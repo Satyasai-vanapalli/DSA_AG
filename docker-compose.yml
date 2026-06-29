@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: dsa_roadmap_db
+    environment:
+      POSTGRES_USER: dsaroadmap
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: dsaroadmap
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: dsa_roadmap_backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dsaroadmap
+      SPRING_DATASOURCE_USERNAME: dsaroadmap
+      SPRING_DATASOURCE_PASSWORD: password
+      JWT_SECRET: ThisIsAVerySecretKeyForJWTAuthThatIsVeryLong
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: dsa_roadmap_frontend
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8080
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  pgdata:
