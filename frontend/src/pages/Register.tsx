@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { registerSchema, authApi } from '../api/auth';
-import type { RegisterData, VerifyRegisterData } from '../api/auth';
+import type { RegisterData } from '../api/auth';
 import { Mail, Lock, User, Loader2, KeyRound } from 'lucide-react';
 
 export default function Register() {

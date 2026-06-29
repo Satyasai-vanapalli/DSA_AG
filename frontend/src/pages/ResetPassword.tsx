@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Link, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { resetPasswordSchema, authApi } from '../api/auth';
 import type { ResetPasswordData } from '../api/auth';
 import { Lock, Loader2, KeyRound } from 'lucide-react';
