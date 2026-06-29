@@ -4,13 +4,42 @@ import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema, authApi } from '../api/auth';
 import type { LoginData } from '../api/auth';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Mail, Lock, Loader2, ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { register, handleSubmit, formState: { errors } } = useForm<LoginData>({
+  const [step, setStep] = useState<1 | 2>(1);
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
+  
+  const { register, handleSubmit, formState: { errors }, setValue } = useForm<LoginData>({
     resolver: zodResolver(loginSchema)
   });
+
+  const checkEmailMutation = useMutation({
+    mutationFn: authApi.checkEmail,
+    onSuccess: (data) => {
+      if (data.exists) {
+        setStep(2);
+        setValue('email', email);
+        setEmailError('');
+      } else {
+        setEmailError('No account found with this email. Please sign up.');
+      }
+    },
+    onError: () => {
+      setEmailError('Failed to check email. Please try again.');
+    }
+  });
+
+  const handleEmailSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setEmailError('Email is required');
+      return;
+    }
+    checkEmailMutation.mutate(email);
+  };
 
   const loginMutation = useMutation({
     mutationFn: authApi.login,
@@ -30,21 +59,27 @@ export default function Login() {
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-dark-card p-10 rounded-2xl shadow-xl border border-slate-100 dark:border-dark-border">
         <div>
           <h2 className="mt-2 text-center text-3xl font-extrabold text-slate-900 dark:text-white">
-            Welcome back
+            {step === 1 ? 'Sign in to your account' : 'Enter your password'}
           </h2>
           <p className="mt-2 text-center text-sm text-slate-600 dark:text-slate-400">
-            Sign in to continue your DSA journey
+            {step === 1 ? 'Welcome back! Please enter your details.' : email}
           </p>
         </div>
 
-        {loginMutation.isError && (
+        {loginMutation.isError && step === 2 && (
           <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm text-center">
-            Invalid email or password.
+            Invalid password
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <div className="space-y-4">
+        {emailError && step === 1 && (
+          <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm text-center">
+            {emailError}
+          </div>
+        )}
+
+        {step === 1 ? (
+          <form className="mt-8 space-y-6" onSubmit={handleEmailSubmit}>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Email address</label>
               <div className="mt-1 relative">
@@ -52,15 +87,25 @@ export default function Login() {
                   <Mail className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
-                  {...register('email')}
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full pl-10 px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg dark:text-white sm:text-sm transition-colors"
                   placeholder="you@example.com"
                 />
               </div>
-              {errors.email && <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>}
             </div>
 
+            <button
+              type="submit"
+              disabled={checkEmailMutation.isPending}
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+            >
+              {checkEmailMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Continue'}
+            </button>
+          </form>
+        ) : (
+          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
               <div className="mt-1 relative">
@@ -76,30 +121,32 @@ export default function Login() {
               </div>
               {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
             </div>
-          </div>
 
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input id="remember-me" type="checkbox" className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-slate-300 rounded" />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-900 dark:text-slate-300">
-                Remember me
-              </label>
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="text-sm font-medium text-primary-600 hover:text-primary-500 flex items-center"
+              >
+                <ArrowLeft className="w-4 h-4 mr-1" /> Back
+              </button>
+              
+              <div className="text-sm">
+                <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
+                  Forgot your password?
+                </Link>
+              </div>
             </div>
-            <div className="text-sm">
-              <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
-                Forgot password?
-              </Link>
-            </div>
-          </div>
 
-          <button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
-          >
-            {loginMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign In'}
-          </button>
-        </form>
+            <button
+              type="submit"
+              disabled={loginMutation.isPending}
+              className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+            >
+              {loginMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign in'}
+            </button>
+          </form>
+        )}
 
         <div className="mt-6">
           <div className="relative">

@@ -15,6 +15,11 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(Map.of("exists", authService.checkEmailExists(email)));
+    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.login(request));

@@ -25,7 +25,9 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/dsaroadmap
       SPRING_DATASOURCE_USERNAME: dsaroadmap
       SPRING_DATASOURCE_PASSWORD: password
-      JWT_SECRET: ThisIsAVerySecretKeyForJWTAuthThatIsVeryLong
+      JWT_SECRET: ${JWT_SECRET:-ThisIsAVerySecretKeyForJWTAuthThatIsVeryLong}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
     depends_on:
       - postgres
     restart: unless-stopped

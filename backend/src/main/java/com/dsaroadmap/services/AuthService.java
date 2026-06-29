@@ -38,6 +38,10 @@ public class AuthService {
     @Value("${jwt.refresh-expiration}")
     private long refreshTokenDurationMs;
 
+    public boolean checkEmailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+
     public AuthResponse login(AuthRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())

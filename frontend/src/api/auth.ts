@@ -33,6 +33,10 @@ export type ForgotPasswordData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 
 export const authApi = {
+  checkEmail: async (email: string) => {
+    const response = await client.get<{ exists: boolean }>(`/auth/check-email?email=${encodeURIComponent(email)}`);
+    return response.data;
+  },
   login: async (data: LoginData) => {
     const response = await apiClient.post('/auth/login', data);
     return response.data;
