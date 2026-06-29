@@ -34,7 +34,7 @@ export type ResetPasswordData = z.infer<typeof resetPasswordSchema>;
 
 export const authApi = {
   checkEmail: async (email: string) => {
-    const response = await client.get<{ exists: boolean }>(`/auth/check-email?email=${encodeURIComponent(email)}`);
+    const response = await apiClient.get<{ exists: boolean }>(`/auth/check-email?email=${encodeURIComponent(email)}`);
     return response.data;
   },
   login: async (data: LoginData) => {
