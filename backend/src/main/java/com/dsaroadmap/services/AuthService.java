@@ -143,10 +143,7 @@ public class AuthService {
                 .map(RefreshToken::getUser)
                 .map(user -> {
                     String token = tokenProvider.generateTokenFromEmail(user.getEmail());
-                    TokenRefreshResponse res = new TokenRefreshResponse();
-                    res.setAccessToken(token);
-                    res.setRefreshToken(requestRefreshToken);
-                    return res;
+                    return new TokenRefreshResponse(token, requestRefreshToken);
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
     }
