@@ -102,7 +102,9 @@ export default function Home({ category }: { category: string }) {
         {isAuthenticated && userStats && (
           <div className="flex gap-4">
             <div className="bg-white dark:bg-dark-card px-6 py-4 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm flex flex-col items-center min-w-[120px]">
-              <span className="text-3xl font-bold text-green-600 dark:text-green-400">{userStats.completed}</span>
+              <span className="text-3xl font-bold text-green-600 dark:text-green-400">
+                {userStats.completed} <span className="text-xl text-slate-400">/ {userStats.total}</span>
+              </span>
               <span className="text-xs font-medium text-slate-500 uppercase tracking-wider mt-1">Completed</span>
             </div>
             <div className="bg-white dark:bg-dark-card px-6 py-4 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm flex flex-col items-center min-w-[120px]">
