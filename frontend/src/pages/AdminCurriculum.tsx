@@ -305,6 +305,19 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
         </div>
         <div className="flex items-center gap-2">
           <button 
+            onClick={(e) => { 
+              e.stopPropagation(); 
+              setMaterialText(concept.description || ''); 
+              setEditConceptName(concept.name || ''); 
+              setShowEditMaterial(true); 
+              setIsOpen(true); 
+            }}
+            className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+            title="Edit Concept"
+          >
+            <Edit2 className="w-4 h-4" />
+          </button>
+          <button 
             onClick={(e) => { e.stopPropagation(); if (confirm(`Delete "${concept.name}"?`)) onDelete(); }}
             className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
             title="Delete"
