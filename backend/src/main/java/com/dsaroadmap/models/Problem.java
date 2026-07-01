@@ -88,4 +88,8 @@ public class Problem {
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties("problem")
     private List<Solution> solutions = new ArrayList<>();
+
+    @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private List<UserProgress> userProgresses = new ArrayList<>();
 }
