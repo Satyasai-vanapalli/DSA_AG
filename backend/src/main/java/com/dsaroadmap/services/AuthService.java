@@ -213,8 +213,12 @@ public class AuthService {
     
     @Transactional
     public void sendDeleteAccountOtp(String email) {
-        userRepository.findByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
+                
+        if (user.getRole() != Role.STUDENT) {
+            throw new RuntimeException("Admins cannot delete their accounts.");
+        }
                 
         String otp = String.format("%06d", new java.util.Random().nextInt(999999));
         otpTokenRepository.deleteByEmailAndPurpose(email, "DELETE_ACCOUNT");
