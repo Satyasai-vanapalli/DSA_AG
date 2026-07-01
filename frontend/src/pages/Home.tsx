@@ -30,7 +30,13 @@ export default function Home({ category }: { category: string }) {
   const filteredConcepts = useMemo(() => {
     if (!concepts) return [];
     if (!searchQuery) return concepts;
-    return concepts.filter(c => c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    const lowerQuery = searchQuery.toLowerCase();
+    return concepts.filter(c => {
+      if ((c.name || '').toLowerCase().includes(lowerQuery)) return true;
+      if (c.problems?.some(p => (p.title || '').toLowerCase().includes(lowerQuery))) return true;
+      if (c.children?.some(sub => (sub.name || '').toLowerCase().includes(lowerQuery) || sub.problems?.some(p => (p.title || '').toLowerCase().includes(lowerQuery)))) return true;
+      return false;
+    });
   }, [concepts, searchQuery]);
 
   const pageTitle = category === 'LEARN' 
@@ -260,12 +266,12 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
       result = result.filter(p => p.difficulty === difficultyFilter);
     }
     if (searchQuery) {
-      result = result.filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()));
+      result = result.filter(p => (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
     }
     return result;
   }, [problems, difficultyFilter, searchQuery]);
 
-  if (searchQuery && filteredProblems.length === 0 && !concept.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+  if (searchQuery && filteredProblems.length === 0 && !(concept.name || '').toLowerCase().includes(searchQuery.toLowerCase())) {
     return null;
   }
 

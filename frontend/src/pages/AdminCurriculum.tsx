@@ -162,6 +162,7 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
   const [newSubConceptName, setNewSubConceptName] = useState('');
   const [editingProblemId, setEditingProblemId] = useState<string | null>(null);
   const [materialText, setMaterialText] = useState(concept.description || '');
+  const [editConceptName, setEditConceptName] = useState(concept.name || '');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -201,14 +202,14 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
 
   // Update material/description mutation
   const updateMaterialMutation = useMutation({
-    mutationFn: () => adminApi.updateConcept(concept.id, { name: concept.name, description: materialText, category }),
+    mutationFn: () => adminApi.updateConcept(concept.id, { name: editConceptName, description: materialText, category }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['concepts', category] });
       queryClient.invalidateQueries({ queryKey: ['subconcepts'] });
-      toast('Material updated', 'success');
+      toast('Concept updated', 'success');
       setShowEditMaterial(false);
     },
-    onError: () => toast('Failed to update material', 'error'),
+    onError: () => toast('Failed to update concept', 'error'),
   });
 
   const reorderProblemsMutation = useMutation({
@@ -345,10 +346,10 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
                   <Plus className="w-4 h-4" /> Add Problem
                 </button>
                 <button 
-                  onClick={() => { setMaterialText(concept.description || ''); setShowEditMaterial(true); }}
+                  onClick={() => { setMaterialText(concept.description || ''); setEditConceptName(concept.name || ''); setShowEditMaterial(true); }}
                   className="text-sm px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-semibold rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors flex items-center gap-1"
                 >
-                  <FileText className="w-4 h-4" /> {concept.description ? 'Edit Material' : 'Add Material'}
+                  <Edit2 className="w-4 h-4" /> Edit Concept
                 </button>
               </div>
 
@@ -386,6 +387,13 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
               {/* Material Editor */}
               {showEditMaterial && (
                 <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/10 rounded-xl border border-green-200 dark:border-green-800">
+                  <label className="block text-xs font-medium text-green-700 dark:text-green-300 mb-1">Concept Name</label>
+                  <input 
+                    type="text" 
+                    value={editConceptName} 
+                    onChange={(e) => setEditConceptName(e.target.value)}
+                    className="w-full mb-3 px-3 py-2 text-sm border border-green-300 dark:border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-dark-bg dark:text-white"
+                  />
                   <label className="block text-xs font-medium text-green-700 dark:text-green-300 mb-2">Material / Notes</label>
                   <textarea 
                     value={materialText} 
@@ -398,10 +406,10 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
                     <button onClick={() => setShowEditMaterial(false)} className="px-3 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg">Cancel</button>
                     <button 
                       onClick={() => updateMaterialMutation.mutate()} 
-                      disabled={updateMaterialMutation.isPending}
+                      disabled={updateMaterialMutation.isPending || !editConceptName.trim()}
                       className="px-4 py-1.5 text-sm font-semibold bg-green-600 text-white hover:bg-green-500 rounded-lg disabled:opacity-50"
                     >
-                      {updateMaterialMutation.isPending ? 'Saving...' : 'Save Material'}
+                      {updateMaterialMutation.isPending ? 'Saving...' : 'Save Changes'}
                     </button>
                   </div>
                 </div>
