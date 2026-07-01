@@ -26,10 +26,10 @@ public class AuthController {
     private void setTokenCookie(HttpServletResponse response, String token) {
         ResponseCookie cookie = ResponseCookie.from("jwt", token)
             .httpOnly(true)
-            .secure(false) // false for localhost dev, should be true for prod with HTTPS
+            .secure(true) // Must be true for cross-domain cookies
             .path("/")
             .maxAge(24 * 60 * 60)
-            .sameSite("Lax")
+            .sameSite("None") // Required for frontend and backend on different domains
             .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
