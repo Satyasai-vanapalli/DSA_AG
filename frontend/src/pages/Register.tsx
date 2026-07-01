@@ -72,7 +72,7 @@ export default function Register() {
 
             {registerMutation.isError && (
               <div className="bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 p-3 rounded-lg text-sm text-center">
-                Registration failed. Email might already be taken.
+                {(registerMutation.error as any)?.response?.data?.message || 'Registration failed. Email might already be taken.'}
               </div>
             )}
 
