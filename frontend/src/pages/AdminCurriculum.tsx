@@ -5,7 +5,7 @@ import { adminApi } from '../api/admin';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import { Link, Navigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, GripVertical, ChevronDown, X, Edit2, FolderPlus, FileText, BookOpen } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, ChevronDown, X, Edit2, FolderPlus, BookOpen } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
 import { motion, AnimatePresence } from 'framer-motion';
