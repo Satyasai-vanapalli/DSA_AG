@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8081/api/progress';
+import apiClient from './client';
 
 export interface UserProgress {
   id: string;
@@ -30,58 +28,55 @@ export interface UserAnalytics {
   averageTime: number;
 }
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return { Authorization: `Bearer ${token}` };
-};
+// Removed getAuthHeaders as apiClient handles it automatically
 
 export const progressApi = {
   toggleCompleted: async (problemId: string, timeSpent?: number): Promise<UserProgress> => {
-    const url = timeSpent ? `${API_URL}/toggle-completed/${problemId}?timeSpent=${timeSpent}` : `${API_URL}/toggle-completed/${problemId}`;
-    const response = await axios.post(url, {}, { headers: getAuthHeaders() });
+    const url = timeSpent ? `/progress/toggle-completed/${problemId}?timeSpent=${timeSpent}` : `/progress/toggle-completed/${problemId}`;
+    const response = await apiClient.post(url, {});
     return response.data;
   },
 
   toggleRevision: async (problemId: string): Promise<UserProgress> => {
-    const response = await axios.post(`${API_URL}/toggle-revision/${problemId}`, {}, { headers: getAuthHeaders() });
+    const response = await apiClient.post(`/progress/toggle-revision/${problemId}`, {});
     return response.data;
   },
 
   updateLastOpened: async (problemId: string): Promise<UserProgress> => {
-    const response = await axios.post(`${API_URL}/last-opened/${problemId}`, {}, { headers: getAuthHeaders() });
+    const response = await apiClient.post(`/progress/last-opened/${problemId}`, {});
     return response.data;
   },
 
   getMyProgress: async (): Promise<UserProgress[]> => {
-    const response = await axios.get(`${API_URL}/me`, { headers: getAuthHeaders() });
+    const response = await apiClient.get(`/progress/me`);
     return response.data;
   },
 
   getMyStats: async (category?: string): Promise<UserStats> => {
-    const url = category ? `${API_URL}/stats?category=${category}` : `${API_URL}/stats`;
-    const response = await axios.get(url, { headers: getAuthHeaders() });
+    const url = category ? `/progress/stats?category=${category}` : `/progress/stats`;
+    const response = await apiClient.get(url);
     return response.data;
   },
 
   getMyAnalytics: async (category?: string): Promise<UserAnalytics> => {
-    const url = category ? `${API_URL}/analytics?category=${category}` : `${API_URL}/analytics`;
-    const response = await axios.get(url, { headers: getAuthHeaders() });
+    const url = category ? `/progress/analytics?category=${category}` : `/progress/analytics`;
+    const response = await apiClient.get(url);
     return response.data;
   },
 
   getHeatmap: async (category?: string): Promise<Record<string, number>> => {
-    const url = category ? `${API_URL}/heatmap?category=${category}` : `${API_URL}/heatmap`;
-    const response = await axios.get(url, { headers: getAuthHeaders() });
+    const url = category ? `/progress/heatmap?category=${category}` : `/progress/heatmap`;
+    const response = await apiClient.get(url);
     return response.data;
   },
 
   getDueReviews: async (): Promise<UserProgress[]> => {
-    const response = await axios.get(`${API_URL}/reviews`, { headers: getAuthHeaders() });
+    const response = await apiClient.get(`/progress/reviews`);
     return response.data;
   },
 
   submitReview: async (problemId: string, remembered: boolean): Promise<UserProgress> => {
-    const response = await axios.post(`${API_URL}/review/${problemId}?remembered=${remembered}`, {}, { headers: getAuthHeaders() });
+    const response = await apiClient.post(`/progress/review/${problemId}?remembered=${remembered}`, {});
     return response.data;
   },
 };
