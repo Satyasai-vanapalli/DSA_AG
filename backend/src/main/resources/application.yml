@@ -27,6 +27,10 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
+resend:
+  api:
+    key: ${RESEND_API_KEY:re_default}
+
 jwt:
   secret: ${JWT_SECRET:ThisIsAVerySecretKeyForJWTAuthThatIsVeryLongAndMustBeAtLeast256BitsLong}
   expiration: 86400000 # 24 hours
