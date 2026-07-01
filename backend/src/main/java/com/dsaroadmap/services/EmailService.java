@@ -14,8 +14,8 @@ import java.util.Map;
 @Service
 public class EmailService {
 
-    @Value("${resend.api.key}")
-    private String resendApiKey;
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -36,21 +36,20 @@ public class EmailService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(resendApiKey);
+        headers.set("api-key", brevoApiKey);
 
         Map<String, Object> body = new HashMap<>();
-        // Resend testing domain must be used if no custom domain is verified
-        body.put("from", "DSA Roadmap <onboarding@resend.dev>");
-        body.put("to", List.of(toEmail));
+        body.put("sender", Map.of("name", "DSA Roadmap", "email", "satyasaivanapalli47@gmail.com"));
+        body.put("to", List.of(Map.of("email", toEmail)));
         body.put("subject", subject);
-        body.put("text", text);
+        body.put("textContent", text);
 
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
         try {
-            restTemplate.postForEntity("https://api.resend.com/emails", request, String.class);
+            restTemplate.postForEntity("https://api.brevo.com/v3/smtp/email", request, String.class);
         } catch (Exception e) {
-            System.err.println("Failed to send email via Resend: " + e.getMessage());
+            System.err.println("Failed to send email via Brevo: " + e.getMessage());
             throw new RuntimeException("Failed to send email");
         }
     }

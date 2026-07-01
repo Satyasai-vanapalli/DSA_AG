@@ -27,9 +27,9 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
-resend:
+brevo:
   api:
-    key: ${RESEND_API_KEY:re_default}
+    key: ${BREVO_API_KEY:default}
 
 jwt:
   secret: ${JWT_SECRET:ThisIsAVerySecretKeyForJWTAuthThatIsVeryLongAndMustBeAtLeast256BitsLong}
