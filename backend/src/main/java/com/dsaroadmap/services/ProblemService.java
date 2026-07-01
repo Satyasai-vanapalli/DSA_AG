@@ -19,33 +19,63 @@ public class ProblemService {
         return problemRepository.findAll();
     }
 
+    public List<Problem> searchProblems(String title) {
+        return problemRepository.findByTitleContainingIgnoreCase(title);
+    }
+
+    public List<Problem> filterProblems(String difficulty) {
+        return problemRepository.findByDifficultyIgnoreCase(difficulty);
+    }
+
     public Problem getProblemById(UUID id) {
         return problemRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
     }
 
     public List<Problem> getProblemsByConcept(UUID conceptId) {
-        return problemRepository.findByConcept(conceptService.getConceptById(conceptId));
+        return problemRepository.findByConceptOrderByOrderIndexAsc(conceptService.getConceptById(conceptId));
+    }
+
+    public List<Problem> getProblemsByCategory(String category) {
+        return problemRepository.findByCategoryOrderByOrderIndexAsc(category);
     }
 
     public Problem createProblem(Problem problem) {
+        // Auto-set orderIndex
+        List<Problem> existing = problemRepository.findByConcept(problem.getConcept());
+        int maxOrder = existing.stream()
+                .mapToInt(p -> p.getOrderIndex() == null ? 0 : p.getOrderIndex())
+                .max().orElse(-1);
+        problem.setOrderIndex(maxOrder + 1);
         return problemRepository.save(problem);
     }
 
     public Problem updateProblem(UUID id, Problem updatedProblem) {
         Problem existing = getProblemById(id);
         existing.setTitle(updatedProblem.getTitle());
-        existing.setDescription(updatedProblem.getDescription());
         existing.setDifficulty(updatedProblem.getDifficulty());
-        existing.setEstimatedTime(updatedProblem.getEstimatedTime());
-        existing.setConstraints(updatedProblem.getConstraints());
-        existing.setInputFormat(updatedProblem.getInputFormat());
-        existing.setOutputFormat(updatedProblem.getOutputFormat());
-        existing.setConcept(updatedProblem.getConcept());
-        // Handling nested links, videos, solutions would require more logic here
+        existing.setDescription(updatedProblem.getDescription());
+        existing.setProblemLink(updatedProblem.getProblemLink());
+        existing.setYoutubeLink(updatedProblem.getYoutubeLink());
+        existing.setDocumentationLink(updatedProblem.getDocumentationLink());
+        existing.setBruteSolution(updatedProblem.getBruteSolution());
+        existing.setBetterSolution(updatedProblem.getBetterSolution());
+        existing.setOptimalSolution(updatedProblem.getOptimalSolution());
+        existing.setCategory(updatedProblem.getCategory());
+        if (updatedProblem.getConcept() != null) {
+            existing.setConcept(updatedProblem.getConcept());
+        }
         return problemRepository.save(existing);
     }
 
     public void deleteProblem(UUID id) {
         problemRepository.deleteById(id);
+    }
+
+    public void reorderProblems(List<UUID> problemIds) {
+        for (int i = 0; i < problemIds.size(); i++) {
+            Problem problem = getProblemById(problemIds.get(i));
+            problem.setOrderIndex(i);
+            problemRepository.save(problem);
+        }
     }
 }

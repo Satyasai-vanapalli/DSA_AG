@@ -10,5 +10,6 @@ import java.util.UUID;
 @Repository
 public interface OtpTokenRepository extends JpaRepository<OtpToken, UUID> {
     Optional<OtpToken> findByEmailAndOtpAndPurpose(String email, String otp, String purpose);
+    void deleteByEmail(String email);
     void deleteByEmailAndPurpose(String email, String purpose);
 }

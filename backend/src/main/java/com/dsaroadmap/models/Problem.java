@@ -1,5 +1,6 @@
 package com.dsaroadmap.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,19 +32,31 @@ public class Problem {
     @Column(nullable = false)
     private String difficulty; // Easy, Medium, Hard
 
-    private String estimatedTime; // e.g., "30 mins"
+    private String problemLink;
+    private String youtubeLink;
+    private String documentationLink;
 
     @Column(columnDefinition = "TEXT")
-    private String constraints;
+    private String bruteSolution;
 
     @Column(columnDefinition = "TEXT")
-    private String inputFormat;
+    private String betterSolution;
 
     @Column(columnDefinition = "TEXT")
-    private String outputFormat;
+    private String optimalSolution;
+
+    @ElementCollection
+    @CollectionTable(name = "problem_additional_solutions", joinColumns = @JoinColumn(name = "problem_id"))
+    @Column(name = "solution_code", columnDefinition = "TEXT")
+    private List<String> additionalSolutions = new ArrayList<>();
+
+    private Integer orderIndex = 0;
+
+    private String category = "PRACTICE";
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "concept_id", nullable = false)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "problems"})
     private Concept concept;
 
     @ManyToMany
@@ -52,6 +65,7 @@ public class Problem {
         joinColumns = @JoinColumn(name = "problem_id"),
         inverseJoinColumns = @JoinColumn(name = "company_id")
     )
+    @JsonIgnoreProperties("problems")
     private List<Company> companies = new ArrayList<>();
 
     @ManyToMany
@@ -60,14 +74,18 @@ public class Problem {
         joinColumns = @JoinColumn(name = "problem_id"),
         inverseJoinColumns = @JoinColumn(name = "topic_id")
     )
+    @JsonIgnoreProperties("problems")
     private List<Topic> topics = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("problem")
     private List<PlatformLink> platformLinks = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("problem")
     private List<ProblemVideo> videos = new ArrayList<>();
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("problem")
     private List<Solution> solutions = new ArrayList<>();
 }

@@ -10,4 +10,5 @@ import java.util.UUID;
     private String name;
     private String email;
     private Role role;
+    private java.util.Set<String> adminCategories;
 }

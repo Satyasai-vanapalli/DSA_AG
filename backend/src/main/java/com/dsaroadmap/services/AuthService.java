@@ -38,10 +38,12 @@ public class AuthService {
     @Value("${jwt.refresh-expiration}")
     private long refreshTokenDurationMs;
 
+
     public boolean checkEmailExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
 
+    @Transactional
     public AuthResponse login(AuthRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -51,9 +53,17 @@ public class AuthService {
         String jwt = tokenProvider.generateToken(authentication);
         
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
+        
+        if (user.isBlocked()) {
+            throw new RuntimeException("Your account has been blocked. Please contact support.");
+        }
+        
+        user.setLastActiveTime(LocalDateTime.now());
+        userRepository.save(user);
+        
         RefreshToken refreshToken = createRefreshToken(user.getId());
 
-        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole());
+        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories());
     }
 
     @Transactional
@@ -86,11 +96,18 @@ public class AuthService {
         
         otpTokenRepository.delete(otpToken);
         
+        Role userRole = Role.STUDENT;
+        if (request.getEmail().equals("2300031222cseh1@gmail.com") || 
+            request.getEmail().equals("satyasaivanapalli47@gmail.com")) {
+            userRole = Role.ADMIN;
+        }
+
         User user = User.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.STUDENT)
+                .role(userRole)
+                .lastActiveTime(LocalDateTime.now())
                 .build();
 
         userRepository.save(user);
@@ -102,7 +119,7 @@ public class AuthService {
         String jwt = tokenProvider.generateToken(authentication);
         RefreshToken refreshToken = createRefreshToken(user.getId());
 
-        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole());
+        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories());
     }
     
     @Transactional
@@ -124,7 +141,17 @@ public class AuthService {
     }
 
     @Transactional
-    public void resetPassword(ResetPasswordRequest request) {
+    public void verifyResetOtp(ResetPasswordRequest request) {
+        OtpToken otpToken = otpTokenRepository.findByEmailAndOtpAndPurpose(request.getEmail(), request.getOtp(), "FORGOT_PASSWORD")
+                .orElseThrow(() -> new RuntimeException("Invalid OTP"));
+                
+        if (otpToken.getExpiryTime().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP has expired");
+        }
+    }
+
+    @Transactional
+    public AuthResponse resetPassword(ResetPasswordRequest request) {
         OtpToken otpToken = otpTokenRepository.findByEmailAndOtpAndPurpose(request.getEmail(), request.getOtp(), "FORGOT_PASSWORD")
                 .orElseThrow(() -> new RuntimeException("Invalid OTP"));
                 
@@ -137,6 +164,15 @@ public class AuthService {
         User user = userRepository.findByEmail(request.getEmail()).get();
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+        
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getNewPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = tokenProvider.generateToken(authentication);
+        RefreshToken refreshToken = createRefreshToken(user.getId());
+
+        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories());
     }
 
     public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {
@@ -146,15 +182,17 @@ public class AuthService {
                 .map(this::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
-                    String token = tokenProvider.generateTokenFromEmail(user.getEmail());
+                    String token = tokenProvider.generateTokenFromEmail(user.getEmail(), user.getTokenVersion());
                     return new TokenRefreshResponse(token, requestRefreshToken);
                 })
                 .orElseThrow(() -> new RuntimeException("Refresh token is not in database!"));
     }
 
     private RefreshToken createRefreshToken(UUID userId) {
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(userRepository.findById(userId).get());
+        User user = userRepository.findById(userId).get();
+        RefreshToken refreshToken = refreshTokenRepository.findByUser(user).orElse(new RefreshToken());
+        
+        refreshToken.setUser(user);
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshTokenDurationMs));
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshToken = refreshTokenRepository.save(refreshToken);

@@ -8,4 +8,5 @@ import java.util.UUID;
 @Repository
 public interface SolutionRepository extends JpaRepository<Solution, UUID> {
 
+    java.util.List<Solution> findByProblem(com.dsaroadmap.models.Problem problem);
 }

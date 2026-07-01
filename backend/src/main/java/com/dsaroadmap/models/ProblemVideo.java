@@ -1,5 +1,6 @@
 package com.dsaroadmap.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,13 @@ public class ProblemVideo {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    private String title; // Display name for the video
+
     @Column(nullable = false)
     private String url; // YouTube URL
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
+    @JsonIgnore
     private Problem problem;
 }

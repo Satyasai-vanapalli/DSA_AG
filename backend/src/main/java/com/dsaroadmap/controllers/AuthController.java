@@ -7,6 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,9 +23,28 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("exists", authService.checkEmailExists(email)));
     }
 
+    private void setTokenCookie(HttpServletResponse response, String token) {
+        ResponseCookie cookie = ResponseCookie.from("jwt", token)
+            .httpOnly(true)
+            .secure(false) // false for localhost dev, should be true for prod with HTTPS
+            .path("/")
+            .maxAge(24 * 60 * 60)
+            .sameSite("Lax")
+            .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+
+
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    public ResponseEntity<?> login(@RequestBody AuthRequest request, HttpServletResponse response) {
+        try {
+            AuthResponse authResponse = authService.login(request);
+            setTokenCookie(response, authResponse.getToken());
+            return ResponseEntity.ok(authResponse);
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body(Map.of("error", e.getClass().getName(), "message", e.getMessage() != null ? e.getMessage() : "null"));
+        }
     }
 
     @PostMapping("/register")
@@ -32,8 +54,10 @@ public class AuthController {
     }
 
     @PostMapping("/verify-register")
-    public ResponseEntity<AuthResponse> verifyRegister(@RequestBody VerifyRegisterRequest request) {
-        return ResponseEntity.ok(authService.verifySignup(request));
+    public ResponseEntity<AuthResponse> verifyRegister(@RequestBody VerifyRegisterRequest request, HttpServletResponse response) {
+        AuthResponse authResponse = authService.verifySignup(request);
+        setTokenCookie(response, authResponse.getToken());
+        return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/forgot-password")
@@ -42,14 +66,23 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("message", "OTP sent successfully"));
     }
 
+    @PostMapping("/verify-reset-otp")
+    public ResponseEntity<Map<String, String>> verifyResetOtp(@RequestBody ResetPasswordRequest request) {
+        authService.verifyResetOtp(request);
+        return ResponseEntity.ok(Map.of("message", "OTP verified successfully"));
+    }
+
     @PostMapping("/reset-password")
-    public ResponseEntity<Map<String, String>> resetPassword(@RequestBody ResetPasswordRequest request) {
-        authService.resetPassword(request);
-        return ResponseEntity.ok(Map.of("message", "Password reset successfully"));
+    public ResponseEntity<AuthResponse> resetPassword(@RequestBody ResetPasswordRequest request, HttpServletResponse response) {
+        AuthResponse authResponse = authService.resetPassword(request);
+        setTokenCookie(response, authResponse.getToken());
+        return ResponseEntity.ok(authResponse);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenRefreshResponse> refreshtoken(@RequestBody TokenRefreshRequest request) {
-        return ResponseEntity.ok(authService.refreshToken(request));
+    public ResponseEntity<TokenRefreshResponse> refreshtoken(@RequestBody TokenRefreshRequest request, HttpServletResponse response) {
+        TokenRefreshResponse refreshResponse = authService.refreshToken(request);
+        setTokenCookie(response, refreshResponse.getAccessToken());
+        return ResponseEntity.ok(refreshResponse);
     }
 }

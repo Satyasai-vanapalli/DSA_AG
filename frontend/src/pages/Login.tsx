@@ -1,28 +1,31 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { Link, useNavigate } from 'react-router-dom';
-import { loginSchema, authApi } from '../api/auth';
-import type { LoginData } from '../api/auth';
-import { Mail, Lock, Loader2, ArrowLeft } from 'lucide-react';
+import { authApi } from '../api/auth';
+import { Mail, Lock, Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login: setAuthLogin } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
-  
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<LoginData>({
-    resolver: zodResolver(loginSchema)
-  });
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Reset password whenever we move to step 2
+  useEffect(() => {
+    if (step === 2) {
+      setPassword('');
+    }
+  }, [step]);
 
   const checkEmailMutation = useMutation({
     mutationFn: authApi.checkEmail,
     onSuccess: (data) => {
       if (data.exists) {
         setStep(2);
-        setValue('email', email);
         setEmailError('');
       } else {
         setEmailError('No account found with this email. Please sign up.');
@@ -45,14 +48,15 @@ export default function Login() {
   const loginMutation = useMutation({
     mutationFn: authApi.login,
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data));
+      setAuthLogin(data.token, data);
       navigate('/');
     }
   });
 
-  const onSubmit = (data: LoginData) => {
-    loginMutation.mutate(data);
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!password || password.length < 6) return;
+    loginMutation.mutate({ email, password });
   };
 
   return (
@@ -91,8 +95,8 @@ export default function Login() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg dark:text-white sm:text-sm transition-colors"
-                  placeholder="you@example.com"
+                  className="appearance-none block w-full pl-10 px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg dark:text-white sm:text-sm transition-colors"
+                  autoComplete="off"
                 />
               </div>
             </div>
@@ -106,7 +110,10 @@ export default function Login() {
             </button>
           </form>
         ) : (
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <form className="mt-8 space-y-6" onSubmit={handlePasswordSubmit} autoComplete="off">
+            {/* Hidden dummy fields to trick browser autofill */}
+            <input type="text" name="prevent_autofill_name" id="prevent_autofill_name" autoComplete="off" style={{ display: 'none' }} tabIndex={-1} />
+            <input type="password" name="prevent_autofill_pass" id="prevent_autofill_pass" autoComplete="off" style={{ display: 'none' }} tabIndex={-1} />
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Password</label>
               <div className="mt-1 relative">
@@ -114,13 +121,25 @@ export default function Login() {
                   <Lock className="h-5 w-5 text-slate-400" />
                 </div>
                 <input
-                  {...register('password')}
-                  type="password"
-                  className="appearance-none block w-full pl-10 px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg shadow-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg dark:text-white sm:text-sm transition-colors"
-                  placeholder="••••••••"
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none block w-full pl-10 pr-10 px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent dark:bg-dark-bg dark:text-white sm:text-sm transition-colors"
+                  autoComplete="off"
+                  name="login_pwd_field"
+                  id="login_pwd_field"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
-              {errors.password && <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>}
+              {password.length > 0 && password.length < 6 && (
+                <p className="mt-1 text-sm text-red-500">Password must be at least 6 characters</p>
+              )}
             </div>
 
             <div className="flex items-center justify-between">
@@ -141,7 +160,7 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={loginMutation.isPending}
+              disabled={loginMutation.isPending || password.length < 6}
               className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
             >
               {loginMutation.isPending ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Sign in'}

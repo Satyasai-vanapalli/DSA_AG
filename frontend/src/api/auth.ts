@@ -1,6 +1,16 @@
 import apiClient from './client';
 import { z } from 'zod';
 
+export interface AuthResponse {
+  token: string;
+  refreshToken: string;
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  adminCategories: string[];
+}
+
 export const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
@@ -10,6 +20,10 @@ export const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 export const verifyRegisterSchema = registerSchema.extend({
@@ -23,7 +37,11 @@ export const forgotPasswordSchema = z.object({
 export const resetPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
   otp: z.string().length(6, 'OTP must be 6 digits'),
-  newPassword: z.string().min(6, 'Password must be at least 6 characters'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string()
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 export type LoginData = z.infer<typeof loginSchema>;
@@ -38,7 +56,7 @@ export const authApi = {
     return response.data;
   },
   login: async (data: LoginData) => {
-    const response = await apiClient.post('/auth/login', data);
+    const response = await apiClient.post<AuthResponse>('/auth/login', data);
     return response.data;
   },
   register: async (data: RegisterData) => {
@@ -46,15 +64,19 @@ export const authApi = {
     return response.data;
   },
   verifyRegister: async (data: VerifyRegisterData) => {
-    const response = await apiClient.post('/auth/verify-register', data);
+    const response = await apiClient.post<AuthResponse>('/auth/verify-register', data);
     return response.data;
   },
   forgotPassword: async (data: ForgotPasswordData) => {
     const response = await apiClient.post('/auth/forgot-password', data);
     return response.data;
   },
+  verifyResetOtp: async (data: { email: string; otp: string }) => {
+    const response = await apiClient.post('/auth/verify-reset-otp', data);
+    return response.data;
+  },
   resetPassword: async (data: ResetPasswordData) => {
-    const response = await apiClient.post('/auth/reset-password', data);
+    const response = await apiClient.post<AuthResponse>('/auth/reset-password', data);
     return response.data;
   },
 };

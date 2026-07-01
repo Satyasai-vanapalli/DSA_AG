@@ -1,5 +1,6 @@
 package com.dsaroadmap.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "concepts")
+@Table(name = "concepts", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name", "category"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,9 +25,30 @@ public class Concept {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    private Integer orderIndex = 0;
+
+    private String category = "PRACTICE";
+
+    @Column(name = "parent_id")
+    private UUID parentId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private Concept parent;
+
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"parent", "children", "problems"})
+    @OrderBy("orderIndex ASC")
+    private List<Concept> children = new ArrayList<>();
+
     @OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"concept", "companies", "topics", "platformLinks", "videos", "solutions"})
     private List<Problem> problems = new ArrayList<>();
 }
