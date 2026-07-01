@@ -92,6 +92,11 @@ export default function Home({ category }: { category: string }) {
           <p className="text-slate-600 dark:text-slate-400 text-lg">
             {pageSubtitle}
           </p>
+          {category === 'LEARN_PYTHON' && (
+            <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+              Special thanks to <a href="https://jayasimha-portfolio-2300032389.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-primary-400 hover:underline font-semibold">JAYASIMHA</a> for editing the Python curriculum!
+            </p>
+          )}
         </div>
         
         {isAuthenticated && userStats && (
@@ -294,7 +299,12 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     return null;
   }
 
-  const { completedCount, conceptProgress } = useMemo(() => {
+  const isConceptCompleted = useMemo(() => {
+    if (!userConceptProgress) return false;
+    return userConceptProgress.some(cp => cp.conceptId === concept.id && cp.completed);
+  }, [userConceptProgress, concept.id]);
+
+  const { completedCount, conceptProgress, totalItemsCount } = useMemo(() => {
     let problemCount = 0;
     if (problems && problems.length > 0 && userProgress) {
       problemCount = problems.filter(p => 
@@ -302,18 +312,20 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
       ).length;
     }
     
-    if (!problems || problems.length === 0) return { completedCount: 0, conceptProgress: 0 };
+    const hasMaterial = concept.description && concept.description.trim() !== '' ? 1 : 0;
+    const materialCompleted = isConceptCompleted ? 1 : 0;
+    
+    const totalItems = (problems?.length || 0) + hasMaterial;
+    const completedItems = problemCount + materialCompleted;
+    
+    if (totalItems === 0) return { completedCount: 0, conceptProgress: 0, totalItemsCount: 0 };
     
     return { 
-      completedCount: problemCount, 
-      conceptProgress: Math.round((problemCount / problems.length) * 100) 
+      completedCount: completedItems, 
+      conceptProgress: Math.round((completedItems / totalItems) * 100),
+      totalItemsCount: totalItems
     };
-  }, [problems, userProgress]);
-
-  const isConceptCompleted = useMemo(() => {
-    if (!userConceptProgress) return false;
-    return userConceptProgress.some(cp => cp.conceptId === concept.id && cp.completed);
-  }, [userConceptProgress, concept.id]);
+  }, [problems, userProgress, concept.description, isConceptCompleted]);
 
   return (
     <div className="bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
@@ -327,18 +339,18 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
           </div>
           <div className="text-left">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">{concept.name}</h3>
-            {problems && (
+            {totalItemsCount > 0 && (
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 {isAuthenticated 
-                  ? `${completedCount}/${problems.length} problems completed`
-                  : `${problems.length} problem${problems.length !== 1 ? 's' : ''}`
+                  ? `${completedCount}/${totalItemsCount} items completed`
+                  : `${totalItemsCount} item${totalItemsCount !== 1 ? 's' : ''}`
                 }
               </p>
             )}
           </div>
         </div>
         <div className="flex items-center gap-6">
-          {isAuthenticated && problems && problems.length > 0 && (
+          {isAuthenticated && totalItemsCount > 0 && (
             <div className="hidden sm:flex items-center gap-3 w-32">
               <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
                 <div 
