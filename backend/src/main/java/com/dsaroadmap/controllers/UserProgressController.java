@@ -1,5 +1,6 @@
 package com.dsaroadmap.controllers;
 
+import com.dsaroadmap.models.ConceptProgress;
 import com.dsaroadmap.models.UserProgress;
 import com.dsaroadmap.security.CustomUserDetails;
 import com.dsaroadmap.services.UserProgressService;
@@ -47,6 +48,19 @@ public class UserProgressController {
     public ResponseEntity<List<UserProgress>> getMyProgress(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         return ResponseEntity.ok(userProgressService.getUserProgress(userDetails.getUsername()));
+    }
+    
+    @GetMapping("/me/concepts")
+    public ResponseEntity<List<ConceptProgress>> getMyConceptProgress(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        return ResponseEntity.ok(userProgressService.getConceptProgress(userDetails.getUsername()));
+    }
+    
+    @PostMapping("/toggle-concept-completed/{conceptId}")
+    public ResponseEntity<ConceptProgress> toggleConceptCompleted(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable UUID conceptId) {
+        return ResponseEntity.ok(userProgressService.toggleConceptCompleted(userDetails.getUsername(), conceptId));
     }
 
     @GetMapping("/stats")

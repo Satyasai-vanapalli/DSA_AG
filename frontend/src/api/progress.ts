@@ -13,6 +13,13 @@ export interface UserProgress {
   problem?: any; // To hold the nested problem data from the backend
 }
 
+export interface ConceptProgress {
+  id: string;
+  conceptId: string;
+  completed: boolean;
+  completedAt?: string;
+}
+
 export interface UserStats {
   completed: number;
   revision: number;
@@ -49,6 +56,16 @@ export const progressApi = {
 
   getMyProgress: async (): Promise<UserProgress[]> => {
     const response = await apiClient.get(`/progress/me`);
+    return response.data;
+  },
+
+  getMyConceptProgress: async (): Promise<ConceptProgress[]> => {
+    const response = await apiClient.get(`/progress/me/concepts`);
+    return response.data;
+  },
+
+  toggleConceptCompleted: async (conceptId: string): Promise<ConceptProgress> => {
+    const response = await apiClient.post(`/progress/toggle-concept-completed/${conceptId}`, {});
     return response.data;
   },
 

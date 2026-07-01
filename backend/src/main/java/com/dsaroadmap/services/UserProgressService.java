@@ -1,8 +1,12 @@
 package com.dsaroadmap.services;
 
+import com.dsaroadmap.models.Concept;
+import com.dsaroadmap.models.ConceptProgress;
 import com.dsaroadmap.models.Problem;
 import com.dsaroadmap.models.User;
 import com.dsaroadmap.models.UserProgress;
+import com.dsaroadmap.repositories.ConceptRepository;
+import com.dsaroadmap.repositories.ConceptProgressRepository;
 import com.dsaroadmap.repositories.ProblemRepository;
 import com.dsaroadmap.repositories.UserProgressRepository;
 import com.dsaroadmap.repositories.UserRepository;
@@ -24,6 +28,8 @@ public class UserProgressService {
     private final UserProgressRepository userProgressRepository;
     private final ProblemRepository problemRepository;
     private final UserRepository userRepository;
+    private final ConceptRepository conceptRepository;
+    private final ConceptProgressRepository conceptProgressRepository;
 
     @Transactional
     public UserProgress toggleCompleted(String userEmail, UUID problemId, Integer timeSpent) {
@@ -148,6 +154,34 @@ public class UserProgressService {
         return userProgressRepository.findByUser(user);
     }
     
+    public List<ConceptProgress> getConceptProgress(String userEmail) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return conceptProgressRepository.findByUser(user);
+    }
+    
+    @Transactional
+    public ConceptProgress toggleConceptCompleted(String userEmail, UUID conceptId) {
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Concept concept = conceptRepository.findById(conceptId)
+                .orElseThrow(() -> new RuntimeException("Concept not found"));
+
+        ConceptProgress progress = conceptProgressRepository.findByUserAndConcept(user, concept)
+                .orElse(ConceptProgress.builder()
+                        .user(user)
+                        .concept(concept)
+                        .completed(false)
+                        .build());
+
+        progress.setCompleted(!progress.isCompleted());
+        if (progress.isCompleted()) {
+            progress.setCompletedAt(LocalDate.now());
+            updateUserStreak(user);
+        }
+        return conceptProgressRepository.save(progress);
+    }
+    
     public Map<String, Object> getUserStats(String userEmail, String category) {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -164,11 +198,67 @@ public class UserProgressService {
         long totalProblems = category != null && !category.isEmpty() 
             ? problemRepository.findAll().stream().filter(p -> category.equalsIgnoreCase(p.getCategory())).count()
             : problemRepository.count();
+            
+        // Include materials in the count (Concepts with descriptions)
+        long totalMaterials = 0;
+        long completedMaterials = 0;
+        
+        if (category != null && !category.isEmpty()) {
+            List<Concept> categoryConcepts = conceptRepository.findByCategoryOrderByOrderIndexAsc(category);
+            
+            // Function to recursively count materials
+            class MaterialCounter {
+                long total = 0;
+                void countMaterials(Concept c) {
+                    if (c.getDescription() != null && !c.getDescription().trim().isEmpty()) {
+                        total++;
+                    }
+                    if (c.getChildren() != null) {
+                        for (Concept child : c.getChildren()) {
+                            countMaterials(child);
+                        }
+                    }
+                }
+            }
+            
+            MaterialCounter counter = new MaterialCounter();
+            for (Concept c : categoryConcepts) {
+                counter.countMaterials(c);
+            }
+            totalMaterials = counter.total;
+            
+            // Get completed concepts for this user and this category
+            List<ConceptProgress> conceptProgresses = conceptProgressRepository.findByUserWithConcept(user);
+            completedMaterials = conceptProgresses.stream()
+                .filter(ConceptProgress::isCompleted)
+                .filter(cp -> {
+                    // Check if this concept belongs to the category. We need to check if it's in the tree.
+                    // For simplicity, we can fetch all concepts in the category tree and check if it's there.
+                    // Actually, a simpler way is to check the top-level concept's category.
+                    Concept current = cp.getConcept();
+                    while (current.getParent() != null) {
+                        current = current.getParent();
+                    }
+                    return category.equalsIgnoreCase(current.getCategory());
+                })
+                .count();
+        } else {
+            // Global stats across all categories
+            totalMaterials = conceptRepository.findAll().stream()
+                .filter(c -> c.getDescription() != null && !c.getDescription().trim().isEmpty())
+                .count();
+            completedMaterials = conceptProgressRepository.findByUser(user).stream()
+                .filter(ConceptProgress::isCompleted)
+                .count();
+        }
+        
+        long totalItems = totalProblems + totalMaterials;
+        long completedItems = completed + completedMaterials;
         
         return Map.of(
-            "completed", completed,
+            "completed", completedItems,
             "revision", revision,
-            "total", totalProblems,
+            "total", totalItems,
             "currentStreak", user.getCurrentStreak(),
             "maxStreak", user.getMaxStreak()
         );

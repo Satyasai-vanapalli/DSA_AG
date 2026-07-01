@@ -235,9 +235,22 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     }
   });
 
+  const toggleConceptCompletedMutation = useMutation({
+    mutationFn: (conceptId: string) => progressApi.toggleConceptCompleted(conceptId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conceptProgress'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+    }
+  });
+
   const handleToggleCompleted = (e: React.MouseEvent, problemId: string, _isCompleted: boolean) => {
     e.stopPropagation();
     toggleCompletedMutation.mutate({ problemId });
+  };
+  
+  const handleToggleConceptCompleted = (e: React.MouseEvent, conceptId: string) => {
+    e.stopPropagation();
+    toggleConceptCompletedMutation.mutate(conceptId);
   };
   
   const expanded = isOpen || searchQuery.length > 0;
@@ -250,6 +263,12 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
   const { data: userProgress } = useQuery({
     queryKey: ['progress'],
     queryFn: progressApi.getMyProgress,
+    enabled: isAuthenticated,
+  });
+
+  const { data: userConceptProgress } = useQuery({
+    queryKey: ['conceptProgress'],
+    queryFn: progressApi.getMyConceptProgress,
     enabled: isAuthenticated,
   });
 
@@ -276,15 +295,25 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
   }
 
   const { completedCount, conceptProgress } = useMemo(() => {
-    if (!problems || problems.length === 0 || !userProgress) return { completedCount: 0, conceptProgress: 0 };
-    const count = problems.filter(p => 
-      userProgress.find(up => up.problemId === p.id && up.completed)
-    ).length;
+    let problemCount = 0;
+    if (problems && problems.length > 0 && userProgress) {
+      problemCount = problems.filter(p => 
+        userProgress.find(up => up.problemId === p.id && up.completed)
+      ).length;
+    }
+    
+    if (!problems || problems.length === 0) return { completedCount: 0, conceptProgress: 0 };
+    
     return { 
-      completedCount: count, 
-      conceptProgress: Math.round((count / problems.length) * 100) 
+      completedCount: problemCount, 
+      conceptProgress: Math.round((problemCount / problems.length) * 100) 
     };
   }, [problems, userProgress]);
+
+  const isConceptCompleted = useMemo(() => {
+    if (!userConceptProgress) return false;
+    return userConceptProgress.some(cp => cp.conceptId === concept.id && cp.completed);
+  }, [userConceptProgress, concept.id]);
 
   return (
     <div className="bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
@@ -341,8 +370,21 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
             <div className="overflow-x-auto">
               {/* Material/Description */}
               {concept.description && (
-                <div className="px-6 py-4 bg-blue-50/50 dark:bg-blue-900/5 border-b border-slate-100 dark:border-slate-800">
-                  <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">{concept.description}</div>
+                <div className="px-6 py-4 bg-blue-50/50 dark:bg-blue-900/5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start gap-4">
+                  <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap flex-1">{concept.description}</div>
+                  {isAuthenticated && (
+                    <button 
+                      onClick={(e) => handleToggleConceptCompleted(e, concept.id)}
+                      className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors"
+                      title={isConceptCompleted ? "Mark material as incomplete" : "Mark material as complete"}
+                    >
+                      {isConceptCompleted ? (
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <div className="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-500 hover:border-green-500 transition-colors" />
+                      )}
+                    </button>
+                  )}
                 </div>
               )}
 
