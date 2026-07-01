@@ -210,4 +210,43 @@ public class AuthService {
         }
         return token;
     }
+    
+    @Transactional
+    public void sendDeleteAccountOtp(String email) {
+        userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+                
+        String otp = String.format("%06d", new java.util.Random().nextInt(999999));
+        otpTokenRepository.deleteByEmailAndPurpose(email, "DELETE_ACCOUNT");
+        
+        OtpToken token = new OtpToken();
+        token.setEmail(email);
+        token.setOtp(otp);
+        token.setPurpose("DELETE_ACCOUNT");
+        token.setExpiryTime(LocalDateTime.now().plusMinutes(10));
+        otpTokenRepository.save(token);
+        
+        emailService.sendOtpEmail(email, otp, "DELETE_ACCOUNT");
+    }
+
+    @Transactional
+    public void verifyAndDeleteAccount(String email, String otp) {
+        OtpToken otpToken = otpTokenRepository.findByEmailAndOtpAndPurpose(email, otp, "DELETE_ACCOUNT")
+                .orElseThrow(() -> new RuntimeException("Invalid OTP"));
+                
+        if (otpToken.getExpiryTime().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP has expired");
+        }
+        
+        otpTokenRepository.delete(otpToken);
+        
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+                
+        // Delete refresh token first
+        refreshTokenRepository.findByUser(user).ifPresent(refreshTokenRepository::delete);
+        
+        // Delete user (cascade handles UserProgress)
+        userRepository.delete(user);
+    }
 }

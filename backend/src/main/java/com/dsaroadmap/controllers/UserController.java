@@ -1,6 +1,7 @@
 package com.dsaroadmap.controllers;
 
 import com.dsaroadmap.repositories.UserRepository;
+import com.dsaroadmap.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseCookie;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final AuthService authService;
 
     @GetMapping("/leaderboard")
     public ResponseEntity<List<UserRepository.LeaderboardProjection>> getLeaderboard(
@@ -59,5 +61,39 @@ public class UserController {
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/me/delete-account/send-otp")
+    public ResponseEntity<Void> sendDeleteAccountOtp(org.springframework.security.core.Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            authService.sendDeleteAccountOtp(authentication.getName());
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(401).build();
+    }
+
+    @PostMapping("/me/delete-account/verify")
+    public ResponseEntity<Void> verifyAndDeleteAccount(
+            @RequestBody java.util.Map<String, String> request,
+            org.springframework.security.core.Authentication authentication,
+            HttpServletResponse response) {
+            
+        if (authentication != null && authentication.isAuthenticated()) {
+            String otp = request.get("otp");
+            authService.verifyAndDeleteAccount(authentication.getName(), otp);
+            
+            // Clear JWT cookie
+            ResponseCookie cookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(true) // Adjust for production
+                .path("/")
+                .maxAge(0)
+                .sameSite("None")
+                .build();
+            response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+            
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.status(401).build();
     }
 }
