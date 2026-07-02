@@ -15,4 +15,10 @@ public class AdditionalSolution {
     
     @Column(columnDefinition = "TEXT")
     private String code;
+
+    @com.fasterxml.jackson.annotation.JsonCreator(mode = com.fasterxml.jackson.annotation.JsonCreator.Mode.DELEGATING)
+    public AdditionalSolution(String code) {
+        this.name = "";
+        this.code = code;
+    }
 }
