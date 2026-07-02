@@ -9,8 +9,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ProblemService {
 
     private final ProblemRepository problemRepository;
@@ -95,12 +98,19 @@ public class ProblemService {
             }
         }
         if (updatedProblem.getSolutions() != null) {
-            java.util.Map<String, com.dsaroadmap.models.Solution> existingSols = existing.getSolutions().stream()
-                .collect(java.util.stream.Collectors.toMap(com.dsaroadmap.models.Solution::getLanguage, s -> s));
+            // Remove solutions not present in the updated list
+            existing.getSolutions().removeIf(existingSol -> 
+                updatedProblem.getSolutions().stream().noneMatch(updatedSol -> 
+                    updatedSol.getLanguage().equals(existingSol.getLanguage())
+                )
+            );
             
-            java.util.List<com.dsaroadmap.models.Solution> newSols = new java.util.ArrayList<>();
+            // Add or update solutions
             for (com.dsaroadmap.models.Solution updatedSol : updatedProblem.getSolutions()) {
-                com.dsaroadmap.models.Solution existingSol = existingSols.get(updatedSol.getLanguage());
+                com.dsaroadmap.models.Solution existingSol = existing.getSolutions().stream()
+                    .filter(s -> s.getLanguage().equals(updatedSol.getLanguage()))
+                    .findFirst().orElse(null);
+                    
                 if (existingSol != null) {
                     existingSol.setBruteSolution(updatedSol.getBruteSolution());
                     existingSol.setBetterSolution(updatedSol.getBetterSolution());
@@ -110,15 +120,12 @@ public class ProblemService {
                     if (updatedSol.getAdditionalSolutions() != null) {
                         existingSol.getAdditionalSolutions().addAll(updatedSol.getAdditionalSolutions());
                     }
-                    newSols.add(existingSol);
                 } else {
                     updatedSol.setId(null);
                     updatedSol.setProblem(existing);
-                    newSols.add(updatedSol);
+                    existing.getSolutions().add(updatedSol);
                 }
             }
-            existing.getSolutions().clear();
-            existing.getSolutions().addAll(newSols);
         }
         return problemRepository.save(existing);
     }
