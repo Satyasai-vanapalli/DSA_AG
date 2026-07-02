@@ -41,8 +41,14 @@ class UpdateProblemTest {
         Solution s = new Solution();
         s.setLanguage("Java");
         s.setBruteSolution("brute");
-        AdditionalSolution as = new AdditionalSolution("a1", "c1");
-        s.setAdditionalSolutions(new ArrayList<>(List.of(as)));
+        com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+        com.fasterxml.jackson.databind.node.ArrayNode arrayNode = mapper.createArrayNode();
+        com.fasterxml.jackson.databind.node.ObjectNode obj = mapper.createObjectNode();
+        obj.put("name", "a1");
+        obj.put("code", "c1");
+        arrayNode.add(obj);
+        
+        s.setAdditionalSolutions(arrayNode);
         update.setSolutions(List.of(s));
         
         Problem updated = problemService.updateProblem(saved.getId(), update);
