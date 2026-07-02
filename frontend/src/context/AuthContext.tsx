@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!user) return;
 
-    const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+    const TIMEOUT_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
     const checkActivity = () => {
       const lastActivity = localStorage.getItem('lastActivity');
