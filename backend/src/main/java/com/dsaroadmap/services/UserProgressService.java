@@ -187,14 +187,17 @@ public class UserProgressService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         List<UserProgress> allProgress = userProgressRepository.findByUserWithProblem(user);
         
+        final List<UserProgress> finalAllProgress;
         if (category != null && !category.isEmpty()) {
-            allProgress = allProgress.stream()
+            finalAllProgress = allProgress.stream()
                 .filter(up -> category.equalsIgnoreCase(up.getProblem().getCategory()))
                 .toList();
+        } else {
+            finalAllProgress = allProgress;
         }
         
-        long completed = allProgress.stream().filter(UserProgress::isCompleted).count();
-        long revision = allProgress.stream().filter(UserProgress::isRevision).count();
+        long completed = finalAllProgress.stream().filter(UserProgress::isCompleted).count();
+        long revision = finalAllProgress.stream().filter(UserProgress::isRevision).count();
         long totalConcepts = 0;
         long completedConcepts = 0;
         
@@ -207,7 +210,7 @@ public class UserProgressService {
             List<Problem> allProblems = problemRepository.findByCategoryOrderByOrderIndexAsc(category);
             
             completedConcepts = topLevelConcepts.stream()
-                .filter(c -> isConceptFullyCompleted(c, allConcepts, allProblems, allProgress, conceptProgresses))
+                .filter(c -> isConceptFullyCompleted(c, allConcepts, allProblems, finalAllProgress, conceptProgresses))
                 .count();
         } else {
             // Global stats across all categories
@@ -219,7 +222,7 @@ public class UserProgressService {
             List<Problem> allProblems = problemRepository.findAll();
             
             completedConcepts = allTopLevelConcepts.stream()
-                .filter(c -> isConceptFullyCompleted(c, allConcepts, allProblems, allProgress, conceptProgresses))
+                .filter(c -> isConceptFullyCompleted(c, allConcepts, allProblems, finalAllProgress, conceptProgresses))
                 .count();
         }
         
