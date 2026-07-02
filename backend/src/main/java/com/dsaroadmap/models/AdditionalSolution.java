@@ -16,9 +16,15 @@ public class AdditionalSolution {
     @Column(columnDefinition = "TEXT")
     private String code;
 
-    @com.fasterxml.jackson.annotation.JsonCreator(mode = com.fasterxml.jackson.annotation.JsonCreator.Mode.DELEGATING)
-    public AdditionalSolution(String code) {
-        this.name = "";
-        this.code = code;
+    @com.fasterxml.jackson.annotation.JsonCreator
+    public static AdditionalSolution fromJson(com.fasterxml.jackson.databind.JsonNode node) {
+        if (node.isTextual()) {
+            return new AdditionalSolution("", node.asText());
+        } else if (node.isObject()) {
+            String name = node.has("name") && !node.get("name").isNull() ? node.get("name").asText() : "";
+            String code = node.has("code") && !node.get("code").isNull() ? node.get("code").asText() : "";
+            return new AdditionalSolution(name, code);
+        }
+        return new AdditionalSolution();
     }
 }
