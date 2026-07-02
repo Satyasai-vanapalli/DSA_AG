@@ -41,8 +41,7 @@ public class SolutionService {
         existing.setBetterSolution(updatedSolution.getBetterSolution());
         existing.setOptimalSolution(updatedSolution.getOptimalSolution());
         if (updatedSolution.getAdditionalSolutions() != null) {
-            existing.getAdditionalSolutions().clear();
-            existing.getAdditionalSolutions().addAll(updatedSolution.getAdditionalSolutions());
+            existing.setAdditionalSolutions(updatedSolution.getAdditionalSolutions());
         }
         return solutionRepository.save(existing);
     }
