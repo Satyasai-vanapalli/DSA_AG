@@ -38,6 +38,12 @@ public class Solution {
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     private com.fasterxml.jackson.databind.JsonNode additionalSolutions;
 
+    // Legacy column to satisfy existing NOT NULL constraint in production database
+    @Column(name = "solution_code", columnDefinition = "TEXT")
+    @Builder.Default
+    @JsonIgnore
+    private String solutionCode = "";
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
     @JsonIgnore
