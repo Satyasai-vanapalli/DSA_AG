@@ -40,6 +40,11 @@ public class ProblemService {
     }
 
     public Problem createProblem(Problem problem) {
+        if (problem.getConcept() != null && problem.getConcept().getId() != null) {
+            Concept managedConcept = conceptService.getConceptById(problem.getConcept().getId());
+            problem.setConcept(managedConcept);
+        }
+        
         // Auto-set orderIndex
         List<Problem> existing = problemRepository.findByConcept(problem.getConcept());
         int maxOrder = existing.stream()
@@ -64,8 +69,8 @@ public class ProblemService {
         existing.setYoutubeLink(updatedProblem.getYoutubeLink());
         existing.setDocumentationLink(updatedProblem.getDocumentationLink());
         existing.setCategory(updatedProblem.getCategory());
-        if (updatedProblem.getConcept() != null) {
-            existing.setConcept(updatedProblem.getConcept());
+        if (updatedProblem.getConcept() != null && updatedProblem.getConcept().getId() != null) {
+            existing.setConcept(conceptService.getConceptById(updatedProblem.getConcept().getId()));
         }
         if (updatedProblem.getPlatformLinks() != null) {
             existing.getPlatformLinks().clear();
