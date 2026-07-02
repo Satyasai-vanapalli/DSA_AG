@@ -275,4 +275,52 @@ public class UserProgressService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return userProgressRepository.findDueForReview(user, LocalDate.now());
     }
+
+    private boolean isConceptFullyCompleted(
+            Concept concept, 
+            List<Concept> allConcepts, 
+            List<Problem> allProblems, 
+            List<UserProgress> userProgress, 
+            List<ConceptProgress> conceptProgress) {
+        
+        List<Problem> problems = allProblems.stream()
+            .filter(p -> p.getConcept() != null && p.getConcept().getId().equals(concept.getId()))
+            .toList();
+        List<Concept> subConcepts = allConcepts.stream()
+            .filter(c -> concept.getId().equals(c.getParentId()))
+            .toList();
+        
+        int totalItems = 0;
+        int completedItems = 0;
+        
+        if (!problems.isEmpty()) {
+            totalItems += problems.size();
+            long completedProbs = problems.stream()
+                .filter(p -> userProgress.stream().anyMatch(up -> up.getProblem().getId().equals(p.getId()) && up.isCompleted()))
+                .count();
+            completedItems += completedProbs;
+        }
+        
+        List<Concept> subConceptsWithMaterial = subConcepts.stream()
+            .filter(c -> c.getDescription() != null && !c.getDescription().trim().isEmpty())
+            .toList();
+        if (!subConceptsWithMaterial.isEmpty()) {
+            totalItems += subConceptsWithMaterial.size();
+            long completedSubConcepts = subConceptsWithMaterial.stream()
+                .filter(c -> conceptProgress.stream().anyMatch(cp -> cp.getConcept().getId().equals(c.getId()) && cp.isCompleted()))
+                .count();
+            completedItems += completedSubConcepts;
+        }
+        
+        boolean hasMaterial = concept.getDescription() != null && !concept.getDescription().trim().isEmpty();
+        if (hasMaterial) {
+            totalItems += 1;
+            boolean isMaterialCompleted = conceptProgress.stream()
+                .anyMatch(cp -> cp.getConcept().getId().equals(concept.getId()) && cp.isCompleted());
+            if (isMaterialCompleted) completedItems += 1;
+        }
+        
+        if (totalItems == 0) return false;
+        return totalItems == completedItems;
+    }
 }
