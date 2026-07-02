@@ -68,10 +68,8 @@ public class AuthService {
 
     @Transactional
     public void sendSignupOtp(RegisterRequest request) {
-        if (userRepository.count() >= 100) {
-            throw new RuntimeException("Max user limit is reached and cannot create account. Contact admin: satyasaivanapalli47@gmail.com");
-        }
-        
+        // Removed max user limit
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email is already taken!");
         }

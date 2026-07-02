@@ -19,36 +19,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String path = request.getRequestURI();
-        
-        // Skip rate limiting for OPTIONS requests (CORS preflight)
-        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        
-        // Only rate limit auth endpoints
-        if (path.startsWith("/api/auth/")) {
-            String clientIp = getClientIp(request);
-            
-            RequestData requestData = requestCounts.compute(clientIp, (key, value) -> {
-                long currentTime = System.currentTimeMillis();
-                if (value == null || currentTime - value.startTime > TimeUnit.MINUTES.toMillis(1)) {
-                    return new RequestData(currentTime, 1);
-                } else {
-                    value.count++;
-                    return value;
-                }
-            });
-
-            if (requestData.count > MAX_REQUESTS_PER_MINUTE) {
-                response.setStatus(429); // Too Many Requests
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\": \"Too many requests. Please try again later.\"}");
-                return;
-            }
-        }
-        
+        // Rate limiting is disabled
         filterChain.doFilter(request, response);
     }
 
