@@ -74,20 +74,51 @@ public class ProblemService {
             existing.setConcept(conceptService.getConceptById(updatedProblem.getConcept().getId()));
         }
         if (updatedProblem.getPlatformLinks() != null) {
-            existing.getPlatformLinks().clear();
-            updatedProblem.getPlatformLinks().forEach(link -> {
-                link.setId(null);
-                link.setProblem(existing);
-                existing.getPlatformLinks().add(link);
-            });
+            // Remove links not in the updated list
+            existing.getPlatformLinks().removeIf(existingLink -> 
+                updatedProblem.getPlatformLinks().stream().noneMatch(updatedLink -> 
+                    updatedLink.getPlatformName().equals(existingLink.getPlatformName()) && 
+                    updatedLink.getUrl().equals(existingLink.getUrl())
+                )
+            );
+            // Add new links
+            for (com.dsaroadmap.models.PlatformLink updatedLink : updatedProblem.getPlatformLinks()) {
+                boolean exists = existing.getPlatformLinks().stream().anyMatch(existingLink -> 
+                    existingLink.getPlatformName().equals(updatedLink.getPlatformName()) && 
+                    existingLink.getUrl().equals(updatedLink.getUrl())
+                );
+                if (!exists) {
+                    updatedLink.setId(null);
+                    updatedLink.setProblem(existing);
+                    existing.getPlatformLinks().add(updatedLink);
+                }
+            }
         }
         if (updatedProblem.getSolutions() != null) {
+            java.util.Map<String, com.dsaroadmap.models.Solution> existingSols = existing.getSolutions().stream()
+                .collect(java.util.stream.Collectors.toMap(com.dsaroadmap.models.Solution::getLanguage, s -> s));
+            
+            java.util.List<com.dsaroadmap.models.Solution> newSols = new java.util.ArrayList<>();
+            for (com.dsaroadmap.models.Solution updatedSol : updatedProblem.getSolutions()) {
+                com.dsaroadmap.models.Solution existingSol = existingSols.get(updatedSol.getLanguage());
+                if (existingSol != null) {
+                    existingSol.setBruteSolution(updatedSol.getBruteSolution());
+                    existingSol.setBetterSolution(updatedSol.getBetterSolution());
+                    existingSol.setOptimalSolution(updatedSol.getOptimalSolution());
+                    
+                    existingSol.getAdditionalSolutions().clear();
+                    if (updatedSol.getAdditionalSolutions() != null) {
+                        existingSol.getAdditionalSolutions().addAll(updatedSol.getAdditionalSolutions());
+                    }
+                    newSols.add(existingSol);
+                } else {
+                    updatedSol.setId(null);
+                    updatedSol.setProblem(existing);
+                    newSols.add(updatedSol);
+                }
+            }
             existing.getSolutions().clear();
-            updatedProblem.getSolutions().forEach(solution -> {
-                solution.setId(null);
-                solution.setProblem(existing);
-                existing.getSolutions().add(solution);
-            });
+            existing.getSolutions().addAll(newSols);
         }
         return problemRepository.save(existing);
     }
