@@ -16,6 +16,8 @@ export default function AdminCurriculum({ category, title }: { category: string,
   const queryClient = useQueryClient();
   const [showAddConcept, setShowAddConcept] = useState(false);
   const [newConceptName, setNewConceptName] = useState('');
+  const [newConceptDescription, setNewConceptDescription] = useState('');
+  const [newConceptIsMaterialOnly, setNewConceptIsMaterialOnly] = useState(false);
 
   if (user?.role !== 'ADMIN' && !user?.adminCategories?.includes(category)) return <Navigate to="/" replace />;
 
@@ -25,11 +27,18 @@ export default function AdminCurriculum({ category, title }: { category: string,
   });
 
   const createConceptMutation = useMutation({
-    mutationFn: () => adminApi.createConcept({ name: newConceptName, category }),
+    mutationFn: () => adminApi.createConcept({ 
+      name: newConceptIsMaterialOnly ? (newConceptName.trim() || 'Material Block') : newConceptName, 
+      category,
+      description: newConceptDescription,
+      isMaterialOnly: newConceptIsMaterialOnly 
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['concepts', category] });
       toast('Concept created', 'success');
       setNewConceptName('');
+      setNewConceptDescription('');
+      setNewConceptIsMaterialOnly(false);
       setShowAddConcept(false);
     },
     onError: () => toast('Failed to create concept', 'error'),
@@ -84,20 +93,45 @@ export default function AdminCurriculum({ category, title }: { category: string,
       </div>
 
       {showAddConcept && (
-        <div className="mb-6 bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border p-6 shadow-sm flex items-end gap-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Concept Name</label>
-            <input 
-              type="text" 
-              value={newConceptName} 
-              onChange={(e) => setNewConceptName(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter' && newConceptName.trim()) createConceptMutation.mutate(); }}
-              className="w-full px-4 py-2 border border-slate-300 dark:border-dark-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-dark-bg dark:text-white" 
+        <div className="mb-6 bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border p-6 shadow-sm flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Concept Name</label>
+              <input 
+                type="text" 
+                value={newConceptName} 
+                onChange={(e) => setNewConceptName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && (newConceptName.trim() || newConceptIsMaterialOnly)) createConceptMutation.mutate(); }}
+                className="w-full px-4 py-2 border border-slate-300 dark:border-dark-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-dark-bg dark:text-white disabled:opacity-50"
+                placeholder={newConceptIsMaterialOnly ? "Optional: Admin label (won't be shown to users)" : "e.g., Introduction to Arrays"}
+              />
+            </div>
+            <div className="flex items-center gap-2 mt-6">
+              <input 
+                type="checkbox" 
+                id="isMaterialOnly" 
+                checked={newConceptIsMaterialOnly} 
+                onChange={(e) => setNewConceptIsMaterialOnly(e.target.checked)}
+                className="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500"
+              />
+              <label htmlFor="isMaterialOnly" className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">
+                Is Material Only
+              </label>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Material (Markdown)</label>
+            <textarea 
+              value={newConceptDescription} 
+              onChange={(e) => setNewConceptDescription(e.target.value)}
+              className="w-full px-4 py-3 border border-slate-300 dark:border-dark-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 min-h-[100px] dark:bg-dark-bg dark:text-white"
+              placeholder="Add study materials, notes, or explanations in Markdown..."
             />
           </div>
+          <div className="flex justify-end gap-3 mt-2">
           <button 
             onClick={() => createConceptMutation.mutate()}
-            disabled={!newConceptName.trim() || createConceptMutation.isPending}
+            disabled={(!newConceptName.trim() && !newConceptIsMaterialOnly) || createConceptMutation.isPending}
             className="px-6 py-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 h-[42px]"
           >
             Create
@@ -108,6 +142,7 @@ export default function AdminCurriculum({ category, title }: { category: string,
           >
             Cancel
           </button>
+          </div>
         </div>
       )}
 
@@ -163,6 +198,7 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
   const [editingProblemId, setEditingProblemId] = useState<string | null>(null);
   const [materialText, setMaterialText] = useState(concept.description || '');
   const [editConceptName, setEditConceptName] = useState(concept.name || '');
+  const [editIsMaterialOnly, setEditIsMaterialOnly] = useState(concept.isMaterialOnly || false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -202,7 +238,12 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
 
   // Update material/description mutation
   const updateMaterialMutation = useMutation({
-    mutationFn: () => adminApi.updateConcept(concept.id, { name: editConceptName, description: materialText, category }),
+    mutationFn: () => adminApi.updateConcept(concept.id, { 
+      name: editIsMaterialOnly ? (editConceptName.trim() || 'Material Block') : editConceptName, 
+      description: materialText, 
+      category,
+      isMaterialOnly: editIsMaterialOnly 
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['concepts', category] });
       queryClient.invalidateQueries({ queryKey: ['subconcepts'] });
@@ -309,6 +350,7 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
               e.stopPropagation(); 
               setMaterialText(concept.description || ''); 
               setEditConceptName(concept.name || ''); 
+              setEditIsMaterialOnly(concept.isMaterialOnly || false);
               setShowEditMaterial(true); 
               setIsOpen(true); 
             }}
@@ -359,7 +401,12 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
                   <Plus className="w-4 h-4" /> Add Problem
                 </button>
                 <button 
-                  onClick={() => { setMaterialText(concept.description || ''); setEditConceptName(concept.name || ''); setShowEditMaterial(true); }}
+                  onClick={() => { 
+                    setMaterialText(concept.description || ''); 
+                    setEditConceptName(concept.name || ''); 
+                    setEditIsMaterialOnly(concept.isMaterialOnly || false);
+                    setShowEditMaterial(true); 
+                  }}
                   className="text-sm px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-semibold rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors flex items-center gap-1"
                 >
                   <Edit2 className="w-4 h-4" /> Edit Concept
@@ -405,8 +452,23 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
                     type="text" 
                     value={editConceptName} 
                     onChange={(e) => setEditConceptName(e.target.value)}
-                    className="w-full mb-3 px-3 py-2 text-sm border border-green-300 dark:border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-dark-bg dark:text-white"
+                    className="w-full mb-3 px-3 py-2 text-sm border border-green-300 dark:border-green-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-dark-bg dark:text-white disabled:opacity-50"
+                    placeholder={editIsMaterialOnly ? "Optional: Admin label (won't be shown to users)" : ""}
                   />
+                  
+                  <div className="flex items-center gap-2 mb-3">
+                    <input 
+                      type="checkbox" 
+                      id={`editIsMaterialOnly-${concept.id}`}
+                      checked={editIsMaterialOnly} 
+                      onChange={(e) => setEditIsMaterialOnly(e.target.checked)}
+                      className="w-4 h-4 text-green-600 rounded border-green-300 focus:ring-green-500"
+                    />
+                    <label htmlFor={`editIsMaterialOnly-${concept.id}`} className="text-xs font-medium text-green-700 dark:text-green-300">
+                      Is Material Only
+                    </label>
+                  </div>
+
                   <label className="block text-xs font-medium text-green-700 dark:text-green-300 mb-2">Material / Notes</label>
                   <textarea 
                     value={materialText} 

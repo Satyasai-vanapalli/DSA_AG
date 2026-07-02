@@ -26,7 +26,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @org.springframework.data.jpa.repository.Query(
            "SELECT u.name AS name, COUNT(up.id) AS completedCount, u.currentStreak AS currentStreak " +
            "FROM UserProgress up JOIN up.user u JOIN up.problem p " +
-           "WHERE up.completed = true AND p.category = :category " +
+           "WHERE up.completed = true AND UPPER(p.category) = UPPER(:category) " +
            "GROUP BY u.id, u.name, u.currentStreak " +
            "ORDER BY COUNT(up.id) DESC")
     java.util.List<LeaderboardProjection> getLeaderboardByCategory(@org.springframework.data.repository.query.Param("category") String category, org.springframework.data.domain.Pageable pageable);

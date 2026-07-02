@@ -174,11 +174,11 @@ export default function Analytics({ category }: { category?: string }) {
               return (
                 <div key={weekIdx} className="flex flex-col gap-1">
                   {weekDays.map((day) => {
-                    let bg = 'bg-slate-100 dark:bg-slate-800';
-                    if (day.count > 0) bg = 'bg-green-200 dark:bg-green-900/40';
-                    if (day.count > 1) bg = 'bg-green-300 dark:bg-green-800/60';
-                    if (day.count > 2) bg = 'bg-green-400 dark:bg-green-700/80';
-                    if (day.count > 3) bg = 'bg-green-500 dark:bg-green-500';
+                    let bg = 'bg-slate-100 dark:bg-slate-700';
+                    if (day.count > 0) bg = 'bg-green-200 dark:bg-green-700';
+                    if (day.count > 1) bg = 'bg-green-300 dark:bg-green-600';
+                    if (day.count > 2) bg = 'bg-green-400 dark:bg-green-500';
+                    if (day.count > 3) bg = 'bg-green-500 dark:bg-green-400';
                     
                     return (
                       <div
@@ -196,11 +196,11 @@ export default function Analytics({ category }: { category?: string }) {
         <div className="flex items-center justify-end gap-2 text-xs text-slate-500 dark:text-slate-400 mt-2">
           <span>Less</span>
           <div className="flex gap-1">
-            <div className="w-3.5 h-3.5 rounded-sm bg-slate-100 dark:bg-slate-800" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-200 dark:bg-green-900/40" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-300 dark:bg-green-800/60" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-400 dark:bg-green-700/80" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-500 dark:bg-green-500" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-slate-100 dark:bg-slate-700" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-green-200 dark:bg-green-700" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-green-300 dark:bg-green-600" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-green-400 dark:bg-green-500" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-green-500 dark:bg-green-400" />
           </div>
           <span>More</span>
         </div>

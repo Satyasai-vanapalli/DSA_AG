@@ -39,25 +39,25 @@ export default function Home({ category }: { category: string }) {
     });
   }, [concepts, searchQuery]);
 
-  const pageTitle = category === 'LEARN' 
-    ? 'Learn Java' 
+  const pageTitle = category === 'LEARN'
+    ? 'Learn Java'
     : category === 'LEARN_PYTHON'
-    ? 'Learn Python'
-    : category === 'LEARN_C'
-    ? 'Learn C Programming'
-    : category === 'LEARN_CPP'
-    ? 'Learn C++'
-    : category === 'LEARN_KOTLIN'
-    ? 'Learn Kotlin'
-    : category === 'PRACTICE' 
-    ? 'DSA Practice' 
-    : 'Competitive Programming';
-    
+      ? 'Learn Python'
+      : category === 'LEARN_C'
+        ? 'Learn C Programming'
+        : category === 'LEARN_CPP'
+          ? 'Learn C++'
+          : category === 'LEARN_KOTLIN'
+            ? 'Learn Kotlin'
+            : category === 'PRACTICE'
+              ? 'DSA Practice'
+              : 'Competitive Programming';
+
   const pageSubtitle = category.startsWith('LEARN')
     ? 'Master theory and concepts.'
     : category === 'PRACTICE'
-    ? 'Practice standard DSA problems.'
-    : 'Prepare for contests with advanced problems.';
+      ? 'Practice standard DSA problems.'
+      : 'Prepare for contests with advanced problems.';
 
   if (isLoading) {
     return (
@@ -98,7 +98,7 @@ export default function Home({ category }: { category: string }) {
             </p>
           )}
         </div>
-        
+
         {isAuthenticated && userStats && (
           <div className="flex gap-4">
             <div className="bg-white dark:bg-dark-card px-6 py-4 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm flex flex-col items-center min-w-[120px]">
@@ -153,7 +153,7 @@ export default function Home({ category }: { category: string }) {
       {activeTab === 'leaderboard' && (
         <Leaderboard category={category} />
       )}
-      
+
       {activeTab === 'analytics' && (
         <Analytics category={category} />
       )}
@@ -162,55 +162,54 @@ export default function Home({ category }: { category: string }) {
         <>
           {/* Filters & Search */}
           <div className="flex flex-col md:flex-row gap-4 items-center bg-white dark:bg-dark-card p-4 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm">
-        <div className="relative flex-1 w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-          <input 
-            type="text" 
-            placeholder="Search concepts or problems..." 
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900 dark:text-white transition-all"
-          />
-        </div>
-        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-          {['All', 'Easy', 'Medium', 'Hard'].map((diff) => (
-            <button
-              key={diff}
-              onClick={() => setDifficultyFilter(diff)}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${
-                difficultyFilter === diff 
-                  ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20' 
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
-              }`}
-            >
-              {diff}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      {/* Roadmap List */}
-      <div className="space-y-4">
-        {filteredConcepts?.map((concept, index) => (
-          <ConceptAccordion 
-            key={concept.id} 
-            concept={concept} 
-            index={index + 1} 
-            difficultyFilter={difficultyFilter} 
-            searchQuery={searchQuery}
-          />
-        ))}
-        {filteredConcepts?.length === 0 && (
-          <div className="text-center py-16 bg-white dark:bg-dark-card rounded-3xl border border-slate-200 dark:border-dark-border">
-            <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Search className="w-8 h-8 text-slate-400" />
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search concepts or problems..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900 dark:text-white transition-all"
+              />
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No matches found</h3>
-            <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
+            <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+              {['All', 'Easy', 'Medium', 'Hard'].map((diff) => (
+                <button
+                  key={diff}
+                  onClick={() => setDifficultyFilter(diff)}
+                  className={`px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${difficultyFilter === diff
+                    ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    }`}
+                >
+                  {diff}
+                </button>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
-      </>
+
+          {/* Roadmap List */}
+          <div className="space-y-4">
+            {filteredConcepts?.map((concept, index) => (
+              <ConceptAccordion
+                key={concept.id}
+                concept={concept}
+                index={index + 1}
+                difficultyFilter={difficultyFilter}
+                searchQuery={searchQuery}
+              />
+            ))}
+            {filteredConcepts?.length === 0 && (
+              <div className="text-center py-16 bg-white dark:bg-dark-card rounded-3xl border border-slate-200 dark:border-dark-border">
+                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-slate-400" />
+                </div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No matches found</h3>
+                <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   );
@@ -220,7 +219,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
   const [isOpen, setIsOpen] = useState(false);
   const [expandedProblemIds, setExpandedProblemIds] = useState<Set<string>>(new Set());
   const [selectedSolutionProblem, setSelectedSolutionProblem] = useState<any | null>(null);
-  
+
   const toggleProblemExpansion = (problemId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedProblemIds(prev => {
@@ -233,7 +232,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 
   const { isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
-  
+
   const toggleCompletedMutation = useMutation({
     mutationFn: (data: { problemId: string; timeSpent?: number }) => progressApi.toggleCompleted(data.problemId, data.timeSpent),
     onSuccess: () => {
@@ -254,12 +253,12 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     e.stopPropagation();
     toggleCompletedMutation.mutate({ problemId });
   };
-  
+
   const handleToggleConceptCompleted = (e: React.MouseEvent, conceptId: string) => {
     e.stopPropagation();
     toggleConceptCompletedMutation.mutate(conceptId);
   };
-  
+
   const expanded = isOpen || searchQuery.length > 0;
 
   const { data: problems, isLoading } = useQuery({
@@ -307,27 +306,55 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
   }, [userConceptProgress, concept.id]);
 
   const { completedCount, conceptProgress, totalItemsCount } = useMemo(() => {
-    let problemCount = 0;
-    if (problems && problems.length > 0 && userProgress) {
-      problemCount = problems.filter(p => 
-        userProgress.find(up => up.problemId === p.id && up.completed)
-      ).length;
+    let subConceptsWithMaterial = 0;
+    let completedSubConceptsWithMaterial = 0;
+
+    if (concept.children && concept.children.length > 0) {
+      subConceptsWithMaterial = concept.children.filter(c => c.description && c.description.trim() !== '').length;
+      if (userConceptProgress && subConceptsWithMaterial > 0) {
+        completedSubConceptsWithMaterial = concept.children.filter(c => 
+          c.description && c.description.trim() !== '' && userConceptProgress.find(up => up.conceptId === c.id && up.completed)
+        ).length;
+      }
     }
-    
+
     const hasMaterial = concept.description && concept.description.trim() !== '' ? 1 : 0;
     const materialCompleted = isConceptCompleted ? 1 : 0;
-    
-    const totalItems = (problems?.length || 0) + hasMaterial;
-    const completedItems = problemCount + materialCompleted;
-    
+
+    const totalItems = subConceptsWithMaterial + hasMaterial;
+    const completedItems = completedSubConceptsWithMaterial + materialCompleted;
+
     if (totalItems === 0) return { completedCount: 0, conceptProgress: 0, totalItemsCount: 0 };
-    
-    return { 
-      completedCount: completedItems, 
+
+    return {
+      completedCount: completedItems,
       conceptProgress: Math.round((completedItems / totalItems) * 100),
       totalItemsCount: totalItems
     };
   }, [problems, userProgress, concept.description, isConceptCompleted]);
+
+  if (concept.isMaterialOnly) {
+    return (
+      <div className="bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden transition-all duration-300 shadow-sm mb-4">
+        <div className="px-6 py-6 bg-blue-50/50 dark:bg-blue-900/5 flex justify-between items-start gap-4">
+          <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap flex-1 leading-relaxed">{concept.description || concept.name}</div>
+          {isAuthenticated && (
+            <button
+              onClick={(e) => handleToggleConceptCompleted(e, concept.id)}
+              className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors"
+              title={isConceptCompleted ? "Mark material as incomplete" : "Mark material as complete"}
+            >
+              {isConceptCompleted ? (
+                <CheckCircle className="w-5 h-5 text-green-500" />
+              ) : (
+                <div className="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-500 hover:border-green-500 transition-colors" />
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden transition-all duration-300 shadow-sm hover:shadow-md">
@@ -343,7 +370,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">{concept.name}</h3>
             {totalItemsCount > 0 && (
               <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                {isAuthenticated 
+                {isAuthenticated
                   ? `${completedCount}/${totalItemsCount} items completed`
                   : `${totalItemsCount} item${totalItemsCount !== 1 ? 's' : ''}`
                 }
@@ -355,7 +382,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
           {isAuthenticated && totalItemsCount > 0 && (
             <div className="hidden sm:flex items-center gap-3 w-32">
               <div className="flex-1 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <div 
+                <div
                   className="h-full bg-green-500 rounded-full transition-all duration-500"
                   style={{ width: `${conceptProgress}%` }}
                 />
@@ -375,7 +402,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 
       <AnimatePresence>
         {expanded && (
-          <motion.div 
+          <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -387,7 +414,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
                 <div className="px-6 py-4 bg-blue-50/50 dark:bg-blue-900/5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-start gap-4">
                   <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap flex-1">{concept.description}</div>
                   {isAuthenticated && (
-                    <button 
+                    <button
                       onClick={(e) => handleToggleConceptCompleted(e, concept.id)}
                       className="w-8 h-8 shrink-0 flex items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-700/50 transition-colors"
                       title={isConceptCompleted ? "Mark material as incomplete" : "Mark material as complete"}
@@ -406,11 +433,11 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
               {subConcepts && subConcepts.length > 0 && (
                 <div className="px-6 py-4 space-y-3">
                   {subConcepts.map((sub, i) => (
-                    <ConceptAccordion 
-                      key={sub.id} 
-                      concept={sub} 
-                      index={i + 1} 
-                      difficultyFilter={difficultyFilter} 
+                    <ConceptAccordion
+                      key={sub.id}
+                      concept={sub}
+                      index={i + 1}
+                      difficultyFilter={difficultyFilter}
                       searchQuery={searchQuery}
                       depth={depth + 1}
                     />
@@ -441,18 +468,17 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 
                       return (
                         <Fragment key={problem.id}>
-                          <tr 
+                          <tr
                             onClick={(e) => toggleProblemExpansion(problem.id, e)}
-                            className={`cursor-pointer transition-colors group ${
-                              isCompleted 
-                                ? 'bg-green-50/40 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20' 
-                                : 'bg-white dark:bg-dark-card hover:bg-slate-50 dark:hover:bg-slate-800/40'
-                            }`}
+                            className={`cursor-pointer transition-colors group ${isCompleted
+                              ? 'bg-green-50/40 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20'
+                              : 'bg-white dark:bg-dark-card hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                              }`}
                           >
                             {/* Status */}
                             <td className="px-4 py-3.5 text-center">
                               {isAuthenticated ? (
-                                <button 
+                                <button
                                   onClick={(e) => handleToggleCompleted(e, problem.id, isCompleted)}
                                   className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors mx-auto"
                                   title={isCompleted ? "Mark as incomplete" : "Mark as complete"}
@@ -471,11 +497,10 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
                             {/* Problem Name */}
                             <td className="px-4 py-3.5">
                               <div className="flex items-center gap-2">
-                                <span className={`font-medium text-sm transition-colors ${
-                                  isCompleted 
-                                    ? 'text-green-800 dark:text-green-300' 
-                                    : 'text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400'
-                                }`}>
+                                <span className={`font-medium text-sm transition-colors ${isCompleted
+                                  ? 'text-green-800 dark:text-green-300'
+                                  : 'text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400'
+                                  }`}>
                                   {problem.title}
                                 </span>
                                 {isRevision && (
@@ -488,11 +513,10 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 
                             {/* Difficulty */}
                             <td className="px-4 py-3.5">
-                              <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${
-                                problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' :
+                              <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' :
                                 problem.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400' :
-                                'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
-                              }`}>
+                                  'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
+                                }`}>
                                 {problem.difficulty}
                               </span>
                             </td>
@@ -537,7 +561,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
                               </button>
                             </td>
                           </tr>
-                          
+
                           {/* Expanded Documentation Row */}
                           {expandedProblemIds.has(problem.id) && (
                             <tr>
@@ -571,9 +595,9 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 
       <AnimatePresence>
         {selectedSolutionProblem && (
-          <SolutionModal 
-            problem={selectedSolutionProblem} 
-            onClose={() => setSelectedSolutionProblem(null)} 
+          <SolutionModal
+            problem={selectedSolutionProblem}
+            onClose={() => setSelectedSolutionProblem(null)}
           />
         )}
       </AnimatePresence>
@@ -593,11 +617,11 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
     }
   }, [problem]);
 
-  const currentSolution = 
+  const currentSolution =
     activeTab === 'brute' ? problem.bruteSolution :
-    activeTab === 'better' ? problem.betterSolution :
-    activeTab === 'optimal' ? problem.optimalSolution :
-    (activeTab.startsWith('solution_') ? problem.additionalSolutions?.[parseInt(activeTab.split('_')[1])] : null);
+      activeTab === 'better' ? problem.betterSolution :
+        activeTab === 'optimal' ? problem.optimalSolution :
+          (activeTab.startsWith('solution_') ? problem.additionalSolutions?.[parseInt(activeTab.split('_')[1])] : null);
 
   const copyCode = () => {
     if (currentSolution) {
@@ -607,7 +631,7 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4" onClick={onClose}>
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
@@ -617,7 +641,7 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
         <div className="bg-[#252526] border-b border-[#333] p-2 flex items-center justify-between">
           <div className="flex gap-1 overflow-x-auto hide-scrollbar">
             {(['brute', 'better', 'optimal'] as const).map((tab) => {
-              const hasSolution = 
+              const hasSolution =
                 (tab === 'brute' && problem.bruteSolution) ||
                 (tab === 'better' && problem.betterSolution) ||
                 (tab === 'optimal' && problem.optimalSolution);
@@ -628,28 +652,26 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap capitalize ${
-                    activeTab === tab
-                      ? 'bg-[#1e1e1e] text-blue-400'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
-                  }`}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap capitalize ${activeTab === tab
+                    ? 'bg-[#1e1e1e] text-blue-400'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
+                    }`}
                 >
                   {tab} Solution
                 </button>
               );
             })}
-            
+
             {problem.additionalSolutions?.map((_: string, index: number) => {
               const tabId = `solution_${index}`;
               return (
                 <button
                   key={tabId}
                   onClick={() => setActiveTab(tabId)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${
-                    activeTab === tabId
-                      ? 'bg-[#1e1e1e] text-blue-400'
-                      : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
-                  }`}
+                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${activeTab === tabId
+                    ? 'bg-[#1e1e1e] text-blue-400'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
+                    }`}
                 >
                   Solution {index + 1}
                 </button>
@@ -665,7 +687,7 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
             </button>
           </div>
         </div>
-        
+
         <div className="flex-1 relative">
           {currentSolution ? (
             <Editor

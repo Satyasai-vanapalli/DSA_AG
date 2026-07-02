@@ -58,6 +58,7 @@ public class ConceptService {
     public Concept updateConcept(UUID id, Concept updatedConcept) {
         Concept existing = getConceptById(id);
         existing.setName(updatedConcept.getName());
+        existing.setMaterialOnly(updatedConcept.isMaterialOnly());
         if (updatedConcept.getDescription() != null) {
             existing.setDescription(updatedConcept.getDescription());
         }

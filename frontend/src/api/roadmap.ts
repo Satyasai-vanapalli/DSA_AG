@@ -7,6 +7,7 @@ export interface Concept {
   category?: string;
   orderIndex?: number;
   parentId?: string;
+  isMaterialOnly?: boolean;
   children?: Concept[];
   problems?: Problem[];
 }

@@ -195,70 +195,36 @@ public class UserProgressService {
         
         long completed = allProgress.stream().filter(UserProgress::isCompleted).count();
         long revision = allProgress.stream().filter(UserProgress::isRevision).count();
-        long totalProblems = category != null && !category.isEmpty() 
-            ? problemRepository.findAll().stream().filter(p -> category.equalsIgnoreCase(p.getCategory())).count()
-            : problemRepository.count();
-            
-        // Include materials in the count (Concepts with descriptions)
-        long totalMaterials = 0;
-        long completedMaterials = 0;
+        long totalConcepts = 0;
+        long completedConcepts = 0;
         
         if (category != null && !category.isEmpty()) {
-            List<Concept> categoryConcepts = conceptRepository.findByCategoryOrderByOrderIndexAsc(category);
+            List<Concept> topLevelConcepts = conceptRepository.findByCategoryAndParentIdIsNullOrderByOrderIndexAsc(category);
+            totalConcepts = topLevelConcepts.size();
             
-            // Function to recursively count materials
-            class MaterialCounter {
-                long total = 0;
-                void countMaterials(Concept c) {
-                    if (c.getDescription() != null && !c.getDescription().trim().isEmpty()) {
-                        total++;
-                    }
-                    if (c.getChildren() != null) {
-                        for (Concept child : c.getChildren()) {
-                            countMaterials(child);
-                        }
-                    }
-                }
-            }
-            
-            MaterialCounter counter = new MaterialCounter();
-            for (Concept c : categoryConcepts) {
-                counter.countMaterials(c);
-            }
-            totalMaterials = counter.total;
-            
-            // Get completed concepts for this user and this category
             List<ConceptProgress> conceptProgresses = conceptProgressRepository.findByUserWithConcept(user);
-            completedMaterials = conceptProgresses.stream()
+            completedConcepts = conceptProgresses.stream()
                 .filter(ConceptProgress::isCompleted)
-                .filter(cp -> {
-                    // Check if this concept belongs to the category. We need to check if it's in the tree.
-                    // For simplicity, we can fetch all concepts in the category tree and check if it's there.
-                    // Actually, a simpler way is to check the top-level concept's category.
-                    Concept current = cp.getConcept();
-                    while (current.getParent() != null) {
-                        current = current.getParent();
-                    }
-                    return category.equalsIgnoreCase(current.getCategory());
-                })
+                .filter(cp -> topLevelConcepts.stream().anyMatch(c -> c.getId().equals(cp.getConcept().getId())))
                 .count();
         } else {
             // Global stats across all categories
-            totalMaterials = conceptRepository.findAll().stream()
-                .filter(c -> c.getDescription() != null && !c.getDescription().trim().isEmpty())
-                .count();
-            completedMaterials = conceptProgressRepository.findByUser(user).stream()
+            List<Concept> allTopLevelConcepts = conceptRepository.findAll().stream()
+                .filter(c -> c.getParentId() == null)
+                .toList();
+            totalConcepts = allTopLevelConcepts.size();
+            
+            List<ConceptProgress> conceptProgresses = conceptProgressRepository.findByUserWithConcept(user);
+            completedConcepts = conceptProgresses.stream()
                 .filter(ConceptProgress::isCompleted)
+                .filter(cp -> allTopLevelConcepts.stream().anyMatch(c -> c.getId().equals(cp.getConcept().getId())))
                 .count();
         }
         
-        long totalItems = totalProblems + totalMaterials;
-        long completedItems = completed + completedMaterials;
-        
         return Map.of(
-            "completed", completedItems,
+            "completed", completedConcepts,
             "revision", revision,
-            "total", totalItems,
+            "total", totalConcepts,
             "currentStreak", user.getCurrentStreak(),
             "maxStreak", user.getMaxStreak()
         );

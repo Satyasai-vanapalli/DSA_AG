@@ -34,6 +34,10 @@ public class Concept {
     private Integer orderIndex = 0;
 
     private String category = "PRACTICE";
+    
+    @Column(name = "is_material_only", nullable = false, columnDefinition = "boolean default false")
+    @Builder.Default
+    private boolean isMaterialOnly = false;
 
     @Column(name = "parent_id")
     private UUID parentId;

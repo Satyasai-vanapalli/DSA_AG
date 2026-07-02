@@ -69,12 +69,12 @@ export const adminApi = {
   },
 
   // Concept CRUD
-  createConcept: async (data: { name: string; description?: string; category?: string; parentId?: string }): Promise<any> => {
+  createConcept: async (data: { name: string; description?: string; category?: string; parentId?: string; isMaterialOnly?: boolean }): Promise<any> => {
     const response = await apiClient.post('/concepts', data);
     return response.data;
   },
 
-  updateConcept: async (id: string, data: { name: string; description?: string; category?: string }): Promise<any> => {
+  updateConcept: async (id: string, data: { name: string; description?: string; category?: string; isMaterialOnly?: boolean }): Promise<any> => {
     const response = await apiClient.put(`/concepts/${id}`, data);
     return response.data;
   },
