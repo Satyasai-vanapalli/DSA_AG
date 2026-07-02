@@ -94,7 +94,7 @@ export default function Home({ category }: { category: string }) {
           </p>
           {category === 'LEARN_PYTHON' && (
             <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-              Special thanks to <a href="https://jayasimha-portfolio-2300032389.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-primary-400 hover:underline font-semibold">JAYASIMHA</a> for editing the Python curriculum!
+              Special thanks to <a href="https://jayasimha-portfolio-2300032389.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-primary-400 hover:underline font-semibold">JAYASIMHA</a> for managing the Python curriculum!
             </p>
           )}
         </div>
