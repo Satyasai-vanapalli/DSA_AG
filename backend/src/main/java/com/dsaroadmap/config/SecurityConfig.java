@@ -59,10 +59,12 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authz -> authz
                 .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
+                .requestMatchers("/api/public/**", "/api/uploads/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/concepts", "/api/concepts/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/problems", "/api/problems/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/solutions", "/api/solutions/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/motivation").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/contact").permitAll()
                 .anyRequest().authenticated()
             );
 

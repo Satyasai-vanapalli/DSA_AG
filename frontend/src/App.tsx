@@ -18,6 +18,10 @@ import DailyReview from './pages/DailyReview';
 import AdminInsights from './pages/AdminInsights';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
+import Motivation from './pages/Motivation';
+import Contact from './pages/Contact';
+import AdminMotivation from './pages/AdminMotivation';
+import AdminContact from './pages/AdminContact';
 
 const queryClient = new QueryClient();
 
@@ -51,10 +55,14 @@ function App() {
                   <Route path="review" element={<DailyReview />} />
                   <Route path="leaderboard" element={<Leaderboard />} />
                   <Route path="analytics" element={<Analytics />} />
+                  <Route path="motivation" element={<Motivation />} />
+                  <Route path="contact" element={<Contact />} />
                   
                   {/* Admin Routes */}
                   <Route path="admin">
                     <Route index element={<AdminDashboard />} />
+                    <Route path="motivation" element={<AdminMotivation />} />
+                    <Route path="contact" element={<AdminContact />} />
                     <Route path="curriculum/learn" element={<AdminCurriculum category="LEARN" title="Learn Java Curriculum" />} />
                     <Route path="curriculum/learn-python" element={<AdminCurriculum category="LEARN_PYTHON" title="Learn Python Curriculum" />} />
                     <Route path="curriculum/learn-c" element={<AdminCurriculum category="LEARN_C" title="Learn C Curriculum" />} />
