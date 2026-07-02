@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motivationApi, Motivation } from '../api/motivation';
+import { motivationApi, type Motivation } from '../api/motivation';
 import { Loader2, Plus, Edit2, Trash2, Image as ImageIcon, Video, Type, Link as LinkIcon, Upload } from 'lucide-react';
 
 export default function AdminMotivation() {

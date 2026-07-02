@@ -60,6 +60,7 @@ export default function Sidebar() {
     },
     { name: 'DSA Practice', path: '/practice', icon: <Code2 className="w-5 h-5" /> },
     { name: 'CP', path: '/cp', icon: <Terminal className="w-5 h-5" /> },
+    { name: 'Daily Review', path: '/review', icon: <Calendar className="w-5 h-5" /> },
     { name: 'Motivation', path: '/motivation', icon: <Code2 className="w-5 h-5" /> },
     { name: 'Contact Admin', path: '/contact', icon: <Terminal className="w-5 h-5" /> },
     ...(user?.role === 'SUPER_ADMIN' ? [

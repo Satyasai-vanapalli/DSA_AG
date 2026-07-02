@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { contactApi } from '../api/contact';
-import { Loader2, MessageCircle, Instagram, Mail, ExternalLink } from 'lucide-react';
+import { Loader2, MessageCircle, Camera, Mail, ExternalLink } from 'lucide-react';
 
 export default function Contact() {
   const { data: contacts, isLoading } = useQuery({
@@ -13,7 +13,7 @@ export default function Contact() {
   const getIcon = (platform: string) => {
     switch (platform.toUpperCase()) {
       case 'WHATSAPP': return <MessageCircle className="w-6 h-6 text-green-500" />;
-      case 'INSTAGRAM': return <Instagram className="w-6 h-6 text-pink-500" />;
+      case 'INSTAGRAM': return <Camera className="w-6 h-6 text-pink-500" />;
       case 'GMAIL': return <Mail className="w-6 h-6 text-red-500" />;
       default: return <ExternalLink className="w-6 h-6 text-blue-500" />;
     }

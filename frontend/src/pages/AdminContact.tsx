@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { contactApi, ContactInfo } from '../api/contact';
+import { contactApi, type ContactInfo } from '../api/contact';
 import { Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
 
 export default function AdminContact() {
