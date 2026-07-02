@@ -649,6 +649,18 @@ function ConceptRow({ concept, dragHandleProps, onDelete, category, depth }: { c
   );
 }
 
+const getPlatformName = (url: string) => {
+  const lowerUrl = url.toLowerCase();
+  if (lowerUrl.includes('leetcode.com')) return 'LeetCode';
+  if (lowerUrl.includes('geeksforgeeks.org')) return 'GeeksforGeeks';
+  if (lowerUrl.includes('codechef.com')) return 'CodeChef';
+  if (lowerUrl.includes('codeforces.com')) return 'Codeforces';
+  if (lowerUrl.includes('hackerrank.com')) return 'HackerRank';
+  if (lowerUrl.includes('hackerearth.com')) return 'HackerEarth';
+  if (lowerUrl.includes('codingninjas.com')) return 'CodingNinjas';
+  return 'External';
+};
+
 function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptId: string, category: string, initialData?: any, onClose: () => void }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -664,7 +676,30 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
     betterSolution: initialData?.betterSolution || '',
     optimalSolution: initialData?.optimalSolution || '',
     additionalSolutions: initialData?.additionalSolutions || [],
+    platformLinks: initialData?.platformLinks?.length > 0 
+      ? initialData.platformLinks 
+      : (initialData?.problemLink ? [{ platformName: getPlatformName(initialData.problemLink), url: initialData.problemLink }] : []),
   });
+
+  const addPlatformLink = () => {
+    setForm(prev => ({ ...prev, platformLinks: [...(prev.platformLinks || []), { platformName: 'External', url: '' }] }));
+  };
+
+  const updatePlatformLink = (index: number, url: string) => {
+    setForm(prev => {
+      const newLinks = [...(prev.platformLinks || [])];
+      newLinks[index] = { platformName: getPlatformName(url), url };
+      return { ...prev, platformLinks: newLinks };
+    });
+  };
+
+  const removePlatformLink = (index: number) => {
+    setForm(prev => {
+      const newLinks = [...(prev.platformLinks || [])];
+      newLinks.splice(index, 1);
+      return { ...prev, platformLinks: newLinks };
+    });
+  };
 
   const addAdditionalSolution = () => {
     setForm(prev => ({
@@ -729,9 +764,33 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
             <option value="Hard">Hard</option>
           </select>
         </div>
-        <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Problem Link</label>
-          <input type="text" value={form.problemLink} onChange={e => setForm({...form, problemLink: e.target.value})} className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" placeholder="https://leetcode.com/..." />
+        <div className="md:col-span-2">
+          <div className="flex justify-between items-center mb-2">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Platform Links</label>
+            <button type="button" onClick={addPlatformLink} className="text-xs text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium flex items-center gap-1">+ Add Link</button>
+          </div>
+          <div className="space-y-2">
+            {form.platformLinks?.map((link: any, index: number) => (
+              <div key={index} className="flex gap-2 items-center">
+                <div className="px-3 py-1.5 text-xs font-bold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg w-32 text-center whitespace-nowrap overflow-hidden text-ellipsis">
+                  {link.platformName}
+                </div>
+                <input 
+                  type="text" 
+                  value={link.url} 
+                  onChange={e => updatePlatformLink(index, e.target.value)} 
+                  className="flex-1 px-3 py-1.5 text-sm border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" 
+                  placeholder="https://..." 
+                />
+                <button type="button" onClick={() => removePlatformLink(index)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+            {(!form.platformLinks || form.platformLinks.length === 0) && (
+              <div className="text-xs text-slate-400 italic">No platform links added. Click "+ Add Link" to add one.</div>
+            )}
+          </div>
         </div>
         <div>
           <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">YouTube Link</label>

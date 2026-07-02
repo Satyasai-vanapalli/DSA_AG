@@ -46,6 +46,9 @@ public class ProblemService {
                 .mapToInt(p -> p.getOrderIndex() == null ? 0 : p.getOrderIndex())
                 .max().orElse(-1);
         problem.setOrderIndex(maxOrder + 1);
+        if (problem.getPlatformLinks() != null) {
+            problem.getPlatformLinks().forEach(link -> link.setProblem(problem));
+        }
         return problemRepository.save(problem);
     }
 
@@ -63,6 +66,13 @@ public class ProblemService {
         existing.setCategory(updatedProblem.getCategory());
         if (updatedProblem.getConcept() != null) {
             existing.setConcept(updatedProblem.getConcept());
+        }
+        if (updatedProblem.getPlatformLinks() != null) {
+            existing.getPlatformLinks().clear();
+            updatedProblem.getPlatformLinks().forEach(link -> {
+                link.setProblem(existing);
+                existing.getPlatformLinks().add(link);
+            });
         }
         return problemRepository.save(existing);
     }
