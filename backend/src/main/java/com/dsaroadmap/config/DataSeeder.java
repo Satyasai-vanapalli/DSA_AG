@@ -110,20 +110,14 @@ public class DataSeeder implements CommandLineRunner {
         if (title.equals("Two Sum")) {
             Solution solutionJava = Solution.builder()
                     .language("Java")
-                    .solutionCode("class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (map.containsKey(complement)) {\n                return new int[] { map.get(complement), i };\n            }\n            map.put(nums[i], i);\n        }\n        return new int[] {};\n    }\n}")
-                    .approach("Use a HashMap to store the numbers and their indices. For each number, check if the complement (target - number) exists in the map.")
-                    .timeComplexity("O(N)")
-                    .spaceComplexity("O(N)")
+                    .optimalSolution("class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (map.containsKey(complement)) {\n                return new int[] { map.get(complement), i };\n            }\n            map.put(nums[i], i);\n        }\n        return new int[] {};\n    }\n}")
                     .problem(problem)
                     .build();
             solutionRepository.save(solutionJava);
             
             Solution solutionPython = Solution.builder()
                     .language("Python")
-                    .solutionCode("class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        prevMap = {} # val -> index\n        \n        for i, n in enumerate(nums):\n            diff = target - n\n            if diff in prevMap:\n                return [prevMap[diff], i]\n            prevMap[n] = i")
-                    .approach("Use a dictionary to store the numbers and their indices. For each number, check if the complement (target - number) exists in the dictionary.")
-                    .timeComplexity("O(N)")
-                    .spaceComplexity("O(N)")
+                    .optimalSolution("class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        prevMap = {} # val -> index\n        \n        for i, n in enumerate(nums):\n            diff = target - n\n            if diff in prevMap:\n                return [prevMap[diff], i]\n            prevMap[n] = i")
                     .problem(problem)
                     .build();
             solutionRepository.save(solutionPython);

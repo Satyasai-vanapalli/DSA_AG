@@ -647,22 +647,40 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 }
 
 function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void }) {
+  const [activeLang, setActiveLang] = useState<string>('');
   const [activeTab, setActiveTab] = useState<string>('optimal');
 
+  // Initialize selected language
   useEffect(() => {
-    if (problem) {
-      if (problem.optimalSolution) setActiveTab('optimal');
-      else if (problem.betterSolution) setActiveTab('better');
-      else if (problem.bruteSolution) setActiveTab('brute');
-      else if (problem.additionalSolutions && problem.additionalSolutions.length > 0) setActiveTab('solution_0');
+    if (problem && problem.solutions && problem.solutions.length > 0) {
+      // Pick first language that has at least one solution
+      const firstValid = problem.solutions.find((s: any) => s.bruteSolution || s.betterSolution || s.optimalSolution || (s.additionalSolutions && s.additionalSolutions.length > 0));
+      if (firstValid) {
+        setActiveLang(firstValid.language);
+      }
     }
   }, [problem]);
 
-  const currentSolution =
-    activeTab === 'brute' ? problem.bruteSolution :
-      activeTab === 'better' ? problem.betterSolution :
-        activeTab === 'optimal' ? problem.optimalSolution :
-          (activeTab.startsWith('solution_') ? problem.additionalSolutions?.[parseInt(activeTab.split('_')[1])] : null);
+  const activeSol = useMemo(() => {
+    if (!problem?.solutions || !activeLang) return null;
+    return problem.solutions.find((s: any) => s.language === activeLang);
+  }, [problem, activeLang]);
+
+  useEffect(() => {
+    if (activeSol) {
+      if (activeSol.optimalSolution) setActiveTab('optimal');
+      else if (activeSol.betterSolution) setActiveTab('better');
+      else if (activeSol.bruteSolution) setActiveTab('brute');
+      else if (activeSol.additionalSolutions && activeSol.additionalSolutions.length > 0) setActiveTab('solution_0');
+    }
+  }, [activeSol, activeLang]);
+
+  const currentSolution = activeSol ? (
+    activeTab === 'brute' ? activeSol.bruteSolution :
+      activeTab === 'better' ? activeSol.betterSolution :
+        activeTab === 'optimal' ? activeSol.optimalSolution :
+          (activeTab.startsWith('solution_') ? activeSol.additionalSolutions?.[parseInt(activeTab.split('_')[1])] : null)
+  ) : null;
 
   const copyCode = () => {
     if (currentSolution) {
@@ -679,53 +697,79 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-4xl bg-[#1e1e1e] rounded-2xl overflow-hidden border border-slate-800 shadow-2xl flex flex-col h-[80vh]"
       >
-        <div className="bg-[#252526] border-b border-[#333] p-2 flex items-center justify-between">
-          <div className="flex gap-1 overflow-x-auto hide-scrollbar">
-            {(['brute', 'better', 'optimal'] as const).map((tab) => {
-              const hasSolution =
-                (tab === 'brute' && problem.bruteSolution) ||
-                (tab === 'better' && problem.betterSolution) ||
-                (tab === 'optimal' && problem.optimalSolution);
-
-              if (!hasSolution) return null;
-
-              return (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap capitalize ${activeTab === tab
-                    ? 'bg-[#1e1e1e] text-blue-400'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
+        <div className="bg-[#252526] border-b border-[#333] flex flex-col">
+          {/* Language Tabs */}
+          {problem.solutions && problem.solutions.length > 0 && (
+            <div className="flex gap-1 overflow-x-auto hide-scrollbar px-2 pt-2">
+              {problem.solutions.map((sol: any) => {
+                const hasAny = sol.bruteSolution || sol.betterSolution || sol.optimalSolution || (sol.additionalSolutions && sol.additionalSolutions.length > 0);
+                if (!hasAny) return null;
+                return (
+                  <button
+                    key={sol.language}
+                    onClick={() => setActiveLang(sol.language)}
+                    className={`px-4 py-2 text-sm font-bold rounded-t-lg transition-colors whitespace-nowrap ${
+                      activeLang === sol.language
+                        ? 'bg-[#1e1e1e] text-emerald-400 border-b-2 border-emerald-400'
+                        : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
                     }`}
-                >
-                  {tab} Solution
-                </button>
-              );
-            })}
+                  >
+                    {sol.language}
+                  </button>
+                );
+              })}
+            </div>
+          )}
 
-            {problem.additionalSolutions?.map((_: string, index: number) => {
-              const tabId = `solution_${index}`;
-              return (
-                <button
-                  key={tabId}
-                  onClick={() => setActiveTab(tabId)}
-                  className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors whitespace-nowrap ${activeTab === tabId
-                    ? 'bg-[#1e1e1e] text-blue-400'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
-                    }`}
-                >
-                  Solution {index + 1}
-                </button>
-              );
-            })}
-          </div>
-          <div className="flex items-center gap-2 pr-2">
-            <button onClick={copyCode} className="p-2 text-slate-400 hover:text-white rounded transition-colors" title="Copy Code">
-              <Copy className="w-4 h-4" />
-            </button>
-            <button onClick={onClose} className="p-2 text-slate-400 hover:text-white rounded transition-colors" title="Close">
-              <X className="w-5 h-5" />
-            </button>
+          {/* Solution Type Tabs */}
+          <div className="flex items-center justify-between px-2 py-1 bg-[#1e1e1e] border-b border-[#333]">
+            <div className="flex gap-1 overflow-x-auto hide-scrollbar">
+              {activeSol && (['brute', 'better', 'optimal'] as const).map((tab) => {
+                const hasSolution =
+                  (tab === 'brute' && activeSol.bruteSolution) ||
+                  (tab === 'better' && activeSol.betterSolution) ||
+                  (tab === 'optimal' && activeSol.optimalSolution);
+
+                if (!hasSolution) return null;
+
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap capitalize ${activeTab === tab
+                      ? 'bg-[#2d2d2d] text-blue-400'
+                      : 'text-slate-500 hover:text-slate-300 hover:bg-[#252526]'
+                      }`}
+                  >
+                    {tab} Solution
+                  </button>
+                );
+              })}
+
+              {activeSol?.additionalSolutions?.map((_: string, index: number) => {
+                const tabId = `solution_${index}`;
+                return (
+                  <button
+                    key={tabId}
+                    onClick={() => setActiveTab(tabId)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${activeTab === tabId
+                      ? 'bg-[#2d2d2d] text-blue-400'
+                      : 'text-slate-500 hover:text-slate-300 hover:bg-[#252526]'
+                      }`}
+                  >
+                    Solution {index + 1}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-2 pr-2">
+              <button onClick={copyCode} className="p-1.5 text-slate-400 hover:text-white rounded transition-colors" title="Copy Code">
+                <Copy className="w-4 h-4" />
+              </button>
+              <button onClick={onClose} className="p-1.5 text-slate-400 hover:text-white rounded transition-colors" title="Close">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -733,7 +777,7 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
           {currentSolution ? (
             <Editor
               height="100%"
-              language="cpp"
+              language={activeLang?.toLowerCase() === 'python' ? 'python' : activeLang?.toLowerCase() === 'java' ? 'java' : 'cpp'}
               theme="vs-dark"
               value={currentSolution}
               options={{

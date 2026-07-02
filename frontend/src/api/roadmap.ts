@@ -35,7 +35,7 @@ export interface Problem {
   problemLink?: string;
   youtubeLink?: string;
   documentationLink?: string;
-  bruteSolution?: string;
+  bruteSolution?: string; // Keeping these temporarily optional so old typescript code doesn't break if still accessed directly anywhere before cleanup
   betterSolution?: string;
   optimalSolution?: string;
   additionalSolutions?: string[];
@@ -47,13 +47,12 @@ export interface Problem {
 }
 
 export interface Solution {
-  id: string;
+  id?: string;
   language: string;
-  solutionCode: string;
-  approach: string;
-  explanation: string;
-  timeComplexity: string;
-  spaceComplexity: string;
+  bruteSolution?: string;
+  betterSolution?: string;
+  optimalSolution?: string;
+  additionalSolutions?: string[];
 }
 
 export const roadmapApi = {

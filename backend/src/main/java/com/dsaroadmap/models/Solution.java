@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "solutions")
@@ -24,18 +26,19 @@ public class Solution {
     @Column(nullable = false)
     private String language; // C, C++, Java, Python, Kotlin
 
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String solutionCode;
+    @Column(columnDefinition = "TEXT")
+    private String bruteSolution;
 
     @Column(columnDefinition = "TEXT")
-    private String approach;
+    private String betterSolution;
 
     @Column(columnDefinition = "TEXT")
-    private String explanation;
+    private String optimalSolution;
 
-    private String timeComplexity;
-
-    private String spaceComplexity;
+    @ElementCollection
+    @CollectionTable(name = "solution_additional", joinColumns = @JoinColumn(name = "solution_id"))
+    @Column(name = "code", columnDefinition = "TEXT")
+    private List<String> additionalSolutions = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)

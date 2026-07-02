@@ -49,6 +49,9 @@ public class ProblemService {
         if (problem.getPlatformLinks() != null) {
             problem.getPlatformLinks().forEach(link -> link.setProblem(problem));
         }
+        if (problem.getSolutions() != null) {
+            problem.getSolutions().forEach(solution -> solution.setProblem(problem));
+        }
         return problemRepository.save(problem);
     }
 
@@ -60,9 +63,6 @@ public class ProblemService {
         existing.setProblemLink(updatedProblem.getProblemLink());
         existing.setYoutubeLink(updatedProblem.getYoutubeLink());
         existing.setDocumentationLink(updatedProblem.getDocumentationLink());
-        existing.setBruteSolution(updatedProblem.getBruteSolution());
-        existing.setBetterSolution(updatedProblem.getBetterSolution());
-        existing.setOptimalSolution(updatedProblem.getOptimalSolution());
         existing.setCategory(updatedProblem.getCategory());
         if (updatedProblem.getConcept() != null) {
             existing.setConcept(updatedProblem.getConcept());
@@ -72,6 +72,13 @@ public class ProblemService {
             updatedProblem.getPlatformLinks().forEach(link -> {
                 link.setProblem(existing);
                 existing.getPlatformLinks().add(link);
+            });
+        }
+        if (updatedProblem.getSolutions() != null) {
+            existing.getSolutions().clear();
+            updatedProblem.getSolutions().forEach(solution -> {
+                solution.setProblem(existing);
+                existing.getSolutions().add(solution);
             });
         }
         return problemRepository.save(existing);

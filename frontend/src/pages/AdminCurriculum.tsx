@@ -661,10 +661,24 @@ const getPlatformName = (url: string) => {
   return 'External';
 };
 
+const LANGUAGES = ['Java', 'Python', 'C++', 'C', 'Kotlin'];
+
 function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptId: string, category: string, initialData?: any, onClose: () => void }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [activeLangTab, setActiveLangTab] = useState('Java');
   
+  const initSolutions = () => {
+    if (initialData?.solutions && initialData.solutions.length > 0) {
+      const existingLangs = initialData.solutions.map((s: any) => s.language);
+      const missing = LANGUAGES.filter(l => !existingLangs.includes(l)).map(l => ({
+        language: l, bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: []
+      }));
+      return [...initialData.solutions, ...missing];
+    }
+    return LANGUAGES.map(l => ({ language: l, bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: [] }));
+  };
+
   const [form, setForm] = useState({
     title: initialData?.title || '',
     difficulty: initialData?.difficulty || 'Easy',
@@ -672,10 +686,7 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
     youtubeLink: initialData?.youtubeLink || '',
     documentationLink: initialData?.documentationLink || '',
     description: initialData?.description || '',
-    bruteSolution: initialData?.bruteSolution || '',
-    betterSolution: initialData?.betterSolution || '',
-    optimalSolution: initialData?.optimalSolution || '',
-    additionalSolutions: initialData?.additionalSolutions || [],
+    solutions: initSolutions(),
     platformLinks: initialData?.platformLinks?.length > 0 
       ? initialData.platformLinks 
       : (initialData?.problemLink ? [{ platformName: getPlatformName(initialData.problemLink), url: initialData.problemLink }] : []),
@@ -701,26 +712,52 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
     });
   };
 
+  const updateSolution = (field: 'bruteSolution' | 'betterSolution' | 'optimalSolution', value: string) => {
+    setForm(prev => {
+      const newSols = [...prev.solutions];
+      const idx = newSols.findIndex(s => s.language === activeLangTab);
+      if (idx !== -1) {
+        newSols[idx] = { ...newSols[idx], [field]: value };
+      }
+      return { ...prev, solutions: newSols };
+    });
+  };
+
   const addAdditionalSolution = () => {
-    setForm(prev => ({
-      ...prev,
-      additionalSolutions: [...prev.additionalSolutions, '']
-    }));
+    setForm(prev => {
+      const newSols = [...prev.solutions];
+      const idx = newSols.findIndex(s => s.language === activeLangTab);
+      if (idx !== -1) {
+        const adds = newSols[idx].additionalSolutions || [];
+        newSols[idx] = { ...newSols[idx], additionalSolutions: [...adds, ''] };
+      }
+      return { ...prev, solutions: newSols };
+    });
   };
 
   const updateAdditionalSolution = (index: number, value: string) => {
     setForm(prev => {
-      const newSols = [...prev.additionalSolutions];
-      newSols[index] = value;
-      return { ...prev, additionalSolutions: newSols };
+      const newSols = [...prev.solutions];
+      const idx = newSols.findIndex(s => s.language === activeLangTab);
+      if (idx !== -1) {
+        const adds = [...(newSols[idx].additionalSolutions || [])];
+        adds[index] = value;
+        newSols[idx] = { ...newSols[idx], additionalSolutions: adds };
+      }
+      return { ...prev, solutions: newSols };
     });
   };
 
   const removeAdditionalSolution = (index: number) => {
     setForm(prev => {
-      const newSols = [...prev.additionalSolutions];
-      newSols.splice(index, 1);
-      return { ...prev, additionalSolutions: newSols };
+      const newSols = [...prev.solutions];
+      const idx = newSols.findIndex(s => s.language === activeLangTab);
+      if (idx !== -1) {
+        const adds = [...(newSols[idx].additionalSolutions || [])];
+        adds.splice(index, 1);
+        newSols[idx] = { ...newSols[idx], additionalSolutions: adds };
+      }
+      return { ...prev, solutions: newSols };
     });
   };
 
@@ -804,48 +841,60 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
         <div className="md:col-span-2">
           <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Documentation Content</label>
           <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} rows={3} className="w-full text-sm px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" placeholder="Write documentation data here..." />
-        </div>
-        
-        <div className="md:col-span-2 space-y-3 mt-2">
-          <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Brute Solution Code</label>
-            <textarea value={form.bruteSolution} onChange={e => setForm({...form, bruteSolution: e.target.value})} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Better Solution Code</label>
-            <textarea value={form.betterSolution} onChange={e => setForm({...form, betterSolution: e.target.value})} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Optimal Solution Code</label>
-            <textarea value={form.optimalSolution} onChange={e => setForm({...form, optimalSolution: e.target.value})} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
-          </div>
-          
-          {/* Dynamic Additional Solutions */}
-          {form.additionalSolutions.map((sol: string, index: number) => (
-            <div key={index} className="relative">
-              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Solution {index + 1} Code</label>
-              <textarea 
-                value={sol} 
-                onChange={e => updateAdditionalSolution(index, e.target.value)} 
-                rows={3} 
-                className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" 
-              />
-              <button 
-                onClick={() => removeAdditionalSolution(index)}
-                className="absolute top-0 right-0 p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded"
-                title="Remove this solution"
+         <div className="md:col-span-2 space-y-3 mt-4 border-t border-slate-200 dark:border-slate-700 pt-4">
+          <label className="block text-sm font-bold text-slate-800 dark:text-slate-200 mb-2">Solutions</label>
+          <div className="flex gap-1 overflow-x-auto hide-scrollbar border-b border-slate-200 dark:border-slate-700 pb-2">
+            {LANGUAGES.map(lang => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => setActiveLangTab(lang)}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors whitespace-nowrap ${
+                  activeLangTab === lang
+                    ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                    : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800'
+                }`}
               >
-                <X className="w-3 h-3" />
+                {lang}
               </button>
-            </div>
-          ))}
-          
-          <button
-            onClick={addAdditionalSolution}
-            className="w-full py-2 border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:border-primary-500 hover:text-primary-600 dark:hover:text-primary-400 transition-colors rounded-lg text-xs font-semibold flex items-center justify-center gap-2"
-          >
-            + Add Additional Solution
-          </button>
+            ))}
+          </div>
+
+          {(() => {
+            const activeSol = form.solutions.find(s => s.language === activeLangTab) || { bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: [] };
+            return (
+              <div className="space-y-3 mt-3">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Brute Solution Code ({activeLangTab})</label>
+                  <textarea value={activeSol.bruteSolution || ''} onChange={e => updateSolution('bruteSolution', e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Better Solution Code ({activeLangTab})</label>
+                  <textarea value={activeSol.betterSolution || ''} onChange={e => updateSolution('betterSolution', e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Optimal Solution Code ({activeLangTab})</label>
+                  <textarea value={activeSol.optimalSolution || ''} onChange={e => updateSolution('optimalSolution', e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Additional Solutions ({activeLangTab})</label>
+                  {activeSol.additionalSolutions?.map((sol: string, index: number) => (
+                    <div key={index} className="relative">
+                      <textarea value={sol} onChange={e => updateAdditionalSolution(index, e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white pr-10" />
+                      <button type="button" onClick={() => removeAdditionalSolution(index)} className="absolute top-2 right-2 p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button type="button" onClick={addAdditionalSolution} className="w-full py-2 border border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-xs font-medium text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    + Add Additional Solution for {activeLangTab}
+                  </button>
+                </div>
+              </div>
+            );
+          })()}
+        </div>
         </div>
       </div>
 

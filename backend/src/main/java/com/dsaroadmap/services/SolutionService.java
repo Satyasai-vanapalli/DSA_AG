@@ -37,11 +37,13 @@ public class SolutionService {
         Solution existing = solutionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solution not found"));
         existing.setLanguage(updatedSolution.getLanguage());
-        existing.setSolutionCode(updatedSolution.getSolutionCode());
-        existing.setApproach(updatedSolution.getApproach());
-        existing.setExplanation(updatedSolution.getExplanation());
-        existing.setTimeComplexity(updatedSolution.getTimeComplexity());
-        existing.setSpaceComplexity(updatedSolution.getSpaceComplexity());
+        existing.setBruteSolution(updatedSolution.getBruteSolution());
+        existing.setBetterSolution(updatedSolution.getBetterSolution());
+        existing.setOptimalSolution(updatedSolution.getOptimalSolution());
+        if (updatedSolution.getAdditionalSolutions() != null) {
+            existing.getAdditionalSolutions().clear();
+            existing.getAdditionalSolutions().addAll(updatedSolution.getAdditionalSolutions());
+        }
         return solutionRepository.save(existing);
     }
 

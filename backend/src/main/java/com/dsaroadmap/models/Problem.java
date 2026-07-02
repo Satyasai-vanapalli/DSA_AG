@@ -36,19 +36,6 @@ public class Problem {
     private String youtubeLink;
     private String documentationLink;
 
-    @Column(columnDefinition = "TEXT")
-    private String bruteSolution;
-
-    @Column(columnDefinition = "TEXT")
-    private String betterSolution;
-
-    @Column(columnDefinition = "TEXT")
-    private String optimalSolution;
-
-    @ElementCollection
-    @CollectionTable(name = "problem_additional_solutions", joinColumns = @JoinColumn(name = "problem_id"))
-    @Column(name = "solution_code", columnDefinition = "TEXT")
-    private List<String> additionalSolutions = new ArrayList<>();
 
     private Integer orderIndex = 0;
 
