@@ -663,10 +663,11 @@ const getPlatformName = (url: string) => {
 
 const LANGUAGES = ['Java', 'Python', 'C++', 'C', 'Kotlin'];
 
-function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptId: string, category: string, initialData?: any, onClose: () => void }) {
+function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: { conceptId: string, category: string, initialData?: any, onClose: () => void, concepts?: any[] }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [activeLangTab, setActiveLangTab] = useState('Java');
+  const [localConceptId, setLocalConceptId] = useState(conceptId || (concepts && concepts.length > 0 ? concepts[0].id : ''));
   
   const initSolutions = () => {
     if (initialData?.solutions && initialData.solutions.length > 0) {
@@ -773,15 +774,15 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
       ? adminApi.updateProblem(initialData.id, {
           ...form,
           category,
-          concept: { id: conceptId }
+          concept: { id: localConceptId || conceptId }
         })
       : adminApi.createProblem({
           ...form,
           category,
-          concept: { id: conceptId }
+          concept: { id: localConceptId || conceptId }
         }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['problems', conceptId] });
+      queryClient.invalidateQueries({ queryKey: ['problems', localConceptId || conceptId] });
       toast(initialData ? 'Problem updated' : 'Problem added', 'success');
       onClose();
     },
@@ -796,6 +797,20 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        {(!conceptId && concepts && concepts.length > 0) && (
+          <div className="md:col-span-2">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Concept *</label>
+            <select
+              value={localConceptId}
+              onChange={(e) => setLocalConceptId(e.target.value)}
+              className="w-full text-sm px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg focus:ring-2 focus:ring-primary-500 bg-white dark:bg-dark-bg text-slate-900 dark:text-white"
+            >
+              {concepts.map(c => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
           <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Title *</label>
           <input type="text" value={form.title} onChange={e => setForm({...form, title: e.target.value})} className="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
@@ -929,7 +944,7 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
         <button onClick={onClose} className="px-4 py-1.5 text-sm font-semibold text-slate-600 hover:bg-slate-200 dark:text-slate-300 dark:hover:bg-slate-700 rounded-lg">Cancel</button>
         <button 
           onClick={() => saveMutation.mutate()} 
-          disabled={!form.title.trim() || saveMutation.isPending}
+          disabled={!form.title.trim() || saveMutation.isPending || (!conceptId && !localConceptId)}
           className="px-4 py-1.5 text-sm font-semibold bg-primary-600 text-white hover:bg-primary-500 rounded-lg disabled:opacity-50"
         >
           {saveMutation.isPending ? 'Saving...' : 'Save Problem'}
