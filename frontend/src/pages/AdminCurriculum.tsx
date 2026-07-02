@@ -674,7 +674,14 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
       const missing = LANGUAGES.filter(l => !existingLangs.includes(l)).map(l => ({
         language: l, bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: []
       }));
-      return [...initialData.solutions, ...missing];
+      // Map existing additionalSolutions to ensure they are objects
+      const formattedSolutions = initialData.solutions.map((s: any) => ({
+        ...s,
+        additionalSolutions: (s.additionalSolutions || []).map((as: any) => 
+          typeof as === 'string' ? { name: '', code: as } : as
+        )
+      }));
+      return [...formattedSolutions, ...missing];
     }
     return LANGUAGES.map(l => ({ language: l, bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: [] }));
   };
@@ -729,19 +736,19 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
       const idx = newSols.findIndex(s => s.language === activeLangTab);
       if (idx !== -1) {
         const adds = newSols[idx].additionalSolutions || [];
-        newSols[idx] = { ...newSols[idx], additionalSolutions: [...adds, ''] };
+        newSols[idx] = { ...newSols[idx], additionalSolutions: [...adds, { name: '', code: '' }] };
       }
       return { ...prev, solutions: newSols };
     });
   };
 
-  const updateAdditionalSolution = (index: number, value: string) => {
+  const updateAdditionalSolution = (index: number, field: 'name' | 'code', value: string) => {
     setForm(prev => {
       const newSols = [...prev.solutions];
       const idx = newSols.findIndex(s => s.language === activeLangTab);
       if (idx !== -1) {
         const adds = [...(newSols[idx].additionalSolutions || [])];
-        adds[index] = value;
+        adds[index] = { ...adds[index], [field]: value };
         newSols[idx] = { ...newSols[idx], additionalSolutions: adds };
       }
       return { ...prev, solutions: newSols };
@@ -877,11 +884,31 @@ function ProblemEditor({ conceptId, category, initialData, onClose }: { conceptI
                   <textarea value={activeSol.optimalSolution || ''} onChange={e => updateSolution('optimalSolution', e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
                 </div>
                 
-                <div className="space-y-2">
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Additional Solutions ({activeLangTab})</label>
-                  {activeSol.additionalSolutions?.map((sol: string, index: number) => (
-                    <div key={index} className="relative">
-                      <textarea value={sol} onChange={e => updateAdditionalSolution(index, e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white pr-10" />
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Additional Solutions ({activeLangTab})</label>
+                  </div>
+                  {activeSol.additionalSolutions?.map((sol: any, index: number) => (
+                    <div key={index} className="relative bg-slate-50 dark:bg-[#1a1a1a] p-3 rounded-lg border border-slate-200 dark:border-slate-700">
+                      <div className="mb-2 pr-8">
+                        <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Solution Name</label>
+                        <input 
+                          type="text" 
+                          value={sol.name} 
+                          onChange={e => updateAdditionalSolution(index, 'name', e.target.value)} 
+                          className="w-full text-xs px-2 py-1.5 border border-slate-300 dark:border-slate-600 rounded dark:bg-dark-bg dark:text-white" 
+                          placeholder="e.g. Space Optimized, Recursive..." 
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Code</label>
+                        <textarea 
+                          value={sol.code} 
+                          onChange={e => updateAdditionalSolution(index, 'code', e.target.value)} 
+                          rows={3} 
+                          className="w-full font-mono text-xs px-2 py-1.5 border border-slate-300 dark:border-slate-600 rounded dark:bg-dark-bg dark:text-white" 
+                        />
+                      </div>
                       <button type="button" onClick={() => removeAdditionalSolution(index)} className="absolute top-2 right-2 p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">
                         <X className="w-4 h-4" />
                       </button>

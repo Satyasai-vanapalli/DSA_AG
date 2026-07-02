@@ -37,8 +37,7 @@ public class Solution {
 
     @ElementCollection
     @CollectionTable(name = "solution_additional", joinColumns = @JoinColumn(name = "solution_id"))
-    @Column(name = "code", columnDefinition = "TEXT")
-    private List<String> additionalSolutions = new ArrayList<>();
+    private List<AdditionalSolution> additionalSolutions = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)

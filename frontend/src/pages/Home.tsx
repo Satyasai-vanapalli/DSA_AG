@@ -691,7 +691,7 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
     activeTab === 'brute' ? activeSol.bruteSolution :
       activeTab === 'better' ? activeSol.betterSolution :
         activeTab === 'optimal' ? activeSol.optimalSolution :
-          (activeTab.startsWith('solution_') ? activeSol.additionalSolutions?.[parseInt(activeTab.split('_')[1])] : null)
+          (activeTab.startsWith('solution_') ? activeSol.additionalSolutions?.[parseInt(activeTab.split('_')[1])]?.code : null)
   ) : null;
 
   const copyCode = () => {
@@ -758,8 +758,9 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
                 );
               })}
 
-              {activeSol?.additionalSolutions?.map((_: string, index: number) => {
+              {activeSol?.additionalSolutions?.map((asol: any, index: number) => {
                 const tabId = `solution_${index}`;
+                const name = asol?.name && asol.name.trim() !== '' ? asol.name : `Solution ${index + 1}`;
                 return (
                   <button
                     key={tabId}
@@ -769,7 +770,7 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
                       : 'text-slate-500 hover:text-slate-300 hover:bg-[#252526]'
                       }`}
                   >
-                    Solution {index + 1}
+                    {name}
                   </button>
                 );
               })}
