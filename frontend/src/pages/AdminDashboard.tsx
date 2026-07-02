@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi, type AdminUser } from '../api/admin';
 import { useAuth } from '../context/AuthContext';
-import { Users, BookOpen, Code2, ArrowRight, Shield, ShieldOff, Trophy, Settings, Ban, Trash2, CheckCircle } from 'lucide-react';
+import { Users, BookOpen, Code2, ArrowRight, Shield, ShieldOff, Trophy, Settings, Ban, Trash2, CheckCircle, Star, MessageCircle } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
 
@@ -155,6 +155,8 @@ export default function AdminDashboard() {
     { label: 'Manage Curriculum', value: 'Learn Kotlin', icon: BookOpen, color: 'bg-violet-500', link: '/admin/curriculum/learn-kotlin', categoryId: 'LEARN_KOTLIN' },
     { label: 'Manage Curriculum', value: 'DSA Practice', icon: Code2, color: 'bg-emerald-500', link: '/admin/curriculum/practice', categoryId: 'PRACTICE' },
     { label: 'Manage Curriculum', value: 'CP', icon: Trophy, color: 'bg-purple-500', link: '/admin/curriculum/cp', categoryId: 'CP' },
+    { label: 'Manage Global', value: 'Motivation Feed', icon: Star, color: 'bg-amber-500', link: '/admin/motivation', categoryId: null },
+    { label: 'Manage Global', value: 'Contact Admin', icon: MessageCircle, color: 'bg-rose-500', link: '/admin/contact', categoryId: null },
   ];
 
   let displayedCards = statCards;
