@@ -341,6 +341,18 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
   }, [userConceptProgress, concept.id]);
 
   const { completedCount, conceptProgress, totalItemsCount } = useMemo(() => {
+    let problemCount = 0;
+    let completedProblemCount = 0;
+    
+    if (problems && problems.length > 0) {
+      problemCount = problems.length;
+      if (userProgress) {
+        completedProblemCount = problems.filter(p =>
+          userProgress.find(up => up.problemId === p.id && up.completed)
+        ).length;
+      }
+    }
+
     let subConceptsWithMaterial = 0;
     let completedSubConceptsWithMaterial = 0;
 
@@ -356,8 +368,8 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     const hasMaterial = concept.description && concept.description.trim() !== '' ? 1 : 0;
     const materialCompleted = isConceptCompleted ? 1 : 0;
 
-    const totalItems = subConceptsWithMaterial + hasMaterial;
-    const completedItems = completedSubConceptsWithMaterial + materialCompleted;
+    const totalItems = problemCount + subConceptsWithMaterial + hasMaterial;
+    const completedItems = completedProblemCount + completedSubConceptsWithMaterial + materialCompleted;
 
     if (totalItems === 0) return { completedCount: 0, conceptProgress: 0, totalItemsCount: 0 };
 
