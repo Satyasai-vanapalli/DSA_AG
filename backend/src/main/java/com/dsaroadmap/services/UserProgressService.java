@@ -199,25 +199,27 @@ public class UserProgressService {
         long completedConcepts = 0;
         
         if (category != null && !category.isEmpty()) {
-            List<Concept> topLevelConcepts = conceptRepository.findByCategoryAndParentIdIsNullOrderByOrderIndexAsc(category);
+            List<Concept> allConcepts = conceptRepository.findByCategoryOrderByOrderIndexAsc(category);
+            List<Concept> topLevelConcepts = allConcepts.stream().filter(c -> c.getParentId() == null).toList();
             totalConcepts = topLevelConcepts.size();
             
             List<ConceptProgress> conceptProgresses = conceptProgressRepository.findByUserWithConcept(user);
-            completedConcepts = conceptProgresses.stream()
-                .filter(ConceptProgress::isCompleted)
-                .filter(cp -> topLevelConcepts.stream().anyMatch(c -> c.getId().equals(cp.getConcept().getId())))
+            List<Problem> allProblems = problemRepository.findByCategoryOrderByOrderIndexAsc(category);
+            
+            completedConcepts = topLevelConcepts.stream()
+                .filter(c -> isConceptFullyCompleted(c, allConcepts, allProblems, allProgress, conceptProgresses))
                 .count();
         } else {
             // Global stats across all categories
-            List<Concept> allTopLevelConcepts = conceptRepository.findAll().stream()
-                .filter(c -> c.getParentId() == null)
-                .toList();
+            List<Concept> allConcepts = conceptRepository.findAll();
+            List<Concept> allTopLevelConcepts = allConcepts.stream().filter(c -> c.getParentId() == null).toList();
             totalConcepts = allTopLevelConcepts.size();
             
             List<ConceptProgress> conceptProgresses = conceptProgressRepository.findByUserWithConcept(user);
-            completedConcepts = conceptProgresses.stream()
-                .filter(ConceptProgress::isCompleted)
-                .filter(cp -> allTopLevelConcepts.stream().anyMatch(c -> c.getId().equals(cp.getConcept().getId())))
+            List<Problem> allProblems = problemRepository.findAll();
+            
+            completedConcepts = allTopLevelConcepts.stream()
+                .filter(c -> isConceptFullyCompleted(c, allConcepts, allProblems, allProgress, conceptProgresses))
                 .count();
         }
         
