@@ -344,10 +344,10 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     let subConceptsWithMaterial = 0;
     let completedSubConceptsWithMaterial = 0;
 
-    if (concept.children && concept.children.length > 0) {
-      subConceptsWithMaterial = concept.children.filter(c => c.description && c.description.trim() !== '').length;
+    if (subConcepts && subConcepts.length > 0) {
+      subConceptsWithMaterial = subConcepts.filter(c => c.description && c.description.trim() !== '').length;
       if (userConceptProgress && subConceptsWithMaterial > 0) {
-        completedSubConceptsWithMaterial = concept.children.filter(c => 
+        completedSubConceptsWithMaterial = subConcepts.filter(c => 
           c.description && c.description.trim() !== '' && userConceptProgress.find(up => up.conceptId === c.id && up.completed)
         ).length;
       }
@@ -366,7 +366,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
       conceptProgress: Math.round((completedItems / totalItems) * 100),
       totalItemsCount: totalItems
     };
-  }, [problems, userProgress, concept.description, isConceptCompleted]);
+  }, [problems, userProgress, concept.description, isConceptCompleted, subConcepts, userConceptProgress]);
 
   if (concept.isMaterialOnly) {
     return (
