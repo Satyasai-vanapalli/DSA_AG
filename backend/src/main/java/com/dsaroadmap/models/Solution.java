@@ -36,8 +36,7 @@ public class Solution {
     private String optimalSolution;
 
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
-    @Builder.Default
-    private List<AdditionalSolution> additionalSolutions = new ArrayList<>();
+    private com.fasterxml.jackson.databind.JsonNode additionalSolutions;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "problem_id", nullable = false)
