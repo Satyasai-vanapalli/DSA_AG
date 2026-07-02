@@ -15,11 +15,17 @@ import java.util.concurrent.TimeUnit;
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final ConcurrentHashMap<String, RequestData> requestCounts = new ConcurrentHashMap<>();
-    private static final int MAX_REQUESTS_PER_MINUTE = 20;
+    private static final int MAX_REQUESTS_PER_MINUTE = 100;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
+        
+        // Skip rate limiting for OPTIONS requests (CORS preflight)
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         
         // Only rate limit auth endpoints
         if (path.startsWith("/api/auth/")) {
