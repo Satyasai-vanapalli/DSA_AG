@@ -73,60 +73,32 @@ public class ProblemService {
         existing.setYoutubeLink(updatedProblem.getYoutubeLink());
         existing.setDocumentationLink(updatedProblem.getDocumentationLink());
         existing.setCategory(updatedProblem.getCategory());
+        
         if (updatedProblem.getConcept() != null && updatedProblem.getConcept().getId() != null) {
             existing.setConcept(conceptService.getConceptById(updatedProblem.getConcept().getId()));
         }
+        
+        // Sync PlatformLinks
+        existing.getPlatformLinks().clear();
         if (updatedProblem.getPlatformLinks() != null) {
-            // Remove links not in the updated list
-            existing.getPlatformLinks().removeIf(existingLink -> 
-                updatedProblem.getPlatformLinks().stream().noneMatch(updatedLink -> 
-                    updatedLink.getPlatformName().equals(existingLink.getPlatformName()) && 
-                    updatedLink.getUrl().equals(existingLink.getUrl())
-                )
-            );
-            // Add new links
-            for (com.dsaroadmap.models.PlatformLink updatedLink : updatedProblem.getPlatformLinks()) {
-                boolean exists = existing.getPlatformLinks().stream().anyMatch(existingLink -> 
-                    existingLink.getPlatformName().equals(updatedLink.getPlatformName()) && 
-                    existingLink.getUrl().equals(updatedLink.getUrl())
-                );
-                if (!exists) {
-                    updatedLink.setId(null);
-                    updatedLink.setProblem(existing);
-                    existing.getPlatformLinks().add(updatedLink);
-                }
+            for (com.dsaroadmap.models.PlatformLink link : updatedProblem.getPlatformLinks()) {
+                link.setId(null);
+                link.setProblem(existing);
+                existing.getPlatformLinks().add(link);
             }
         }
+        
+        // Sync Solutions
+        existing.getSolutions().clear();
         if (updatedProblem.getSolutions() != null) {
-            // Remove solutions not present in the updated list
-            existing.getSolutions().removeIf(existingSol -> 
-                updatedProblem.getSolutions().stream().noneMatch(updatedSol -> 
-                    updatedSol.getLanguage().equals(existingSol.getLanguage())
-                )
-            );
-            
-            // Add or update solutions
-            for (com.dsaroadmap.models.Solution updatedSol : updatedProblem.getSolutions()) {
-                com.dsaroadmap.models.Solution existingSol = existing.getSolutions().stream()
-                    .filter(s -> s.getLanguage().equals(updatedSol.getLanguage()))
-                    .findFirst().orElse(null);
-                    
-                if (existingSol != null) {
-                    existingSol.setBruteSolution(updatedSol.getBruteSolution());
-                    existingSol.setBetterSolution(updatedSol.getBetterSolution());
-                    existingSol.setOptimalSolution(updatedSol.getOptimalSolution());
-                    
-                    existingSol.getAdditionalSolutions().clear();
-                    if (updatedSol.getAdditionalSolutions() != null) {
-                        existingSol.getAdditionalSolutions().addAll(updatedSol.getAdditionalSolutions());
-                    }
-                } else {
-                    updatedSol.setId(null);
-                    updatedSol.setProblem(existing);
-                    existing.getSolutions().add(updatedSol);
-                }
+            for (com.dsaroadmap.models.Solution sol : updatedProblem.getSolutions()) {
+                sol.setId(null);
+                sol.setProblem(existing);
+                // additionalSolutions is now JSONB, so it saves exactly as provided!
+                existing.getSolutions().add(sol);
             }
         }
+        
         return problemRepository.save(existing);
     }
 

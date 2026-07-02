@@ -23,7 +23,7 @@ public class Problem {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String title;
 
     @Column(columnDefinition = "TEXT")
@@ -32,8 +32,13 @@ public class Problem {
     @Column(nullable = false)
     private String difficulty; // Easy, Medium, Hard
 
+    @Column(columnDefinition = "TEXT")
     private String problemLink;
+    
+    @Column(columnDefinition = "TEXT")
     private String youtubeLink;
+    
+    @Column(columnDefinition = "TEXT")
     private String documentationLink;
 
 

@@ -783,10 +783,14 @@ function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: 
         }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['problems', localConceptId || conceptId] });
-      toast(initialData ? 'Problem updated' : 'Problem added', 'success');
+      toast(initialData ? 'Problem updated successfully' : 'Problem added successfully', 'success');
       onClose();
     },
-    onError: () => toast(initialData ? 'Failed to update problem' : 'Failed to add problem', 'error')
+    onError: (err: any) => {
+      console.error("Save Problem Error:", err);
+      const serverMsg = err?.response?.data?.message || err?.message || 'Unknown server error';
+      toast(`Failed to save problem: ${serverMsg}`, 'error');
+    }
   });
 
   return (

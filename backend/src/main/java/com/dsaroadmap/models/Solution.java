@@ -35,8 +35,8 @@ public class Solution {
     @Column(columnDefinition = "TEXT")
     private String optimalSolution;
 
-    @ElementCollection
-    @CollectionTable(name = "solution_additional", joinColumns = @JoinColumn(name = "solution_id"))
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Builder.Default
     private List<AdditionalSolution> additionalSolutions = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
