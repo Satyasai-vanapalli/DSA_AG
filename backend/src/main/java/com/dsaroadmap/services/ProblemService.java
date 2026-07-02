@@ -70,6 +70,7 @@ public class ProblemService {
         if (updatedProblem.getPlatformLinks() != null) {
             existing.getPlatformLinks().clear();
             updatedProblem.getPlatformLinks().forEach(link -> {
+                link.setId(null);
                 link.setProblem(existing);
                 existing.getPlatformLinks().add(link);
             });
@@ -77,6 +78,7 @@ public class ProblemService {
         if (updatedProblem.getSolutions() != null) {
             existing.getSolutions().clear();
             updatedProblem.getSolutions().forEach(solution -> {
+                solution.setId(null);
                 solution.setProblem(existing);
                 existing.getSolutions().add(solution);
             });
