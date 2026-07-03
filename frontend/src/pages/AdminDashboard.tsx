@@ -10,13 +10,15 @@ const CategoryAdminManager = ({ user, toggleMutation }: { user: AdminUser, toggl
   const [isOpen, setIsOpen] = useState(false);
   
   const categories = [
-    { id: 'LEARN', label: 'Java' }, // Changed LEARN_JAVA to LEARN to match category schema
+    { id: 'LEARN', label: 'Java' }, 
     { id: 'LEARN_PYTHON', label: 'Python' },
     { id: 'LEARN_C', label: 'C' },
     { id: 'LEARN_CPP', label: 'C++' },
     { id: 'LEARN_KOTLIN', label: 'Kotlin' },
     { id: 'PRACTICE', label: 'DSA Practice' },
-    { id: 'CP', label: 'CP' }
+    { id: 'CP', label: 'CP' },
+    { id: 'MOTIVATION', label: 'Motivation' },
+    { id: 'CONTACT', label: 'Contact Admin' }
   ];
 
   return (
@@ -155,8 +157,8 @@ export default function AdminDashboard() {
     { label: 'Manage Curriculum', value: 'Learn Kotlin', icon: BookOpen, color: 'bg-violet-500', link: '/admin/curriculum/learn-kotlin', categoryId: 'LEARN_KOTLIN' },
     { label: 'Manage Curriculum', value: 'DSA Practice', icon: Code2, color: 'bg-emerald-500', link: '/admin/curriculum/practice', categoryId: 'PRACTICE' },
     { label: 'Manage Curriculum', value: 'CP', icon: Trophy, color: 'bg-purple-500', link: '/admin/curriculum/cp', categoryId: 'CP' },
-    { label: 'Manage Global', value: 'Motivation Feed', icon: Star, color: 'bg-amber-500', link: '/admin/motivation', categoryId: null },
-    { label: 'Manage Global', value: 'Contact Admin', icon: MessageCircle, color: 'bg-rose-500', link: '/admin/contact', categoryId: null },
+    { label: 'Manage Global', value: 'Motivation Feed', icon: Star, color: 'bg-amber-500', link: '/admin/motivation', categoryId: 'MOTIVATION' },
+    { label: 'Manage Global', value: 'Contact Admin', icon: MessageCircle, color: 'bg-rose-500', link: '/admin/contact', categoryId: 'CONTACT' },
   ];
 
   let displayedCards = statCards;

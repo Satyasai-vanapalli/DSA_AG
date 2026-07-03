@@ -2,8 +2,11 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { contactApi, type ContactInfo } from '../api/contact';
 import { Loader2, Plus, Edit2, Trash2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 export default function AdminContact() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState<ContactInfo | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -13,6 +16,13 @@ export default function AdminContact() {
     queryKey: ['contacts'],
     queryFn: contactApi.getAll,
   });
+
+  const isSuperAdmin = user?.role === 'ADMIN';
+  const isContactAdmin = user?.adminCategories?.includes('CONTACT');
+
+  if (!isSuperAdmin && !isContactAdmin) {
+    return <Navigate to="/" replace />;
+  }
 
   const createMutation = useMutation({
     mutationFn: contactApi.create,

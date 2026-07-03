@@ -26,26 +26,27 @@ public class MotivationController {
         return ResponseEntity.ok(motivationRepository.findByIsActiveOrderByCreatedAtDesc(true));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    // Only Super Admins or MOTIVATION category admins can access these
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'MOTIVATION')")
     @GetMapping("/admin/motivation")
     public ResponseEntity<List<Motivation>> getAllMotivations() {
         return ResponseEntity.ok(motivationRepository.findAllByOrderByCreatedAtDesc());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'MOTIVATION')")
     @PostMapping("/admin/motivation/upload")
     public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
         String fileUrl = fileStorageService.saveFile(file);
         return ResponseEntity.ok(Map.of("url", fileUrl));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'MOTIVATION')")
     @PostMapping("/admin/motivation")
     public ResponseEntity<Motivation> createMotivation(@RequestBody Motivation motivation) {
         return ResponseEntity.ok(motivationRepository.save(motivation));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'MOTIVATION')")
     @PutMapping("/admin/motivation/{id}")
     public ResponseEntity<Motivation> updateMotivation(@PathVariable UUID id, @RequestBody Motivation motivation) {
         Motivation existing = motivationRepository.findById(id).orElseThrow();
@@ -56,7 +57,7 @@ public class MotivationController {
         return ResponseEntity.ok(motivationRepository.save(existing));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'MOTIVATION')")
     @DeleteMapping("/admin/motivation/{id}")
     public ResponseEntity<Void> deleteMotivation(@PathVariable UUID id) {
         Motivation motivation = motivationRepository.findById(id).orElseThrow();

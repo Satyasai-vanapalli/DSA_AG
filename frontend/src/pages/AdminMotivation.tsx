@@ -2,8 +2,11 @@ import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motivationApi, type Motivation } from '../api/motivation';
 import { Loader2, Plus, Edit2, Trash2, Image as ImageIcon, Video, Type, Link as LinkIcon, Upload } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { Navigate } from 'react-router-dom';
 
 export default function AdminMotivation() {
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -18,6 +21,13 @@ export default function AdminMotivation() {
     queryKey: ['admin-motivations'],
     queryFn: motivationApi.getAllAdmin,
   });
+
+  const isSuperAdmin = user?.role === 'ADMIN';
+  const isMotivationAdmin = user?.adminCategories?.includes('MOTIVATION');
+
+  if (!isSuperAdmin && !isMotivationAdmin) {
+    return <Navigate to="/" replace />;
+  }
 
   const createMutation = useMutation({
     mutationFn: motivationApi.create,

@@ -22,13 +22,13 @@ public class ContactInfoController {
         return ResponseEntity.ok(contactInfoRepository.findAll());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'CONTACT')")
     @PostMapping("/admin/contact")
     public ResponseEntity<ContactInfo> createContact(@RequestBody ContactInfo contactInfo) {
         return ResponseEntity.ok(contactInfoRepository.save(contactInfo));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'CONTACT')")
     @PutMapping("/admin/contact/{id}")
     public ResponseEntity<ContactInfo> updateContact(@PathVariable UUID id, @RequestBody ContactInfo contactInfo) {
         ContactInfo existing = contactInfoRepository.findById(id).orElseThrow();
@@ -38,7 +38,7 @@ public class ContactInfoController {
         return ResponseEntity.ok(contactInfoRepository.save(existing));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEdit(authentication, 'CONTACT')")
     @DeleteMapping("/admin/contact/{id}")
     public ResponseEntity<Void> deleteContact(@PathVariable UUID id) {
         contactInfoRepository.deleteById(id);

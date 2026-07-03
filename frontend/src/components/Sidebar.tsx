@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Code2, Terminal, Calendar, Menu, X, ChevronDown, ChevronRight, LogOut, Trash2 } from 'lucide-react';
+import { Home, BookOpen, Code2, Terminal, Calendar, Menu, X, ChevronDown, ChevronRight, LogOut, Trash2, Settings } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useMutation } from '@tanstack/react-query';
@@ -63,9 +63,8 @@ export default function Sidebar() {
     { name: 'Daily Review', path: '/review', icon: <Calendar className="w-5 h-5" /> },
     { name: 'Motivation', path: '/motivation', icon: <Code2 className="w-5 h-5" /> },
     { name: 'Contact Admin', path: '/contact', icon: <Terminal className="w-5 h-5" /> },
-    ...(user?.role === 'SUPER_ADMIN' ? [
-      { name: 'Admin Motivation', path: '/admin/motivation', icon: <Code2 className="w-5 h-5 text-purple-500" /> },
-      { name: 'Admin Contact', path: '/admin/contact', icon: <Terminal className="w-5 h-5 text-purple-500" /> }
+    ...((user?.role === 'ADMIN' || (user?.adminCategories && user.adminCategories.length > 0)) ? [
+      { name: 'Admin Dashboard', path: '/admin', icon: <Settings className="w-5 h-5 text-purple-500" /> }
     ] : [])
   ];
 
