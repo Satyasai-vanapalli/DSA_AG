@@ -9,41 +9,9 @@ import Leaderboard from './Leaderboard';
 import Analytics from './Analytics';
 
 import { motion, AnimatePresence } from 'framer-motion';
+import { PlatformIcon, getPlatformName } from '../components/PlatformIcon';
 
-const PlatformIcon = ({ name, url }: { name: string, url: string }) => {
-  const getLogo = () => {
-    switch (name) {
-      case 'LeetCode':
-        return <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/LeetCode_Logo_1.png" alt="LeetCode" className="w-4 h-4 object-contain" />;
-      case 'GeeksforGeeks':
-        return <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/GeeksforGeeks.svg" alt="GeeksforGeeks" className="w-4 h-4 object-contain" />;
-      case 'CodeChef':
-        return <span className="font-bold text-xs text-amber-700 dark:text-amber-500 tracking-tighter">CC</span>;
-      case 'Codeforces':
-        return <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Codeforces_logo.svg" alt="Codeforces" className="w-4 h-4 object-contain" />;
-      case 'HackerRank':
-        return <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/HackerRank_Icon-1000px.png" alt="HackerRank" className="w-4 h-4 object-contain" />;
-      case 'HackerEarth':
-        return <span className="font-bold text-[10px] text-blue-600">HE</span>;
-      case 'CodingNinjas':
-        return <span className="font-bold text-[10px] text-orange-600">CN</span>;
-      default:
-        return <ExternalLink className="w-3.5 h-3.5 text-slate-500" />;
-    }
-  };
 
-  return (
-    <a 
-      href={url.startsWith('http') ? url : `https://${url}`} 
-      target="_blank" 
-      rel="noreferrer" 
-      title={name}
-      className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
-    >
-      {getLogo()}
-    </a>
-  );
-};
 
 export default function Home({ category }: { category: string }) {
   const { isAuthenticated } = useAuth();
@@ -576,9 +544,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
                                     <PlatformIcon key={i} name={link.platformName} url={link.url} />
                                   ))
                                 ) : problem.problemLink ? (
-                                  <a href={problem.problemLink.startsWith('http') ? problem.problemLink : `https://${problem.problemLink}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
-                                    <ExternalLink className="w-3.5 h-3.5" /> View
-                                  </a>
+                                  <PlatformIcon name={getPlatformName(problem.problemLink)} url={problem.problemLink} />
                                 ) : (
                                   <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
                                 )}
