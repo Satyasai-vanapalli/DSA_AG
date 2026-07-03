@@ -668,6 +668,20 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
           (activeTab.startsWith('solution_') ? activeSol.additionalSolutions?.[parseInt(activeTab.split('_')[1])]?.code : null)
   ) : null;
 
+  const currentTc = activeSol ? (
+    activeTab === 'brute' ? activeSol.bruteTc :
+    activeTab === 'better' ? activeSol.betterTc :
+    activeTab === 'optimal' ? activeSol.optimalTc :
+    (activeTab.startsWith('solution_') ? activeSol.additionalSolutions?.[parseInt(activeTab.split('_')[1])]?.tc : null)
+  ) : null;
+
+  const currentSc = activeSol ? (
+    activeTab === 'brute' ? activeSol.bruteSc :
+    activeTab === 'better' ? activeSol.betterSc :
+    activeTab === 'optimal' ? activeSol.optimalSc :
+    (activeTab.startsWith('solution_') ? activeSol.additionalSolutions?.[parseInt(activeTab.split('_')[1])]?.sc : null)
+  ) : null;
+
   const copyCode = () => {
     if (currentSolution) {
       navigator.clipboard.writeText(currentSolution);
@@ -750,6 +764,12 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
               })}
             </div>
             <div className="flex items-center gap-2 pr-2">
+              {(currentTc || currentSc) && (
+                <div className="flex items-center gap-2 text-xs mr-2">
+                  {currentTc && <span className="bg-slate-700 text-slate-200 px-2 py-1 rounded font-mono">TC: {currentTc}</span>}
+                  {currentSc && <span className="bg-slate-700 text-slate-200 px-2 py-1 rounded font-mono">SC: {currentSc}</span>}
+                </div>
+              )}
               <button onClick={copyCode} className="p-1.5 text-slate-400 hover:text-white rounded transition-colors" title="Copy Code">
                 <Copy className="w-4 h-4" />
               </button>
