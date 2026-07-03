@@ -23,15 +23,18 @@ export const getDomain = (url: string) => {
 };
 
 export const PlatformIcon = ({ name, url }: { name: string, url: string }) => {
+  // Retroactively fix the name for older links saved before dynamic platform parsing
+  const actualName = name === 'External' ? getPlatformName(url) : name;
+
   const getLogo = () => {
     const domain = getDomain(url);
-    if (name === 'LeetCode') return <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/LeetCode_Logo_1.png" alt="LeetCode" className="w-4 h-4 object-contain" />;
-    if (name === 'GeeksforGeeks') return <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/GeeksforGeeks.svg" alt="GeeksforGeeks" className="w-4 h-4 object-contain" />;
-    if (name === 'CodeChef') return <span className="font-bold text-xs text-amber-700 dark:text-amber-500 tracking-tighter">CC</span>;
-    if (name === 'Codeforces') return <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Codeforces_logo.svg" alt="Codeforces" className="w-4 h-4 object-contain" />;
+    if (actualName === 'LeetCode') return <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/LeetCode_Logo_1.png" alt="LeetCode" className="w-4 h-4 object-contain" />;
+    if (actualName === 'GeeksforGeeks') return <img src="https://upload.wikimedia.org/wikipedia/commons/4/43/GeeksforGeeks.svg" alt="GeeksforGeeks" className="w-4 h-4 object-contain" />;
+    if (actualName === 'CodeChef') return <span className="font-bold text-xs text-amber-700 dark:text-amber-500 tracking-tighter">CC</span>;
+    if (actualName === 'Codeforces') return <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Codeforces_logo.svg" alt="Codeforces" className="w-4 h-4 object-contain" />;
     
     if (domain) {
-      return <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`} alt={name} className="w-4 h-4 object-contain rounded-sm" />;
+      return <img src={`https://www.google.com/s2/favicons?domain=${domain}&sz=64`} alt={actualName} className="w-4 h-4 object-contain rounded-sm" />;
     }
     return <ExternalLink className="w-3.5 h-3.5 text-slate-500" />;
   };
@@ -41,7 +44,7 @@ export const PlatformIcon = ({ name, url }: { name: string, url: string }) => {
       href={url.startsWith('http') ? url : `https://${url}`} 
       target="_blank" 
       rel="noreferrer" 
-      title={name}
+      title={actualName}
       className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors shrink-0"
     >
       {getLogo()}
