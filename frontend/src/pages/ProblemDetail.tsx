@@ -17,6 +17,7 @@ export default function ProblemDetail() {
   const queryClient = useQueryClient();
 
   const [activeTab, setActiveTab] = useState<string>('optimal');
+  const [selectedLanguage, setSelectedLanguage] = useState<string>('');
 
   const { data: problem, isLoading } = useQuery({
     queryKey: ['problem', id],
@@ -25,13 +26,23 @@ export default function ProblemDetail() {
   });
 
   useEffect(() => {
-    if (problem) {
-      if (problem.optimalSolution) setActiveTab('optimal');
-      else if (problem.betterSolution) setActiveTab('better');
-      else if (problem.bruteSolution) setActiveTab('brute');
-      else if (problem.additionalSolutions && problem.additionalSolutions.length > 0) setActiveTab('solution_0');
+    if (problem && problem.solutions && problem.solutions.length > 0) {
+      if (!selectedLanguage) {
+        setSelectedLanguage(problem.solutions[0].language);
+      }
     }
   }, [problem]);
+
+  const activeLangObj = problem?.solutions?.find(s => s.language === selectedLanguage) || problem?.solutions?.[0];
+
+  useEffect(() => {
+    if (activeLangObj) {
+      if (activeLangObj.optimalSolution) setActiveTab('optimal');
+      else if (activeLangObj.betterSolution) setActiveTab('better');
+      else if (activeLangObj.bruteSolution) setActiveTab('brute');
+      else if (activeLangObj.additionalSolutions && activeLangObj.additionalSolutions.length > 0) setActiveTab('solution_0');
+    }
+  }, [activeLangObj]);
 
   const { data: userProgress } = useQuery({
     queryKey: ['progress'],
@@ -92,11 +103,26 @@ export default function ProblemDetail() {
   const isCompleted = prog?.completed || false;
   const isRevision = prog?.revision || false;
 
-  const currentSolution = 
-    activeTab === 'brute' ? problem.bruteSolution :
-    activeTab === 'better' ? problem.betterSolution :
-    activeTab === 'optimal' ? problem.optimalSolution :
-    (activeTab.startsWith('solution_') ? problem.additionalSolutions?.[parseInt(activeTab.split('_')[1])] : null);
+  const currentSolution = activeLangObj ? (
+    activeTab === 'brute' ? activeLangObj.bruteSolution :
+    activeTab === 'better' ? activeLangObj.betterSolution :
+    activeTab === 'optimal' ? activeLangObj.optimalSolution :
+    (activeTab.startsWith('solution_') ? activeLangObj.additionalSolutions?.[parseInt(activeTab.split('_')[1])]?.code : null)
+  ) : null;
+
+  const currentTc = activeLangObj ? (
+    activeTab === 'brute' ? activeLangObj.bruteTc :
+    activeTab === 'better' ? activeLangObj.betterTc :
+    activeTab === 'optimal' ? activeLangObj.optimalTc :
+    (activeTab.startsWith('solution_') ? activeLangObj.additionalSolutions?.[parseInt(activeTab.split('_')[1])]?.tc : null)
+  ) : null;
+
+  const currentSc = activeLangObj ? (
+    activeTab === 'brute' ? activeLangObj.bruteSc :
+    activeTab === 'better' ? activeLangObj.betterSc :
+    activeTab === 'optimal' ? activeLangObj.optimalSc :
+    (activeTab.startsWith('solution_') ? activeLangObj.additionalSolutions?.[parseInt(activeTab.split('_')[1])]?.sc : null)
+  ) : null;
 
   const copyCode = () => {
     if (currentSolution) {
@@ -179,17 +205,19 @@ export default function ProblemDetail() {
               )}
               {problem.documentationLink && (
                 <a href={problem.documentationLink.startsWith('http') ? problem.documentationLink : `https://${problem.documentationLink}`} target="_blank" rel="noopener noreferrer" className="w-full flex items-center justify-center gap-2 py-3 bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400 font-semibold rounded-xl hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors">
-                  <FileText className="w-5 h-5" /> Read Documentation Link
+                  <FileText className="w-5 h-5" /> Read Documentation
                 </a>
               )}
             </div>
 
             {/* Documentation Content */}
             <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-primary-500" />
-                Documentation Data
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileText className="w-5 h-5 text-primary-500" />
+                  Documentation
+                </h3>
+              </div>
               {problem.description ? (
                 <div className="prose dark:prose-invert max-w-none text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">
                   {problem.description}
@@ -210,10 +238,11 @@ export default function ProblemDetail() {
             <div className="bg-[#252526] border-b border-[#333] p-2 flex items-center justify-between">
               <div className="flex gap-1 overflow-x-auto hide-scrollbar">
                 {(['brute', 'better', 'optimal'] as const).map((tab) => {
-                  const hasSolution = 
-                    (tab === 'brute' && problem.bruteSolution) ||
-                    (tab === 'better' && problem.betterSolution) ||
-                    (tab === 'optimal' && problem.optimalSolution);
+                  const hasSolution = activeLangObj && (
+                    (tab === 'brute' && activeLangObj.bruteSolution) ||
+                    (tab === 'better' && activeLangObj.betterSolution) ||
+                    (tab === 'optimal' && activeLangObj.optimalSolution)
+                  );
 
                   if (!hasSolution) return null;
 
@@ -232,7 +261,7 @@ export default function ProblemDetail() {
                   );
                 })}
                 
-                {problem.additionalSolutions?.map((_: string, index: number) => {
+                {activeLangObj?.additionalSolutions?.map((sol: any, index: number) => {
                   const tabId = `solution_${index}`;
                   return (
                     <button
@@ -244,13 +273,30 @@ export default function ProblemDetail() {
                           : 'text-slate-400 hover:text-slate-200 hover:bg-[#2d2d2d]'
                       }`}
                     >
-                      Solution {index + 1}
+                      {sol.name || `Solution ${index + 1}`}
                     </button>
                   );
                 })}
               </div>
-              <div className="flex items-center gap-1 pr-2">
-                <button onClick={copyCode} className="p-2 text-slate-400 hover:text-white rounded transition-colors" title="Copy Code">
+              <div className="flex items-center gap-3 pr-2">
+                {(currentTc || currentSc) && (
+                  <div className="flex items-center gap-2 text-xs">
+                    {currentTc && <span className="bg-slate-700 text-slate-200 px-2 py-1 rounded font-mono">TC: {currentTc}</span>}
+                    {currentSc && <span className="bg-slate-700 text-slate-200 px-2 py-1 rounded font-mono">SC: {currentSc}</span>}
+                  </div>
+                )}
+                {problem.solutions && problem.solutions.length > 0 && (
+                  <select 
+                    value={selectedLanguage} 
+                    onChange={(e) => setSelectedLanguage(e.target.value)}
+                    className="bg-[#2d2d2d] text-white text-xs px-2 py-1 rounded border border-[#444] focus:outline-none focus:border-blue-500"
+                  >
+                    {problem.solutions.map((s: any) => (
+                      <option key={s.language} value={s.language}>{s.language}</option>
+                    ))}
+                  </select>
+                )}
+                <button onClick={copyCode} className="p-1.5 text-slate-400 hover:text-white rounded transition-colors" title="Copy Code">
                   <Copy className="w-4 h-4" />
                 </button>
               </div>
@@ -261,7 +307,7 @@ export default function ProblemDetail() {
               {currentSolution ? (
                 <Editor
                   height="100%"
-                  language="cpp" // Default to a readable language like cpp/java
+                  language={selectedLanguage.toLowerCase() === 'python' ? 'python' : selectedLanguage.toLowerCase() === 'java' ? 'java' : 'cpp'}
                   theme="vs-dark"
                   value={currentSolution}
                   options={{

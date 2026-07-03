@@ -663,6 +663,51 @@ const getPlatformName = (url: string) => {
 
 const LANGUAGES = ['Java', 'Python', 'C++', 'C', 'Kotlin'];
 
+const COMPLEXITY_OPTIONS = ['O(1)', 'O(log N)', 'O(N)', 'O(N log N)', 'O(N²)', 'O(2^N)', 'O(N!)', 'Custom'];
+
+function ComplexitySelect({ value, onChange, label }: { value: string, onChange: (val: string) => void, label: string }) {
+  const isCustom = value && !COMPLEXITY_OPTIONS.includes(value) && value !== '';
+  const [showCustom, setShowCustom] = useState(isCustom);
+
+  return (
+    <div className="flex flex-col gap-1 w-32">
+      <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">{label}</label>
+      {showCustom ? (
+        <div className="flex items-center gap-1">
+          <input 
+            type="text" 
+            value={value} 
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full text-xs px-2 py-1.5 border border-slate-300 dark:border-slate-600 rounded dark:bg-dark-bg dark:text-white"
+            placeholder="e.g. O(N)"
+          />
+          <button onClick={() => { setShowCustom(false); onChange(''); }} className="text-slate-400 hover:text-slate-600 dark:hover:text-white shrink-0">
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      ) : (
+        <select 
+          value={value || ''} 
+          onChange={(e) => {
+            if (e.target.value === 'Custom') {
+              setShowCustom(true);
+              onChange('');
+            } else {
+              onChange(e.target.value);
+            }
+          }}
+          className="w-full text-xs px-2 py-1.5 border border-slate-300 dark:border-slate-600 rounded dark:bg-dark-bg dark:text-white"
+        >
+          <option value="">-</option>
+          {COMPLEXITY_OPTIONS.map(opt => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
+      )}
+    </div>
+  );
+}
+
 function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: { conceptId: string, category: string, initialData?: any, onClose: () => void, concepts?: any[] }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -673,7 +718,7 @@ function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: 
     if (initialData?.solutions && initialData.solutions.length > 0) {
       const existingLangs = initialData.solutions.map((s: any) => s.language);
       const missing = LANGUAGES.filter(l => !existingLangs.includes(l)).map(l => ({
-        language: l, bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: []
+        language: l, bruteSolution: '', bruteTc: '', bruteSc: '', betterSolution: '', betterTc: '', betterSc: '', optimalSolution: '', optimalTc: '', optimalSc: '', additionalSolutions: []
       }));
       // Map existing additionalSolutions to ensure they are objects
       const formattedSolutions = initialData.solutions.map((s: any) => ({
@@ -684,7 +729,7 @@ function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: 
       }));
       return [...formattedSolutions, ...missing];
     }
-    return LANGUAGES.map(l => ({ language: l, bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: [] }));
+    return LANGUAGES.map(l => ({ language: l, bruteSolution: '', bruteTc: '', bruteSc: '', betterSolution: '', betterTc: '', betterSc: '', optimalSolution: '', optimalTc: '', optimalSc: '', additionalSolutions: [] }));
   };
 
   const [form, setForm] = useState({
@@ -720,7 +765,7 @@ function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: 
     });
   };
 
-  const updateSolution = (field: 'bruteSolution' | 'betterSolution' | 'optimalSolution', value: string) => {
+  const updateSolution = (field: 'bruteSolution' | 'bruteTc' | 'bruteSc' | 'betterSolution' | 'betterTc' | 'betterSc' | 'optimalSolution' | 'optimalTc' | 'optimalSc', value: string) => {
     setForm(prev => {
       const newSols = [...prev.solutions];
       const idx = newSols.findIndex(s => s.language === activeLangTab);
@@ -737,13 +782,13 @@ function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: 
       const idx = newSols.findIndex(s => s.language === activeLangTab);
       if (idx !== -1) {
         const adds = newSols[idx].additionalSolutions || [];
-        newSols[idx] = { ...newSols[idx], additionalSolutions: [...adds, { name: '', code: '' }] };
+        newSols[idx] = { ...newSols[idx], additionalSolutions: [...adds, { name: '', code: '', tc: '', sc: '' }] };
       }
       return { ...prev, solutions: newSols };
     });
   };
 
-  const updateAdditionalSolution = (index: number, field: 'name' | 'code', value: string) => {
+  const updateAdditionalSolution = (index: number, field: 'name' | 'code' | 'tc' | 'sc', value: string) => {
     setForm(prev => {
       const newSols = [...prev.solutions];
       const idx = newSols.findIndex(s => s.language === activeLangTab);
@@ -887,19 +932,37 @@ function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: 
           </div>
 
           {(() => {
-            const activeSol = form.solutions.find(s => s.language === activeLangTab) || { bruteSolution: '', betterSolution: '', optimalSolution: '', additionalSolutions: [] };
+            const activeSol = form.solutions.find(s => s.language === activeLangTab) || { bruteSolution: '', bruteTc: '', bruteSc: '', betterSolution: '', betterTc: '', betterSc: '', optimalSolution: '', optimalTc: '', optimalSc: '', additionalSolutions: [] };
             return (
               <div className="space-y-3 mt-3">
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Brute Solution Code ({activeLangTab})</label>
+                  <div className="flex justify-between items-end mb-1">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Brute Solution Code ({activeLangTab})</label>
+                    <div className="flex gap-2">
+                      <ComplexitySelect value={activeSol.bruteTc || ''} onChange={(val) => updateSolution('bruteTc', val)} label="TC" />
+                      <ComplexitySelect value={activeSol.bruteSc || ''} onChange={(val) => updateSolution('bruteSc', val)} label="SC" />
+                    </div>
+                  </div>
                   <textarea value={activeSol.bruteSolution || ''} onChange={e => updateSolution('bruteSolution', e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Better Solution Code ({activeLangTab})</label>
+                  <div className="flex justify-between items-end mb-1">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Better Solution Code ({activeLangTab})</label>
+                    <div className="flex gap-2">
+                      <ComplexitySelect value={activeSol.betterTc || ''} onChange={(val) => updateSolution('betterTc', val)} label="TC" />
+                      <ComplexitySelect value={activeSol.betterSc || ''} onChange={(val) => updateSolution('betterSc', val)} label="SC" />
+                    </div>
+                  </div>
                   <textarea value={activeSol.betterSolution || ''} onChange={e => updateSolution('betterSolution', e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Optimal Solution Code ({activeLangTab})</label>
+                  <div className="flex justify-between items-end mb-1">
+                    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Optimal Solution Code ({activeLangTab})</label>
+                    <div className="flex gap-2">
+                      <ComplexitySelect value={activeSol.optimalTc || ''} onChange={(val) => updateSolution('optimalTc', val)} label="TC" />
+                      <ComplexitySelect value={activeSol.optimalSc || ''} onChange={(val) => updateSolution('optimalSc', val)} label="SC" />
+                    </div>
+                  </div>
                   <textarea value={activeSol.optimalSolution || ''} onChange={e => updateSolution('optimalSolution', e.target.value)} rows={3} className="w-full font-mono text-xs px-3 py-2 border border-slate-300 dark:border-dark-border rounded-lg dark:bg-dark-bg dark:text-white" />
                 </div>
                 
@@ -909,15 +972,19 @@ function ProblemEditor({ conceptId, category, initialData, onClose, concepts }: 
                   </div>
                   {activeSol.additionalSolutions?.map((sol: any, index: number) => (
                     <div key={index} className="relative bg-slate-50 dark:bg-[#1a1a1a] p-3 rounded-lg border border-slate-200 dark:border-slate-700">
-                      <div className="mb-2 pr-8">
-                        <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Solution Name</label>
-                        <input 
-                          type="text" 
-                          value={sol.name} 
-                          onChange={e => updateAdditionalSolution(index, 'name', e.target.value)} 
-                          className="w-full text-xs px-2 py-1.5 border border-slate-300 dark:border-slate-600 rounded dark:bg-dark-bg dark:text-white" 
-                          placeholder="e.g. Space Optimized, Recursive..." 
-                        />
+                      <div className="mb-2 flex items-end gap-3">
+                        <div className="flex-1">
+                          <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Solution Name</label>
+                          <input 
+                            type="text" 
+                            value={sol.name} 
+                            onChange={e => updateAdditionalSolution(index, 'name', e.target.value)} 
+                            className="w-full text-xs px-2 py-1.5 border border-slate-300 dark:border-slate-600 rounded dark:bg-dark-bg dark:text-white" 
+                            placeholder="e.g. Space Optimized, Recursive..." 
+                          />
+                        </div>
+                        <ComplexitySelect value={sol.tc || ''} onChange={(val) => updateAdditionalSolution(index, 'tc', val)} label="TC" />
+                        <ComplexitySelect value={sol.sc || ''} onChange={(val) => updateAdditionalSolution(index, 'sc', val)} label="SC" />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">Code</label>

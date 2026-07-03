@@ -50,9 +50,15 @@ export interface Solution {
   id?: string;
   language: string;
   bruteSolution?: string;
+  bruteTc?: string;
+  bruteSc?: string;
   betterSolution?: string;
+  betterTc?: string;
+  betterSc?: string;
   optimalSolution?: string;
-  additionalSolutions?: string[];
+  optimalTc?: string;
+  optimalSc?: string;
+  additionalSolutions?: any[]; // Allow JSON objects instead of strings
 }
 
 export const roadmapApi = {

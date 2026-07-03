@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { roadmapApi, type Concept } from '../api/roadmap';
 import { progressApi } from '../api/progress';
 import { useAuth } from '../context/AuthContext';
-import { ChevronDown, CheckCircle, Code2, AlertCircle, Search, Star, PlayCircle, X, Copy } from 'lucide-react';
+import { ChevronDown, CheckCircle, Code2, AlertCircle, Search, Star, PlayCircle, X, Copy, FileText } from 'lucide-react';
 import { Editor } from '@monaco-editor/react';
 import Leaderboard from './Leaderboard';
 import Analytics from './Analytics';
@@ -585,7 +585,15 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
                           {expandedProblemIds.has(problem.id) && (
                             <tr>
                               <td colSpan={6} className="px-4 py-4 bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100 dark:border-slate-800">
-                                <div className="text-sm text-slate-600 dark:text-slate-300 md:pl-16">
+                                <div className="text-sm text-slate-600 dark:text-slate-300 md:pl-16 space-y-4">
+                                  {problem.documentationLink && (
+                                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium">
+                                      <FileText className="w-4 h-4" />
+                                      <a href={problem.documentationLink.startsWith('http') ? problem.documentationLink : `https://${problem.documentationLink}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                        Read Official Documentation
+                                      </a>
+                                    </div>
+                                  )}
                                   {problem.description ? (
                                     <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap">
                                       {problem.description}

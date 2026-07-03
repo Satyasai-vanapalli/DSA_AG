@@ -28,12 +28,18 @@ public class Solution {
 
     @Column(columnDefinition = "TEXT")
     private String bruteSolution;
+    private String bruteTc;
+    private String bruteSc;
 
     @Column(columnDefinition = "TEXT")
     private String betterSolution;
+    private String betterTc;
+    private String betterSc;
 
     @Column(columnDefinition = "TEXT")
     private String optimalSolution;
+    private String optimalTc;
+    private String optimalSc;
 
     @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
     private com.fasterxml.jackson.databind.JsonNode additionalSolutions;
