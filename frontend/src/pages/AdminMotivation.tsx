@@ -156,9 +156,9 @@ export default function AdminMotivation() {
             
             <div className="p-4 bg-gray-50 dark:bg-gray-900/50 min-h-[120px] max-h-[200px] overflow-y-auto">
               {m.type === 'IMAGE' ? (
-                <img src={import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`} alt="motivation" className="w-full h-32 object-cover rounded" />
+                <img src={m.content.startsWith('http') ? m.content : (import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`)} alt="motivation" className="w-full h-32 object-cover rounded" />
               ) : m.type === 'VIDEO' ? (
-                <div className="flex items-center justify-center h-32 bg-gray-200 dark:bg-gray-700 rounded text-sm text-gray-500">{m.content.split('/').pop()}</div>
+                <video src={m.content.startsWith('http') ? m.content : (import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`)} controls className="w-full h-32 bg-black rounded" />
               ) : (
                 <blockquote className="text-gray-700 dark:text-gray-300 italic text-sm">
                   "{m.content}"

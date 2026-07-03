@@ -22,7 +22,7 @@ export default function Motivation() {
           <div key={m.id} className="break-inside-avoid bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-xl transition-shadow border border-gray-100 dark:border-gray-700 overflow-hidden group">
             {m.type === 'IMAGE' && (
               <img 
-                src={import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`} 
+                src={m.content.startsWith('http') ? m.content : (import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`)} 
                 alt="motivation" 
                 className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" 
               />
@@ -32,10 +32,10 @@ export default function Motivation() {
               <video 
                 controls 
                 className="w-full h-auto"
-                src={import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`}
+                src={m.content.startsWith('http') ? m.content : (import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`)}
               />
             )}
-
+            
             {m.type === 'QUOTE' && (
               <div className="p-8 relative">
                 <Quote className="w-10 h-10 text-blue-100 dark:text-blue-900 absolute top-4 left-4" />
