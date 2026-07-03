@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { roadmapApi, type Concept } from '../api/roadmap';
 import { progressApi } from '../api/progress';
 import { useAuth } from '../context/AuthContext';
-import { ChevronDown, CheckCircle, Code2, AlertCircle, Search, Star, PlayCircle, ExternalLink, X, Copy } from 'lucide-react';
+import { ChevronDown, CheckCircle, Code2, AlertCircle, Search, Star, PlayCircle, X, Copy } from 'lucide-react';
 import { Editor } from '@monaco-editor/react';
 import Leaderboard from './Leaderboard';
 import Analytics from './Analytics';

@@ -5,7 +5,7 @@ import { roadmapApi } from '../api/roadmap';
 import { progressApi } from '../api/progress';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
-import { ArrowLeft, CheckCircle, Star, ExternalLink, PlayCircle, Copy, FileText } from 'lucide-react';
+import { ArrowLeft, CheckCircle, Star, PlayCircle, Copy, FileText } from 'lucide-react';
 import { Editor } from '@monaco-editor/react';
 import { PlatformIcon, getPlatformName } from '../components/PlatformIcon';
 
