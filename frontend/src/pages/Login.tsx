@@ -49,7 +49,7 @@ export default function Login() {
     mutationFn: authApi.login,
     onSuccess: (data) => {
       setAuthLogin(data.token, data);
-      navigate('/');
+      window.location.href = '/';
     }
   });
 

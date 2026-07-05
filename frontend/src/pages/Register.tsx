@@ -6,9 +6,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { registerSchema, authApi } from '../api/auth';
 import type { RegisterData } from '../api/auth';
 import { Mail, Lock, User, Loader2, KeyRound, Eye, EyeOff } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
   const navigate = useNavigate();
+  const { login: setAuthLogin } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [registerData, setRegisterData] = useState<RegisterData | null>(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -32,9 +34,8 @@ export default function Register() {
   const verifyMutation = useMutation({
     mutationFn: authApi.verifyRegister,
     onSuccess: (data) => {
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data));
-      navigate('/');
+      setAuthLogin(data.token, data);
+      window.location.href = '/';
     },
     onError: () => {
       setOtpError('Invalid or expired OTP');
