@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { authApi } from '../api/auth';
 import { Mail, Lock, Loader2, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const navigate = useNavigate();
   const { login: setAuthLogin } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [email, setEmail] = useState('');

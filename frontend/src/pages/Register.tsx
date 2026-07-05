@@ -2,14 +2,13 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { registerSchema, authApi } from '../api/auth';
 import type { RegisterData } from '../api/auth';
 import { Mail, Lock, User, Loader2, KeyRound, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
-  const navigate = useNavigate();
   const { login: setAuthLogin } = useAuth();
   const [step, setStep] = useState<1 | 2>(1);
   const [registerData, setRegisterData] = useState<RegisterData | null>(null);
