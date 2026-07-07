@@ -54,51 +54,54 @@ export default function Analytics({ category }: { category?: string }) {
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-8">
-      <div className="flex items-center gap-4 mb-8">
-        <div className="w-12 h-12 rounded-xl bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-400">
-          <Activity className="w-6 h-6" />
+      <div className="flex items-center gap-6 mb-10">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-400/20 to-primary-600/20 flex items-center justify-center text-primary-500 border border-primary-500/20 shadow-[0_0_30px_rgba(139,92,246,0.2)]">
+          <Activity className="w-8 h-8 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
         </div>
         <div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            {category === 'PRACTICE' ? 'DSA Practice Analytics' : category === 'CP' ? 'CP Analytics' : 'Your Analytics'}
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tighter mb-1">
+            {category === 'PRACTICE' ? 'DSA Practice ' : category === 'CP' ? 'CP ' : 'Your '}<span className="glow-text">Analytics</span>
           </h1>
-          <p className="text-slate-500 dark:text-slate-400">Track your problem solving journey</p>
+          <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">Track your problem solving journey</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-slate-500 dark:text-slate-400 font-medium">Total Solved</span>
-            <Target className="w-5 h-5 text-blue-500" />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-6 rounded-3xl shadow-lg relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="flex items-center justify-between relative z-10">
+            <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs">Total Solved</span>
+            <Target className="w-6 h-6 text-blue-500 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
           </div>
-          <p className="text-4xl font-black text-slate-900 dark:text-white mt-4">{totalSolved}</p>
+          <p className="text-5xl font-black text-blue-600 dark:text-blue-400 mt-6 relative z-10 drop-shadow-[0_0_10px_rgba(59,130,246,0.3)]">{totalSolved}</p>
         </motion.div>
         
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-slate-500 dark:text-slate-400 font-medium">Average Time</span>
-            <Clock className="w-5 h-5 text-purple-500" />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass-card p-6 rounded-3xl shadow-lg relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="flex items-center justify-between relative z-10">
+            <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs">Average Time</span>
+            <Clock className="w-6 h-6 text-purple-500 drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
           </div>
-          <div className="flex items-end gap-2 mt-4">
-            <p className="text-4xl font-black text-slate-900 dark:text-white">{avgTime}</p>
-            <span className="text-slate-500 dark:text-slate-400 font-medium mb-1">mins / problem</span>
+          <div className="flex items-end gap-2 mt-6 relative z-10">
+            <p className="text-5xl font-black text-purple-600 dark:text-purple-400 drop-shadow-[0_0_10px_rgba(168,85,247,0.3)]">{avgTime}</p>
+            <span className="text-slate-500 dark:text-slate-400 font-bold mb-2">mins</span>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm">
-          <div className="flex items-center justify-between">
-            <span className="text-slate-500 dark:text-slate-400 font-medium">Hard Problems</span>
-            <CheckCircle2 className="w-5 h-5 text-red-500" />
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass-card p-6 rounded-3xl shadow-lg relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="flex items-center justify-between relative z-10">
+            <span className="text-slate-500 dark:text-slate-400 font-bold uppercase tracking-widest text-xs">Hard Problems</span>
+            <CheckCircle2 className="w-6 h-6 text-red-500 drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
           </div>
-          <p className="text-4xl font-black text-slate-900 dark:text-white mt-4">{analytics?.hard || 0}</p>
+          <p className="text-5xl font-black text-red-600 dark:text-red-400 mt-6 relative z-10 drop-shadow-[0_0_10px_rgba(239,68,68,0.3)]">{analytics?.hard || 0}</p>
         </motion.div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Difficulty Breakdown Pie Chart */}
-        <div className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Difficulty Breakdown</h3>
+        <div className="glass-card p-6 rounded-3xl shadow-lg">
+          <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6">Difficulty Breakdown</h3>
           <div className="h-64">
             {totalSolved > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
@@ -117,13 +120,13 @@ export default function Analytics({ category }: { category?: string }) {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }}
-                    itemStyle={{ color: '#fff' }}
+                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', backdropFilter: 'blur(8px)' }}
+                    itemStyle={{ color: '#fff', fontWeight: 'bold' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full flex items-center justify-center text-slate-400">
+              <div className="h-full flex items-center justify-center text-slate-400 font-medium">
                 Start solving problems to see your breakdown!
               </div>
             )}
@@ -131,27 +134,28 @@ export default function Analytics({ category }: { category?: string }) {
           <div className="flex justify-center gap-6 mt-4">
             {pieData.map((entry, index) => (
               <div key={entry.name} className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index] }} />
-                <span className="text-sm font-medium text-slate-600 dark:text-slate-300">{entry.name}</span>
+                <div className="w-3 h-3 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: COLORS[index], color: COLORS[index] }} />
+                <span className="text-sm font-bold text-slate-600 dark:text-slate-300">{entry.name}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Bar Chart - Just reusing pie data as bars for visualization */}
-        <div className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Problems Solved</h3>
+        <div className="glass-card p-6 rounded-3xl shadow-lg">
+          <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6">Problems Solved</h3>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={pieData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" opacity={0.2} />
-                <XAxis dataKey="name" stroke="#64748b" />
-                <YAxis stroke="#64748b" />
+                <XAxis dataKey="name" stroke="#64748b" tick={{ fontWeight: 'bold' }} />
+                <YAxis stroke="#64748b" tick={{ fontWeight: 'bold' }} />
                 <Tooltip 
-                  cursor={{ fill: 'transparent' }}
-                  contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#fff' }}
+                  cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', backdropFilter: 'blur(8px)' }}
+                  itemStyle={{ fontWeight: 'bold' }}
                 />
-                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                   {pieData.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
@@ -163,28 +167,28 @@ export default function Analytics({ category }: { category?: string }) {
       </div>
 
       {/* Activity Heatmap */}
-      <div className="bg-white dark:bg-dark-card p-6 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm overflow-hidden">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Activity Heatmap</h3>
-        <div className="overflow-x-auto pb-4">
-          <div className="min-w-[800px] flex gap-1">
+      <div className="glass-card p-6 rounded-3xl shadow-lg overflow-hidden relative">
+        <h3 className="text-xl font-extrabold text-slate-900 dark:text-white mb-6">Activity Heatmap</h3>
+        <div className="overflow-x-auto pb-4 scrollbar-hide">
+          <div className="min-w-[800px] flex gap-1.5">
             {/* Split into 52 columns of up to 7 days */}
             {Array.from({ length: 53 }).map((_, weekIdx) => {
               const weekDays = heatmapGrid.slice(weekIdx * 7, (weekIdx + 1) * 7);
               if (weekDays.length === 0) return null;
               return (
-                <div key={weekIdx} className="flex flex-col gap-1">
+                <div key={weekIdx} className="flex flex-col gap-1.5">
                   {weekDays.map((day) => {
-                    let bg = 'bg-slate-100 dark:bg-slate-700';
-                    if (day.count > 0) bg = 'bg-green-200 dark:bg-green-700';
-                    if (day.count > 1) bg = 'bg-green-300 dark:bg-green-600';
-                    if (day.count > 2) bg = 'bg-green-400 dark:bg-green-500';
-                    if (day.count > 3) bg = 'bg-green-500 dark:bg-green-400';
+                    let bg = 'bg-slate-200 dark:bg-white/5';
+                    if (day.count > 0) bg = 'bg-primary-300 dark:bg-primary-900/50 shadow-[0_0_8px_rgba(139,92,246,0.3)]';
+                    if (day.count > 1) bg = 'bg-primary-400 dark:bg-primary-700 shadow-[0_0_10px_rgba(139,92,246,0.5)]';
+                    if (day.count > 2) bg = 'bg-primary-500 dark:bg-primary-500 shadow-[0_0_12px_rgba(139,92,246,0.7)]';
+                    if (day.count > 3) bg = 'bg-primary-600 dark:bg-primary-400 shadow-[0_0_15px_rgba(139,92,246,0.9)]';
                     
                     return (
                       <div
                         key={day.date}
                         title={`${day.date}: ${day.count} problems solved`}
-                        className={`w-3.5 h-3.5 rounded-sm ${bg} transition-colors cursor-pointer hover:ring-2 hover:ring-slate-400`}
+                        className={`w-3.5 h-3.5 rounded-sm ${bg} transition-all duration-300 cursor-pointer hover:scale-125 hover:z-10`}
                       />
                     );
                   })}
@@ -193,14 +197,14 @@ export default function Analytics({ category }: { category?: string }) {
             })}
           </div>
         </div>
-        <div className="flex items-center justify-end gap-2 text-xs text-slate-500 dark:text-slate-400 mt-2">
+        <div className="flex items-center justify-end gap-2 text-xs font-bold text-slate-500 dark:text-slate-400 mt-4">
           <span>Less</span>
-          <div className="flex gap-1">
-            <div className="w-3.5 h-3.5 rounded-sm bg-slate-100 dark:bg-slate-700" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-200 dark:bg-green-700" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-300 dark:bg-green-600" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-400 dark:bg-green-500" />
-            <div className="w-3.5 h-3.5 rounded-sm bg-green-500 dark:bg-green-400" />
+          <div className="flex gap-1.5">
+            <div className="w-3.5 h-3.5 rounded-sm bg-slate-200 dark:bg-white/5" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-primary-300 dark:bg-primary-900/50" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-primary-400 dark:bg-primary-700" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-primary-500 dark:bg-primary-500" />
+            <div className="w-3.5 h-3.5 rounded-sm bg-primary-600 dark:bg-primary-400" />
           </div>
           <span>More</span>
         </div>

@@ -37,8 +37,8 @@ export default function AdminCurriculum({ category, title }: { category: string,
   });
 
   const moveProblemMutation = useMutation({
-    mutationFn: ({ problemId, conceptId }: { problemId: string; conceptId: string | null }) =>
-      roadmapApi.moveProblemToConcept(problemId, conceptId),
+    mutationFn: ({ problemId, conceptId }: { problemId: string; conceptId: string }) =>
+      roadmapApi.moveProblemToConcept(problemId, conceptId === "" ? "" : conceptId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['allProblems', category] });
       queryClient.invalidateQueries({ queryKey: ['concepts', category] });
@@ -124,80 +124,84 @@ export default function AdminCurriculum({ category, title }: { category: string,
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="max-w-6xl mx-auto p-4 md:p-8 relative">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 relative z-10">
         <div>
-          <Link to="/admin" className="flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:hover:text-white transition-colors mb-2 font-medium">
-            <ArrowLeft className="w-5 h-5" /> Back to Dashboard
+          <Link to="/admin" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white transition-colors mb-3 font-semibold text-sm group">
+            <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Back to Dashboard
           </Link>
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{title}</h1>
+          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tighter">
+            <span className="glow-text">{title}</span>
+          </h1>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <button 
             onClick={() => setShowProblemManager(true)} 
-            className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-white font-bold rounded-xl transition-all duration-300 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 hover:-translate-y-0.5"
           >
-            <ListChecks className="w-5 h-5" /> Problem Manager
+            <ListChecks className="w-5 h-5 drop-shadow-md" /> Problem Manager
           </button>
           <button 
             onClick={() => setShowAddConcept(true)} 
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-xl transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 text-white font-bold rounded-xl transition-all duration-300 shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:-translate-y-0.5"
           >
-            <Plus className="w-5 h-5" /> Add Concept
+            <Plus className="w-5 h-5 drop-shadow-md" /> Add Concept
           </button>
         </div>
       </div>
 
       {showAddConcept && (
-        <div className="mb-6 bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border p-6 shadow-sm flex flex-col gap-4">
-          <div className="flex items-center gap-4">
+        <div className="mb-8 glass-card rounded-3xl p-6 md:p-8 shadow-xl flex flex-col gap-5 relative z-10 animate-in fade-in slide-in-from-top-4 duration-500">
+          <div className="flex flex-col md:flex-row md:items-start gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Concept Name</label>
+              <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">Concept Name</label>
               <input 
                 type="text" 
                 value={newConceptName} 
                 onChange={(e) => setNewConceptName(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && (newConceptName.trim() || newConceptIsMaterialOnly)) createConceptMutation.mutate(); }}
-                className="w-full px-4 py-2 border border-slate-300 dark:border-dark-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 dark:bg-dark-bg dark:text-white disabled:opacity-50"
+                className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/50 dark:bg-black/20 text-slate-900 dark:text-white disabled:opacity-50 transition-all shadow-inner"
                 placeholder={newConceptIsMaterialOnly ? "Optional: Admin label (won't be shown to users)" : "e.g., Introduction to Arrays"}
               />
             </div>
-            <div className="flex items-center gap-2 mt-6">
+            <div className="flex items-center gap-3 md:mt-9 bg-white/50 dark:bg-white/5 px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10">
               <input 
                 type="checkbox" 
                 id="isMaterialOnly" 
                 checked={newConceptIsMaterialOnly} 
                 onChange={(e) => setNewConceptIsMaterialOnly(e.target.checked)}
-                className="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500"
+                className="w-5 h-5 text-primary-600 rounded border-slate-300 focus:ring-primary-500 bg-white/50 dark:bg-black/20 cursor-pointer"
               />
-              <label htmlFor="isMaterialOnly" className="text-sm font-medium text-slate-700 dark:text-slate-300 whitespace-nowrap">
+              <label htmlFor="isMaterialOnly" className="text-sm font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap cursor-pointer select-none">
                 Is Material Only
               </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Material (Markdown)</label>
+            <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-wider">Material (Markdown)</label>
             <textarea 
               value={newConceptDescription} 
               onChange={(e) => setNewConceptDescription(e.target.value)}
-              className="w-full px-4 py-3 border border-slate-300 dark:border-dark-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 min-h-[100px] dark:bg-dark-bg dark:text-white"
+              className="w-full px-4 py-3 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 min-h-[120px] bg-white/50 dark:bg-black/20 text-slate-900 dark:text-white transition-all shadow-inner font-mono text-sm"
               placeholder="Add study materials, notes, or explanations in Markdown..."
             />
           </div>
           <div className="flex justify-end gap-3 mt-2">
-          <button 
-            onClick={() => createConceptMutation.mutate()}
-            disabled={(!newConceptName.trim() && !newConceptIsMaterialOnly) || createConceptMutation.isPending}
-            className="px-6 py-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-xl transition-colors disabled:opacity-50 h-[42px]"
-          >
-            Create
-          </button>
-          <button 
-            onClick={() => setShowAddConcept(false)}
-            className="px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-colors h-[42px]"
-          >
-            Cancel
-          </button>
+            <button 
+              onClick={() => setShowAddConcept(false)}
+              className="px-5 py-2.5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-slate-700 dark:text-slate-300 font-bold rounded-xl transition-all h-[44px] border border-slate-200 dark:border-white/5"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={() => createConceptMutation.mutate()}
+              disabled={(!newConceptName.trim() && !newConceptIsMaterialOnly) || createConceptMutation.isPending}
+              className="px-6 py-2.5 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-500 hover:to-accent-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 disabled:opacity-50 h-[44px]"
+            >
+              {createConceptMutation.isPending ? 'Creating...' : 'Create Concept'}
+            </button>
           </div>
         </div>
       )}
@@ -248,7 +252,7 @@ export default function AdminCurriculum({ category, title }: { category: string,
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
             onClick={() => setShowProblemManager(false)}
           >
             <motion.div
@@ -256,43 +260,44 @@ export default function AdminCurriculum({ category, title }: { category: string,
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="w-full max-w-5xl max-h-[90vh] bg-white dark:bg-dark-card rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-border flex flex-col overflow-hidden"
+              className="w-full max-w-5xl max-h-[90vh] glass-card rounded-3xl shadow-[0_0_40px_rgba(245,158,11,0.15)] flex flex-col overflow-hidden relative"
               onClick={(e) => e.stopPropagation()}
             >
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 pointer-events-none" />
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-dark-border shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
-                    <ListChecks className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+              <div className="flex items-center justify-between p-6 md:px-8 md:py-6 border-b border-slate-200 dark:border-white/10 shrink-0 relative z-10 bg-white/30 dark:bg-black/20">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl shadow-lg shadow-amber-500/30">
+                    <ListChecks className="w-7 h-7 text-white drop-shadow-md" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Problem Manager</h2>
-                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                    <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Problem Manager</h2>
+                    <p className="text-sm font-medium text-slate-500 dark:text-amber-200/70 mt-1">
                       {allProblems?.length ?? 0} problems total
                     </p>
                   </div>
                 </div>
-                <button onClick={() => setShowProblemManager(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                  <X className="w-5 h-5 text-slate-500" />
+                <button onClick={() => setShowProblemManager(false)} className="p-2.5 hover:bg-white/50 dark:hover:bg-white/10 rounded-xl transition-all hover:rotate-90">
+                  <X className="w-6 h-6 text-slate-500 dark:text-slate-400" />
                 </button>
               </div>
 
               {/* Filters */}
-              <div className="p-4 border-b border-slate-200 dark:border-dark-border shrink-0 flex flex-wrap items-center gap-3">
+              <div className="p-4 md:px-8 md:py-5 border-b border-slate-200 dark:border-white/10 shrink-0 flex flex-wrap items-center gap-4 relative z-10">
                 <div className="relative flex-1 min-w-[200px]">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-amber-200/50" />
                   <input
                     type="text"
                     value={pmSearch}
                     onChange={(e) => setPmSearch(e.target.value)}
                     placeholder="Search problems..."
-                    className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-dark-border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-dark-bg dark:text-white text-sm"
+                    className="w-full pl-11 pr-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 bg-white/50 dark:bg-black/20 text-slate-900 dark:text-white text-sm font-medium transition-all placeholder-slate-400 dark:placeholder-slate-500 shadow-inner"
                   />
                 </div>
                 <select
                   value={pmDifficultyFilter}
                   onChange={(e) => setPmDifficultyFilter(e.target.value)}
-                  className="px-3 py-2 border border-slate-300 dark:border-dark-border rounded-xl bg-white dark:bg-dark-bg dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl bg-white/50 dark:bg-black/20 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all cursor-pointer shadow-sm"
                 >
                   <option value="All">All Difficulties</option>
                   <option value="Easy">Easy</option>
@@ -302,7 +307,7 @@ export default function AdminCurriculum({ category, title }: { category: string,
                 <select
                   value={pmConceptFilter}
                   onChange={(e) => setPmConceptFilter(e.target.value)}
-                  className="px-3 py-2 border border-slate-300 dark:border-dark-border rounded-xl bg-white dark:bg-dark-bg dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 max-w-[250px]"
+                  className="px-4 py-2.5 border border-slate-200 dark:border-white/10 rounded-xl bg-white/50 dark:bg-black/20 text-slate-900 dark:text-white text-sm font-bold focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all cursor-pointer max-w-[250px] shadow-sm"
                 >
                   <option value="All">All Concepts</option>
                   <option value="Unassigned">Unassigned</option>
@@ -315,56 +320,56 @@ export default function AdminCurriculum({ category, title }: { category: string,
               </div>
 
               {/* Table */}
-              <div className="flex-1 overflow-y-auto">
+              <div className="flex-1 overflow-y-auto relative z-10 custom-scrollbar">
                 {isLoadingProblems ? (
-                  <div className="flex justify-center items-center p-12">
-                    <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="flex justify-center items-center p-16">
+                    <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin drop-shadow-[0_0_8px_rgba(245,158,11,0.5)]"></div>
                   </div>
                 ) : filteredProblems.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center p-12 text-slate-400">
-                    <Search className="w-12 h-12 mb-3 opacity-40" />
-                    <p className="text-lg font-medium">No problems found</p>
-                    <p className="text-sm">Try adjusting your search or filters</p>
+                  <div className="flex flex-col items-center justify-center p-16 text-slate-400">
+                    <Search className="w-16 h-16 mb-4 opacity-20 text-amber-500" />
+                    <p className="text-xl font-bold dark:text-white">No problems found</p>
+                    <p className="text-sm mt-1 font-medium text-slate-500">Try adjusting your search or filters</p>
                   </div>
                 ) : (
                   <table className="w-full">
-                    <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 backdrop-blur-sm">
+                    <thead className="sticky top-0 bg-white/80 dark:bg-black/60 backdrop-blur-md z-20 border-b border-slate-200 dark:border-white/10">
                       <tr>
-                        <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-6 py-3">Problem</th>
-                        <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3 w-24">Difficulty</th>
-                        <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3 w-64">
-                          <div className="flex items-center gap-1">
-                            <ArrowRightLeft className="w-3.5 h-3.5" /> Move to Concept
+                        <th className="text-left text-xs font-bold text-slate-500 dark:text-amber-200/50 uppercase tracking-widest px-8 py-4">Problem</th>
+                        <th className="text-left text-xs font-bold text-slate-500 dark:text-amber-200/50 uppercase tracking-widest px-4 py-4 w-28">Difficulty</th>
+                        <th className="text-left text-xs font-bold text-slate-500 dark:text-amber-200/50 uppercase tracking-widest px-4 py-4 w-72">
+                          <div className="flex items-center gap-1.5">
+                            <ArrowRightLeft className="w-4 h-4 text-amber-500" /> Move to Concept
                           </div>
                         </th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                       {filteredProblems.map((problem) => (
-                        <tr key={problem.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                          <td className="px-6 py-3">
-                            <div className="font-medium text-sm text-slate-900 dark:text-white">{problem.title}</div>
-                            <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                              {problem.concept ? problem.concept.name : <span className="italic text-amber-500">Unassigned</span>}
+                        <tr key={problem.id} className="hover:bg-white/40 dark:hover:bg-white/5 transition-colors group">
+                          <td className="px-8 py-4">
+                            <div className="font-bold text-sm text-slate-900 dark:text-white group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">{problem.title}</div>
+                            <div className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">
+                              {problem.concept ? problem.concept.name : <span className="italic text-amber-500/80 bg-amber-500/10 px-2 py-0.5 rounded-full">Unassigned</span>}
                             </div>
                           </td>
-                          <td className="px-4 py-3">
-                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${
-                              problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
-                              problem.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                              'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                          <td className="px-4 py-4">
+                            <span className={`inline-flex px-2.5 py-1 rounded-lg text-xs font-bold border ${
+                              problem.difficulty === 'Easy' ? 'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]' :
+                              problem.difficulty === 'Medium' ? 'bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)]' :
+                              'bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-500/10 dark:text-rose-400 dark:border-rose-500/20 shadow-[0_0_10px_rgba(243,62,112,0.1)]'
                             }`}>
                               {problem.difficulty}
                             </span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-4 py-4">
                             <select
                               value={problem.concept?.id || ''}
                               onChange={(e) => {
-                                const newConceptId = e.target.value || null;
+                                const newConceptId = e.target.value;
                                 moveProblemMutation.mutate({ problemId: problem.id, conceptId: newConceptId });
                               }}
-                              className="w-full px-3 py-1.5 border border-slate-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                              className="w-full px-4 py-2 border border-slate-200 dark:border-white/10 rounded-xl bg-white/50 dark:bg-black/40 dark:text-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all cursor-pointer hover:bg-white dark:hover:bg-black/60"
                             >
                               <option value="">Unassigned</option>
                               {flatConcepts.map(fc => (
@@ -382,15 +387,15 @@ export default function AdminCurriculum({ category, title }: { category: string,
               </div>
 
               {/* Footer */}
-              <div className="p-4 border-t border-slate-200 dark:border-dark-border shrink-0 flex items-center justify-between">
-                <p className="text-xs text-slate-400">
-                  Showing {filteredProblems.length} of {allProblems?.length ?? 0} problems
+              <div className="p-4 md:px-8 border-t border-slate-200 dark:border-white/10 shrink-0 flex items-center justify-between relative z-10 bg-white/30 dark:bg-black/20">
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 tracking-wider">
+                  SHOWING <span className="text-amber-600 dark:text-amber-400">{filteredProblems.length}</span> OF {allProblems?.length ?? 0} PROBLEMS
                 </p>
                 <button
                   onClick={() => setShowProblemManager(false)}
-                  className="px-5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-colors text-sm"
+                  className="px-6 py-2.5 bg-white/50 dark:bg-white/5 hover:bg-white dark:hover:bg-white/10 text-slate-700 dark:text-white font-bold rounded-xl transition-all text-sm border border-slate-200 dark:border-white/10 shadow-sm"
                 >
-                  Close
+                  Close Manager
                 </button>
               </div>
             </motion.div>

@@ -77,7 +77,7 @@ public class ProblemController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Problem> moveProblem(@PathVariable UUID id, @RequestBody java.util.Map<String, String> body) {
         String conceptIdStr = body.get("conceptId");
-        UUID conceptId = (conceptIdStr != null && !conceptIdStr.isEmpty()) ? UUID.fromString(conceptIdStr) : null;
+        UUID conceptId = (conceptIdStr != null && !conceptIdStr.isEmpty() && !conceptIdStr.equalsIgnoreCase("null")) ? UUID.fromString(conceptIdStr) : null;
         return ResponseEntity.ok(problemService.moveProblemToConcept(id, conceptId));
     }
 }
