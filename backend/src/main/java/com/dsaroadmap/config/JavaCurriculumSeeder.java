@@ -36,6 +36,13 @@ public class JavaCurriculumSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        log.info("Dropping unique constraint on concepts table to prevent race conditions...");
+        try {
+            jdbcTemplate.execute("ALTER TABLE concepts DROP CONSTRAINT IF EXISTS uk7q1ebufjuenqwt0b5ca6ksuqa");
+        } catch (Exception e) {
+            log.warn("Could not drop constraint (might not exist): {}", e.getMessage());
+        }
+
         log.info("Deleting existing LEARN concepts to re-seed...");
         jdbcTemplate.execute("DELETE FROM concepts WHERE category = 'LEARN'");
 

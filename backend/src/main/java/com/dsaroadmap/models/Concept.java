@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "concepts", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name", "category"})
-})
+@Table(name = "concepts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

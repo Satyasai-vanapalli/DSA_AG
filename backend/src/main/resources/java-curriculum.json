@@ -40,7 +40,7 @@
             ]
           },
           {
-            "name": "JVM (Java Virtual Machine) (2)",
+            "name": "JVM (Java Virtual Machine)",
             "description": "JVM (Java Virtual Machine)",
             "subTopics": [
               {
@@ -404,7 +404,7 @@
                     "description": "Range: -32,768 to 32,767"
                   },
                   {
-                    "name": "Default Value: 0 (2)",
+                    "name": "Default Value: 0",
                     "description": "Default Value: 0"
                   }
                 ]
@@ -418,7 +418,7 @@
                     "description": "Range: -2^31 to 2^31-1"
                   },
                   {
-                    "name": "Default Value: 0 (3)",
+                    "name": "Default Value: 0",
                     "description": "Default Value: 0"
                   }
                 ]
@@ -470,7 +470,7 @@
                 "description": "double (64-bit - Default for decimals)",
                 "subTopics": [
                   {
-                    "name": "IEEE 754 standard (2)",
+                    "name": "IEEE 754 standard",
                     "description": "IEEE 754 standard"
                   },
                   {
@@ -1304,31 +1304,31 @@
             "description": "`StringBuffer` Class (Mutable, Synchronized - Thread-safe, Slower)",
             "subTopics": [
               {
-                "name": "append() (2)",
+                "name": "append()",
                 "description": "append()"
               },
               {
-                "name": "insert() (2)",
+                "name": "insert()",
                 "description": "insert()"
               },
               {
-                "name": "delete() (2)",
+                "name": "delete()",
                 "description": "delete()"
               },
               {
-                "name": "deleteCharAt() (2)",
+                "name": "deleteCharAt()",
                 "description": "deleteCharAt()"
               },
               {
-                "name": "reverse() (2)",
+                "name": "reverse()",
                 "description": "reverse()"
               },
               {
-                "name": "setCharAt() (2)",
+                "name": "setCharAt()",
                 "description": "setCharAt()"
               },
               {
-                "name": "capacity() (2)",
+                "name": "capacity()",
                 "description": "capacity()"
               }
             ]
@@ -1808,7 +1808,7 @@
                 "description": "Constructor Chaining: super(parameters)",
                 "subTopics": [
                   {
-                    "name": "Must be the first line in constructor (2)",
+                    "name": "Must be the first line in constructor",
                     "description": "Must be the first line in constructor"
                   }
                 ]
@@ -2322,7 +2322,7 @@
                 "description": "Can have custom constructors (compact or canonical)"
               },
               {
-                "name": "Can implement interfaces (2)",
+                "name": "Can implement interfaces",
                 "description": "Can implement interfaces"
               },
               {
@@ -2370,11 +2370,11 @@
                 "description": "size()"
               },
               {
-                "name": "isEmpty() (2)",
+                "name": "isEmpty()",
                 "description": "isEmpty()"
               },
               {
-                "name": "contains() (2)",
+                "name": "contains()",
                 "description": "contains()"
               },
               {
@@ -2460,7 +2460,7 @@
                 "description": "Higher memory overhead"
               },
               {
-                "name": "Time Complexity (2)",
+                "name": "Time Complexity",
                 "description": "Time Complexity",
                 "subTopics": [
                   {
@@ -3290,7 +3290,7 @@
                 "description": "move()"
               },
               {
-                "name": "delete() (3)",
+                "name": "delete()",
                 "description": "delete()"
               },
               {
@@ -3960,7 +3960,7 @@
             ]
           },
           {
-            "name": "Intermediate Operations (Lazy) (2)",
+            "name": "Intermediate Operations (Lazy)",
             "description": "Intermediate Operations (Lazy)",
             "subTopics": [
               {
@@ -4198,11 +4198,11 @@
             "description": "Transformation",
             "subTopics": [
               {
-                "name": "map(Function) (2)",
+                "name": "map(Function)",
                 "description": "map(Function)"
               },
               {
-                "name": "filter(Predicate) (2)",
+                "name": "filter(Predicate)",
                 "description": "filter(Predicate)"
               },
               {
@@ -4278,7 +4278,7 @@
                 "description": "Period (Date-based - years, months, days)",
                 "subTopics": [
                   {
-                    "name": "between() (Static method) (2)",
+                    "name": "between() (Static method)",
                     "description": "between() (Static method)"
                   }
                 ]
@@ -4358,7 +4358,7 @@
         "description": "6.7 Interface Enhancements",
         "subTopics": [
           {
-            "name": "default methods (Provide implementation) (2)",
+            "name": "default methods (Provide implementation)",
             "description": "default methods (Provide implementation)"
           },
           {

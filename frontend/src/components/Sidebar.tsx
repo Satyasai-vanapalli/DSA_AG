@@ -332,6 +332,10 @@ export default function Sidebar() {
                   )}
                 </>
               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
