@@ -33,41 +33,46 @@ public class JavaCurriculumSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        if (conceptRepository.countByCategory("LEARN") == 0) {
-            log.info("Seeding Learn Java Curriculum...");
-            try (InputStream is = new ClassPathResource("java-curriculum.json").getInputStream()) {
-                List<CurriculumNode> nodes = objectMapper.readValue(is, new TypeReference<List<CurriculumNode>>() {});
-                
-                int mainOrder = 1;
-                for (CurriculumNode node : nodes) {
-                    Concept parentConcept = Concept.builder()
-                            .name(node.getName())
-                            .description(node.getDescription())
-                            .category("LEARN")
-                            .isMaterialOnly(true)
-                            .orderIndex(mainOrder++)
-                            .build();
-                    parentConcept = conceptRepository.save(parentConcept);
+        // FORCE RE-SEED LEARN JAVA
+        List<Concept> existingLearnConcepts = conceptRepository.findAll().stream().filter(c -> "LEARN".equals(c.getCategory()) && c.getParentId() == null).toList();
+        if (!existingLearnConcepts.isEmpty()) {
+            log.info("Deleting existing LEARN concepts to re-seed...");
+            conceptRepository.deleteAll(existingLearnConcepts);
+        }
 
-                    if (node.getSubTopics() != null && !node.getSubTopics().isEmpty()) {
-                        int subOrder = 1;
-                        for (CurriculumNode subNode : node.getSubTopics()) {
-                            Concept subConcept = Concept.builder()
-                                    .name(subNode.getName())
-                                    .description(subNode.getDescription())
-                                    .category("LEARN")
-                                    .isMaterialOnly(true)
-                                    .parentId(parentConcept.getId())
-                                    .orderIndex(subOrder++)
-                                    .build();
-                            conceptRepository.save(subConcept);
-                        }
+        log.info("Seeding Learn Java Curriculum...");
+        try (InputStream is = new ClassPathResource("java-curriculum.json").getInputStream()) {
+            List<CurriculumNode> nodes = objectMapper.readValue(is, new TypeReference<List<CurriculumNode>>() {});
+            
+            int mainOrder = 1;
+            for (CurriculumNode node : nodes) {
+                Concept parentConcept = Concept.builder()
+                        .name(node.getName())
+                        .description(node.getDescription())
+                        .category("LEARN")
+                        .isMaterialOnly(true)
+                        .orderIndex(mainOrder++)
+                        .build();
+                parentConcept = conceptRepository.save(parentConcept);
+
+                if (node.getSubTopics() != null && !node.getSubTopics().isEmpty()) {
+                    int subOrder = 1;
+                    for (CurriculumNode subNode : node.getSubTopics()) {
+                        Concept subConcept = Concept.builder()
+                                .name(subNode.getName())
+                                .description(subNode.getDescription())
+                                .category("LEARN")
+                                .isMaterialOnly(true)
+                                .parentId(parentConcept.getId())
+                                .orderIndex(subOrder++)
+                                .build();
+                        conceptRepository.save(subConcept);
                     }
                 }
-                log.info("Successfully seeded Learn Java Curriculum!");
-            } catch (Exception e) {
-                log.error("Failed to seed Learn Java Curriculum", e);
             }
+            log.info("Successfully seeded Learn Java Curriculum!");
+        } catch (Exception e) {
+            log.error("Failed to seed Learn Java Curriculum", e);
         }
     }
 }
