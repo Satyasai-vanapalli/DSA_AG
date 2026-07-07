@@ -16,7 +16,7 @@ import { PlatformIcon, getPlatformName } from '../components/PlatformIcon';
 export default function Home({ category }: { category: string }) {
   const { isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-  const [difficultyFilter, setDifficultyFilter] = useState('All');
+  const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'problems' | 'leaderboard' | 'analytics'>('problems');
 
   const { data: concepts, isLoading, error } = useQuery({
@@ -242,18 +242,27 @@ export default function Home({ category }: { category: string }) {
               />
             </div>
             <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-              {(isAuthenticated ? ['All', 'Easy', 'Medium', 'Hard', 'Solved', 'Unsolved'] : ['All', 'Easy', 'Medium', 'Hard']).map((diff) => (
+              {(isAuthenticated ? ['All', 'Easy', 'Medium', 'Hard', 'Solved', 'Unsolved'] : ['All', 'Easy', 'Medium', 'Hard']).map((filter) => {
+                const isActive = filter === 'All' ? activeFilters.length === 0 : activeFilters.includes(filter);
+                return (
                 <button
-                  key={diff}
-                  onClick={() => setDifficultyFilter(diff)}
-                  className={`px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${difficultyFilter === diff
+                  key={filter}
+                  onClick={() => {
+                    if (filter === 'All') setActiveFilters([]);
+                    else {
+                      setActiveFilters(prev => 
+                        prev.includes(filter) ? prev.filter(f => f !== filter) : [...prev, filter]
+                      );
+                    }
+                  }}
+                  className={`px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${isActive
                     ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white shadow-lg shadow-primary-500/25 scale-105'
                     : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'
                     }`}
                 >
-                  {diff}
+                  {filter}
                 </button>
-              ))}
+              );})}
             </div>
           </div>
 
@@ -264,7 +273,7 @@ export default function Home({ category }: { category: string }) {
                 key={concept.id}
                 concept={concept}
                 index={index + 1}
-                difficultyFilter={difficultyFilter}
+                activeFilters={activeFilters}
                 searchQuery={searchQuery}
               />
             ))}
@@ -284,7 +293,7 @@ export default function Home({ category }: { category: string }) {
   );
 }
 
-function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth = 0 }: { concept: Concept; index: number, difficultyFilter: string, searchQuery: string, depth?: number }) {
+function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 0 }: { concept: Concept; index: number, activeFilters: string[], searchQuery: string, depth?: number }) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedProblemIds, setExpandedProblemIds] = useState<Set<string>>(new Set());
   const [selectedSolutionProblem, setSelectedSolutionProblem] = useState<any | null>(null);
@@ -396,14 +405,21 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
   const filteredProblems = useMemo(() => {
     if (!problems) return [];
     let result = problems;
-    if (difficultyFilter !== 'All') {
-      if (difficultyFilter === 'Solved') {
-        result = result.filter(p => userProgress?.some(up => up.problemId === p.id && up.completed));
-      } else if (difficultyFilter === 'Unsolved') {
-        result = result.filter(p => !userProgress?.some(up => up.problemId === p.id && up.completed));
-      } else {
-        result = result.filter(p => p.difficulty === difficultyFilter);
-      }
+    
+    if (activeFilters.length > 0) {
+      result = result.filter(p => {
+        const isSolved = userProgress?.some(up => up.problemId === p.id && up.completed);
+        
+        const hasDifficultyFilter = activeFilters.some(f => ['Easy', 'Medium', 'Hard'].includes(f));
+        const hasStatusFilter = activeFilters.some(f => ['Solved', 'Unsolved'].includes(f));
+
+        const difficultyMatch = !hasDifficultyFilter || activeFilters.includes(p.difficulty);
+        const statusMatch = !hasStatusFilter || 
+          (activeFilters.includes('Solved') && isSolved) || 
+          (activeFilters.includes('Unsolved') && !isSolved);
+          
+        return difficultyMatch && statusMatch;
+      });
     }
     if (searchQuery) {
       result = result.filter(p => (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
@@ -564,7 +580,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
                       key={sub.id}
                       concept={sub}
                       index={i + 1}
-                      difficultyFilter={difficultyFilter}
+                      activeFilters={activeFilters}
                       searchQuery={searchQuery}
                       depth={depth + 1}
                     />
