@@ -144,18 +144,19 @@ export default function ProblemDetail() {
         
         {/* Left Column - Problem Actions */}
         <div className="lg:col-span-1 space-y-6">
-          <div className="bg-white dark:bg-dark-card rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-dark-border shadow-sm">
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              <span className={`text-xs font-bold px-3 py-1 rounded-md ${
-                problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' :
-                problem.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400' :
-                'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
+          <div className="glass-card rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden group">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-accent-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="flex flex-wrap items-center gap-3 mb-4 relative z-10">
+              <span className={`text-xs font-bold px-3 py-1.5 rounded-lg shadow-sm ${
+                problem.difficulty === 'Easy' ? 'bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20' :
+                problem.difficulty === 'Medium' ? 'bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-500/20' :
+                'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20'
               }`}>
                 {problem.difficulty}
               </span>
             </div>
 
-            <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-6">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white mb-6 tracking-tight relative z-10 glow-text">
               {problem.title}
             </h1>
 
@@ -164,26 +165,26 @@ export default function ProblemDetail() {
                 <button
                   onClick={handleToggleComplete}
                   disabled={toggleCompleted.isPending}
-                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold transition-all ${
+                  className={`w-full py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-all ${
                     isCompleted 
-                      ? 'bg-green-500 text-white shadow-md shadow-green-500/20' 
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    ? 'bg-green-500 text-white shadow-lg shadow-green-500/25 hover:bg-green-600 hover:scale-[1.02]' 
+                    : 'bg-white/50 dark:bg-black/20 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
                   }`}
                 >
                   <CheckCircle className={`w-5 h-5 ${isCompleted ? 'text-white' : 'text-slate-400'}`} />
-                  {isCompleted ? 'Completed' : 'Mark Complete'}
+                  {isCompleted ? 'Completed' : 'Mark as Complete'}
                 </button>
                 <button
                   onClick={() => toggleRevision.mutate()}
                   disabled={toggleRevision.isPending}
-                  className={`flex items-center justify-center gap-2 px-4 rounded-xl font-semibold transition-all ${
+                  className={`w-full py-3.5 px-4 rounded-xl flex items-center justify-center gap-2 font-bold transition-all ${
                     isRevision 
-                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' 
-                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/25 hover:bg-yellow-600 hover:scale-[1.02]' 
+                    : 'bg-white/50 dark:bg-black/20 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-white/10 hover:bg-white dark:hover:bg-white/10'
                   }`}
-                  title={isRevision ? "Remove from Revision" : "Mark for Revision"}
                 >
-                  <Star className={`w-5 h-5 ${isRevision ? 'fill-current' : ''}`} />
+                  <Star className={`w-5 h-5 ${isRevision ? 'text-white fill-white' : 'text-slate-400'}`} />
+                  {isRevision ? 'Marked for Revision' : 'Mark for Revision'}
                 </button>
               </div>
             )}
@@ -233,9 +234,10 @@ export default function ProblemDetail() {
 
         {/* Right Column - Code Editor */}
         <div className="lg:col-span-2">
-          <div className="bg-[#1e1e1e] rounded-2xl overflow-hidden border border-slate-800 shadow-xl flex flex-col h-[600px] lg:h-[800px]">
+          {/* Editor Container with Glow */}
+          <div className="glass-card rounded-3xl overflow-hidden shadow-2xl glow-border flex flex-col h-[700px] lg:h-[800px]">
             {/* Editor Header */}
-            <div className="bg-[#252526] border-b border-[#333] p-2 flex items-center justify-between">
+            <div className="border-b border-slate-200 dark:border-white/10 bg-white/50 dark:bg-black/20 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 backdrop-blur-sm relative z-10">
               <div className="flex gap-1 overflow-x-auto hide-scrollbar">
                 {(['brute', 'better', 'optimal'] as const).map((tab) => {
                   const hasSolution = activeLangObj && (

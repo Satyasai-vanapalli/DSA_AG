@@ -104,49 +104,51 @@ export default function Home({ category }: { category: string }) {
 
         {isAuthenticated && userStats && (
           <div className="flex gap-4">
-            <div className="bg-white dark:bg-dark-card px-6 py-4 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm flex flex-col items-center min-w-[120px]">
-              <span className="text-3xl font-bold text-green-600 dark:text-green-400">
-                {userStats.completed} <span className="text-xl text-slate-400">/ {userStats.total}</span>
+            <div className="glass-card px-6 py-4 rounded-2xl relative overflow-hidden group min-w-[130px] flex flex-col items-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <span className="text-3xl font-extrabold text-green-500 drop-shadow-[0_0_10px_rgba(34,197,94,0.4)] relative z-10">
+                {userStats.completed} <span className="text-xl text-slate-500 dark:text-slate-400">/ {userStats.total}</span>
               </span>
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider mt-1">Completed</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">Completed</span>
             </div>
-            <div className="bg-white dark:bg-dark-card px-6 py-4 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm flex flex-col items-center min-w-[120px]">
-              <span className="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{userStats.revision}</span>
-              <span className="text-xs font-medium text-slate-500 uppercase tracking-wider mt-1">To Revise</span>
+            <div className="glass-card px-6 py-4 rounded-2xl relative overflow-hidden group min-w-[130px] flex flex-col items-center">
+              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <span className="text-3xl font-extrabold text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.4)] relative z-10">{userStats.revision}</span>
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">To Revise</span>
             </div>
           </div>
         )}
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 mb-6">
+      <div className="flex border-b border-slate-200 dark:border-white/10 mb-6 gap-2">
         <button
           onClick={() => setActiveTab('problems')}
-          className={`px-6 py-3 font-semibold text-sm transition-colors relative ${activeTab === 'problems' ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+          className={`px-6 py-3 font-bold text-sm transition-colors relative rounded-t-xl ${activeTab === 'problems' ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-white/5'}`}
         >
           {category.startsWith('LEARN') ? 'Path' : 'Problems'}
           {activeTab === 'problems' && (
-            <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 dark:bg-primary-400" />
+            <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
           )}
         </button>
         {!category.startsWith('LEARN') && (
           <>
             <button
               onClick={() => setActiveTab('leaderboard')}
-              className={`px-6 py-3 font-semibold text-sm transition-colors relative ${activeTab === 'leaderboard' ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              className={`px-6 py-3 font-bold text-sm transition-colors relative rounded-t-xl ${activeTab === 'leaderboard' ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-white/5'}`}
             >
               Leaderboard
               {activeTab === 'leaderboard' && (
-                <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 dark:bg-primary-400" />
+                <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
               )}
             </button>
             <button
               onClick={() => setActiveTab('analytics')}
-              className={`px-6 py-3 font-semibold text-sm transition-colors relative ${activeTab === 'analytics' ? 'text-primary-600 dark:text-primary-400' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              className={`px-6 py-3 font-bold text-sm transition-colors relative rounded-t-xl ${activeTab === 'analytics' ? 'text-primary-600 dark:text-primary-400 bg-primary-500/5' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-white/5'}`}
             >
               Analytics
               {activeTab === 'analytics' && (
-                <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600 dark:bg-primary-400" />
+                <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-primary-500 to-accent-500 shadow-[0_0_8px_rgba(139,92,246,0.8)]" />
               )}
             </button>
           </>
@@ -164,25 +166,25 @@ export default function Home({ category }: { category: string }) {
       {activeTab === 'problems' && (
         <>
           {/* Filters & Search */}
-          <div className="flex flex-col md:flex-row gap-4 items-center bg-white dark:bg-dark-card p-4 rounded-2xl border border-slate-200 dark:border-dark-border shadow-sm">
-            <div className="relative flex-1 w-full">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+          <div className="flex flex-col md:flex-row gap-4 items-center glass-card p-4 rounded-2xl shadow-lg relative z-20">
+            <div className="relative flex-1 w-full group">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-primary-500 transition-colors" />
               <input
                 type="text"
                 placeholder="Search concepts or problems..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900 dark:text-white transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-black/20 border border-slate-300 dark:border-white/10 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 text-slate-900 dark:text-white transition-all backdrop-blur-sm"
               />
             </div>
-            <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+            <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
               {['All', 'Easy', 'Medium', 'Hard'].map((diff) => (
                 <button
                   key={diff}
                   onClick={() => setDifficultyFilter(diff)}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-colors ${difficultyFilter === diff
-                    ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  className={`px-5 py-3 rounded-xl text-sm font-bold whitespace-nowrap transition-all ${difficultyFilter === diff
+                    ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white shadow-lg shadow-primary-500/25 scale-105'
+                    : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'
                     }`}
                 >
                   {diff}
