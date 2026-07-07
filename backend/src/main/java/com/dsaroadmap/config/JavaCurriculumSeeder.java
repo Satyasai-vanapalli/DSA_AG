@@ -38,6 +38,7 @@ public class JavaCurriculumSeeder implements CommandLineRunner {
         if (!existingLearnConcepts.isEmpty()) {
             log.info("Deleting existing LEARN concepts to re-seed...");
             conceptRepository.deleteAll(existingLearnConcepts);
+            conceptRepository.flush(); // Force delete in DB before inserting to prevent unique constraint violation
         }
 
         log.info("Seeding Learn Java Curriculum...");
