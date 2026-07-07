@@ -44,7 +44,11 @@ export default function AdminCurriculum({ category, title }: { category: string,
       queryClient.invalidateQueries({ queryKey: ['concepts', category] });
       toast('Problem moved successfully', 'success');
     },
-    onError: () => toast('Failed to move problem', 'error'),
+    onError: (err: any) => {
+      console.error("Failed to move problem:", err);
+      const serverMsg = err?.response?.data?.message || err?.message || 'Unknown server error';
+      toast(`Failed to move problem: ${serverMsg}`, 'error');
+    },
   });
 
   // Flatten concepts tree into a flat list with indentation info for the dropdown

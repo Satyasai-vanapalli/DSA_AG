@@ -74,7 +74,7 @@ public class ProblemController {
     }
 
     @PatchMapping("/{id}/move")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or @categorySecurity.canEditProblem(authentication, #id, @problemRepository)")
     public ResponseEntity<Problem> moveProblem(@PathVariable UUID id, @RequestBody java.util.Map<String, String> body) {
         String conceptIdStr = body.get("conceptId");
         UUID conceptId = (conceptIdStr != null && !conceptIdStr.isEmpty() && !conceptIdStr.equalsIgnoreCase("null")) ? UUID.fromString(conceptIdStr) : null;
