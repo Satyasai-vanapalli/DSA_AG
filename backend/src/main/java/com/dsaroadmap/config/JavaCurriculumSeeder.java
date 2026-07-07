@@ -43,6 +43,12 @@ public class JavaCurriculumSeeder implements CommandLineRunner {
             log.warn("Could not drop constraint (might not exist): {}", e.getMessage());
         }
 
+        log.info("Unlinking problems from LEARN concepts to prevent data loss...");
+        jdbcTemplate.execute("UPDATE problems SET concept_id = NULL WHERE concept_id IN (SELECT id FROM concepts WHERE category = 'LEARN')");
+
+        log.info("Deleting existing concept_progress for LEARN concepts to prevent foreign key constraint violations...");
+        jdbcTemplate.execute("DELETE FROM concept_progress WHERE concept_id IN (SELECT id FROM concepts WHERE category = 'LEARN')");
+
         log.info("Deleting existing LEARN concepts to re-seed...");
         jdbcTemplate.execute("DELETE FROM concepts WHERE category = 'LEARN'");
 
