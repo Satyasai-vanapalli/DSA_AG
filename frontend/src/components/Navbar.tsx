@@ -16,7 +16,8 @@ export default function Navbar() {
   
   const [isDarkMode, setIsDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
-    return saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    // Default to dark mode unless 'light' was explicitly saved
+    return saved !== 'light';
   });
 
   useEffect(() => {
@@ -30,7 +31,7 @@ export default function Navbar() {
   }, [isDarkMode]);
 
   return (
-    <nav className="sticky top-0 z-50 w-full backdrop-blur flex-none transition-colors duration-500 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/75 pl-14 lg:pl-0">
+    <nav className="sticky top-0 z-50 w-full flex-none transition-colors duration-500 border-b border-white/20 dark:border-white/10 bg-white/70 dark:bg-dark-bg/70 backdrop-blur-xl pl-14 lg:pl-0">
       <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="flex justify-end h-16 items-center">
           

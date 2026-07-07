@@ -89,14 +89,18 @@ export default function Sidebar() {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:sticky top-0 left-0 h-screen w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-[55] transition-transform duration-300 flex flex-col ${
+      <aside className={`fixed lg:sticky top-0 left-0 h-screen w-64 glass-card z-[55] transition-transform duration-300 flex flex-col ${
         isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
         {/* Logo */}
-        <div className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-800">
-          <Link to="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
-            <Code2 className="w-8 h-8 text-primary-500" />
-            <span className="font-bold text-xl tracking-tight text-slate-900 dark:text-white">DSA Roadmap</span>
+        <div className="h-16 flex items-center px-6 border-b border-white/10 relative overflow-hidden group">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-500/10 to-accent-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <Link to="/" className="flex items-center gap-2 relative z-10" onClick={() => setIsOpen(false)}>
+            <div className="relative">
+              <Code2 className="w-8 h-8 text-primary-500 relative z-10" />
+              <div className="absolute inset-0 bg-primary-500 blur-md opacity-40 rounded-full" />
+            </div>
+            <span className="font-bold text-xl tracking-tight glow-text">DSA Roadmap</span>
           </Link>
         </div>
 
@@ -111,10 +115,10 @@ export default function Sidebar() {
                 <div key={item.name} className="space-y-1">
                   <button
                     onClick={() => setExpanded(isExpanded ? null : item.name)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
                       isActive
-                        ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
-                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                        ? 'bg-gradient-to-r from-primary-500/10 to-transparent border-l-2 border-primary-500 text-primary-600 dark:text-primary-400 shadow-[inset_0_0_20px_rgba(139,92,246,0.05)]'
+                        : 'text-slate-600 dark:text-slate-400 hover:bg-white/5 hover:text-slate-900 dark:hover:text-white border-l-2 border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -132,10 +136,10 @@ export default function Sidebar() {
                             key={child.name}
                             to={child.path}
                             onClick={() => setIsOpen(false)}
-                            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            className={`block px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                               isChildActive
-                                ? 'bg-primary-50/50 dark:bg-primary-500/5 text-primary-600 dark:text-primary-400'
-                                : 'text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                                ? 'bg-primary-500/10 text-primary-500 dark:text-primary-400'
+                                : 'text-slate-500 dark:text-slate-400 hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                             }`}
                           >
                             {child.name}
@@ -154,10 +158,10 @@ export default function Sidebar() {
                 key={item.name}
                 to={item.path!}
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 ${
                   isActive
-                    ? 'bg-primary-50 dark:bg-primary-500/10 text-primary-600 dark:text-primary-400'
-                    : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-gradient-to-r from-primary-500/10 to-transparent border-l-2 border-primary-500 text-primary-600 dark:text-primary-400 shadow-[inset_0_0_20px_rgba(139,92,246,0.05)]'
+                    : 'text-slate-600 dark:text-slate-400 hover:bg-white/5 hover:text-slate-900 dark:hover:text-white border-l-2 border-transparent'
                 }`}
               >
                 {item.icon}
