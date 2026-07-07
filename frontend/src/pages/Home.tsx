@@ -102,7 +102,7 @@ export default function Home({ category }: { category: string }) {
             </div>
             <div className="h-5 bg-slate-200 dark:bg-slate-800/60 rounded-lg w-2/3 overflow-hidden relative">
               <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.1 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
-            </motion.div>
+            </div>
           </div>
         </div>
         <div className="space-y-4">
