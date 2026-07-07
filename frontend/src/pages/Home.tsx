@@ -329,7 +329,7 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
       });
       return { previousProgress };
     },
-    onError: (err, newData, context: any) => {
+    onError: (_err, _newData, context: any) => {
       queryClient.setQueryData(['progress'], context.previousProgress);
     },
     onSettled: () => {
@@ -357,7 +357,7 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
       });
       return { previousProgress };
     },
-    onError: (err, conceptId, context: any) => {
+    onError: (_err, _conceptId, context: any) => {
       queryClient.setQueryData(['conceptProgress'], context.previousProgress);
     },
     onSettled: () => {
@@ -425,7 +425,7 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
       result = result.filter(p => (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
     }
     return result;
-  }, [problems, difficultyFilter, searchQuery]);
+  }, [problems, activeFilters, searchQuery]);
 
   if (searchQuery && filteredProblems.length === 0 && !(concept.name || '').toLowerCase().includes(searchQuery.toLowerCase())) {
     return null;

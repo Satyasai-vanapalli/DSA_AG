@@ -75,7 +75,7 @@ export default function ProblemDetail() {
       });
       return { previousProgress };
     },
-    onError: (err, newData, context: any) => {
+    onError: (_err, _newData, context: any) => {
       queryClient.setQueryData(['progress'], context.previousProgress);
       toast('Failed to update progress', 'error');
     },
