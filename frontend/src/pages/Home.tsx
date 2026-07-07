@@ -304,7 +304,26 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 
   const toggleCompletedMutation = useMutation({
     mutationFn: (data: { problemId: string; timeSpent?: number }) => progressApi.toggleCompleted(data.problemId, data.timeSpent),
-    onSuccess: () => {
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ['progress'] });
+      const previousProgress = queryClient.getQueryData(['progress']);
+      queryClient.setQueryData(['progress'], (old: any) => {
+        if (!old) return old;
+        const index = old.findIndex((p: any) => p.problemId === newData.problemId);
+        if (index > -1) {
+          const newProgress = [...old];
+          newProgress[index] = { ...newProgress[index], completed: !newProgress[index].completed };
+          return newProgress;
+        } else {
+          return [...old, { problemId: newData.problemId, completed: true }];
+        }
+      });
+      return { previousProgress };
+    },
+    onError: (err, newData, context: any) => {
+      queryClient.setQueryData(['progress'], context.previousProgress);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['progress'] });
       queryClient.invalidateQueries({ queryKey: ['stats'] });
       queryClient.invalidateQueries({ queryKey: ['analytics'] });
@@ -313,7 +332,26 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
 
   const toggleConceptCompletedMutation = useMutation({
     mutationFn: (conceptId: string) => progressApi.toggleConceptCompleted(conceptId),
-    onSuccess: () => {
+    onMutate: async (conceptId) => {
+      await queryClient.cancelQueries({ queryKey: ['conceptProgress'] });
+      const previousProgress = queryClient.getQueryData(['conceptProgress']);
+      queryClient.setQueryData(['conceptProgress'], (old: any) => {
+        if (!old) return old;
+        const index = old.findIndex((p: any) => p.conceptId === conceptId);
+        if (index > -1) {
+          const newProgress = [...old];
+          newProgress[index] = { ...newProgress[index], completed: !newProgress[index].completed };
+          return newProgress;
+        } else {
+          return [...old, { conceptId, completed: true }];
+        }
+      });
+      return { previousProgress };
+    },
+    onError: (err, conceptId, context: any) => {
+      queryClient.setQueryData(['conceptProgress'], context.previousProgress);
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['conceptProgress'] });
       queryClient.invalidateQueries({ queryKey: ['stats'] });
       queryClient.invalidateQueries({ queryKey: ['analytics'] });

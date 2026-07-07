@@ -59,12 +59,30 @@ export default function ProblemDetail() {
 
   const toggleCompleted = useMutation({
     mutationFn: (timeSpent?: number) => progressApi.toggleCompleted(id!, timeSpent),
-    onSuccess: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['progress'] });
+      const previousProgress = queryClient.getQueryData(['progress']);
+      queryClient.setQueryData(['progress'], (old: any) => {
+        if (!old) return old;
+        const index = old.findIndex((p: any) => p.problemId === id);
+        if (index > -1) {
+          const newProgress = [...old];
+          newProgress[index] = { ...newProgress[index], completed: !newProgress[index].completed };
+          return newProgress;
+        } else {
+          return [...old, { problemId: id, completed: true }];
+        }
+      });
+      return { previousProgress };
+    },
+    onError: (err, newData, context: any) => {
+      queryClient.setQueryData(['progress'], context.previousProgress);
+      toast('Failed to update progress', 'error');
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['progress'] });
       queryClient.invalidateQueries({ queryKey: ['stats'] });
-      toast('Progress updated successfully', 'success');
-    },
-    onError: () => toast('Failed to update progress', 'error')
+    }
   });
 
   const handleToggleComplete = () => {
