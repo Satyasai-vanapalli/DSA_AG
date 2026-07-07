@@ -18,4 +18,10 @@ export const usersApi = {
   logout: async (): Promise<void> => {
     await apiClient.post(`/users/logout`, {});
   },
+  updateProfile: async (formData: FormData): Promise<{ name: string; profilePictureUrl: string }> => {
+    const response = await apiClient.put('/users/profile', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
 };

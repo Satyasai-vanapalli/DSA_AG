@@ -63,7 +63,7 @@ public class AuthService {
         
         RefreshToken refreshToken = createRefreshToken(user.getId());
 
-        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories());
+        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories(), user.getProfilePictureUrl());
     }
 
     @Transactional
@@ -121,7 +121,7 @@ public class AuthService {
         String jwt = tokenProvider.generateToken(authentication);
         RefreshToken refreshToken = createRefreshToken(user.getId());
 
-        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories());
+        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories(), user.getProfilePictureUrl());
     }
     
     @Transactional
@@ -174,7 +174,7 @@ public class AuthService {
         String jwt = tokenProvider.generateToken(authentication);
         RefreshToken refreshToken = createRefreshToken(user.getId());
 
-        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories());
+        return new AuthResponse(jwt, refreshToken.getToken(), user.getId(), user.getName(), user.getEmail(), user.getRole(), user.getAdminCategories(), user.getProfilePictureUrl());
     }
 
     public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {

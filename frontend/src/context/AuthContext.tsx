@@ -7,12 +7,14 @@ interface User {
   email: string;
   role: string;
   adminCategories?: string[];
+  profilePictureUrl?: string;
 }
 
 interface AuthContextType {
   user: User | null;
   login: (token: string, user: User) => void;
   logout: () => void;
+  updateUser: (updates: Partial<User>) => void;
   isAuthenticated: boolean;
 }
 
@@ -27,6 +29,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = (_newToken: string, newUser: User) => {
     setUser(newUser);
     localStorage.setItem('user', JSON.stringify(newUser));
+  };
+
+  const updateUser = (updates: Partial<User>) => {
+    setUser(prev => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...updates };
+      localStorage.setItem('user', JSON.stringify(updated));
+      return updated;
+    });
   };
 
   const logout = async () => {
@@ -104,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, logout, updateUser, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

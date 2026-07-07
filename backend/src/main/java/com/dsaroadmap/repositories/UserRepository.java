@@ -29,4 +29,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            "GROUP BY u.id, u.name, u.currentStreak " +
            "ORDER BY SUM(CASE WHEN up.completed = true AND UPPER(p.category) = UPPER(:category) THEN 1L ELSE 0L END) DESC, u.name ASC")
     java.util.List<LeaderboardProjection> getLeaderboardByCategory(@org.springframework.data.repository.query.Param("category") String category, org.springframework.data.domain.Pageable pageable);
+
+    java.util.List<User> findAllByOrderByLastActiveTimeDesc();
 }

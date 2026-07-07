@@ -58,7 +58,7 @@ public class AdminController {
             progressMap.computeIfAbsent(p.getUserId(), k -> new java.util.HashMap<>()).put(p.getCategory(), p.getCompletedCount());
         }
 
-        List<Map<String, Object>> users = userRepository.findAll().stream()
+        List<Map<String, Object>> users = userRepository.findAllByOrderByLastActiveTimeDesc().stream()
                 .map(user -> {
                     java.util.Map<String, Object> map = new java.util.HashMap<>();
                     map.put("id", user.getId().toString());
@@ -68,6 +68,9 @@ public class AdminController {
                     map.put("isBlocked", user.isBlocked());
                     map.put("lastActiveTime", user.getLastActiveTime() != null ? user.getLastActiveTime().toString() : null);
                     map.put("adminCategories", user.getAdminCategories() != null ? user.getAdminCategories() : new java.util.HashSet<>());
+                    map.put("createdAt", user.getCreatedAt() != null ? user.getCreatedAt().toString() : null);
+                    map.put("totalActiveDays", user.getTotalActiveDays() != null ? user.getTotalActiveDays() : 0);
+                    map.put("profilePictureUrl", user.getProfilePictureUrl());
                     
                     java.util.Map<String, Long> userProgress = progressMap.getOrDefault(user.getId(), new java.util.HashMap<>());
                     map.put("progress", userProgress);
@@ -174,5 +177,40 @@ public class AdminController {
         userRepository.delete(user);
 
         return ResponseEntity.ok(Map.of("message", "User completely deleted", "email", user.getEmail()));
+    }
+
+    @GetMapping("/users/{userId}/progress")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getUserDetailedProgress(@PathVariable UUID userId) {
+        User targetUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        var progressList = userProgressRepository.findByUserWithProblem(targetUser);
+
+        var solvedProblems = progressList.stream()
+                .filter(up -> up.isCompleted())
+                .map(up -> {
+                    java.util.Map<String, Object> item = new java.util.HashMap<>();
+                    item.put("problemId", up.getProblem().getId().toString());
+                    item.put("title", up.getProblem().getTitle());
+                    item.put("difficulty", up.getProblem().getDifficulty());
+                    item.put("category", up.getProblem().getCategory());
+                    item.put("completedAt", up.getCompletedAt() != null ? up.getCompletedAt().toString() : null);
+                    return item;
+                })
+                .toList();
+
+        java.util.Map<String, Object> result = new java.util.HashMap<>();
+        result.put("userId", targetUser.getId().toString());
+        result.put("name", targetUser.getName());
+        result.put("email", targetUser.getEmail());
+        result.put("currentStreak", targetUser.getCurrentStreak());
+        result.put("maxStreak", targetUser.getMaxStreak());
+        result.put("totalActiveDays", targetUser.getTotalActiveDays() != null ? targetUser.getTotalActiveDays() : 0);
+        result.put("createdAt", targetUser.getCreatedAt() != null ? targetUser.getCreatedAt().toString() : null);
+        result.put("totalSolved", solvedProblems.size());
+        result.put("solvedProblems", solvedProblems);
+
+        return ResponseEntity.ok(result);
     }
 }

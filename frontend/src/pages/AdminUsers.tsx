@@ -5,42 +5,92 @@ import { useAuth } from '../context/AuthContext';
 import { Shield, ShieldOff, Settings, Ban, Trash2, CheckCircle } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
-import { Download, Search, X, BarChart2 } from 'lucide-react';
+import { Download, Search, X, BarChart2, Calendar, Activity, Loader2 } from 'lucide-react';
 
 // Progress Modal Component
-const UserProgressModal = ({ user, onClose }: { user: AdminUser; onClose: () => void }) => {
+const UserProgressModal = ({ userId, onClose }: { userId: string; onClose: () => void }) => {
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['admin-user-progress', userId],
+    queryFn: () => adminApi.getUserDetailedProgress(userId),
+  });
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200 dark:border-white/10">
-        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden border border-slate-200 dark:border-white/10 max-h-[85vh] flex flex-col">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 flex-shrink-0">
           <div>
             <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
               <BarChart2 className="w-5 h-5 text-primary-500" />
-              User Progress
+              Detailed User Progress
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400">{user.name}</p>
+            {data && <p className="text-sm text-slate-500 dark:text-slate-400">{data.name} ({data.email})</p>}
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400">
             <X className="w-5 h-5" />
           </button>
         </div>
-        <div className="p-6">
-          <div className="space-y-4">
-            {user.progress && Object.keys(user.progress).length > 0 ? (
-              Object.entries(user.progress).map(([category, count]) => (
-                <div key={category} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-white/5">
-                  <span className="font-semibold text-slate-700 dark:text-slate-300">
-                    {category.replace('LEARN_', '').replace('_', ' ')}
-                  </span>
-                  <span className="font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-3 py-1 rounded-lg">
-                    {count} solved
-                  </span>
+        <div className="p-6 overflow-y-auto">
+          {isLoading && (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+            </div>
+          )}
+          {isError && <p className="text-center text-red-500 py-4">Failed to load progress data.</p>}
+          {data && (
+            <div className="space-y-6">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/30 text-center">
+                  <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{data.totalSolved}</p>
+                  <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">Total Solved</p>
                 </div>
-              ))
-            ) : (
-              <p className="text-center text-slate-500 dark:text-slate-400 py-4">No progress data available for this user.</p>
-            )}
-          </div>
+                <div className="p-3 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-100 dark:border-orange-800/30 text-center">
+                  <p className="text-2xl font-bold text-orange-600 dark:text-orange-400">🔥 {data.currentStreak}</p>
+                  <p className="text-xs font-medium text-orange-700 dark:text-orange-300">Current Streak</p>
+                </div>
+                <div className="p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-800/30 text-center">
+                  <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">{data.maxStreak}</p>
+                  <p className="text-xs font-medium text-purple-700 dark:text-purple-300">Max Streak</p>
+                </div>
+                <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 text-center">
+                  <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{data.totalActiveDays}</p>
+                  <p className="text-xs font-medium text-blue-700 dark:text-blue-300">Active Days</p>
+                </div>
+              </div>
+
+              {/* Solved Problems List */}
+              <div>
+                <h4 className="font-bold text-slate-900 dark:text-white mb-3">Solved Problems ({data.solvedProblems.length})</h4>
+                {data.solvedProblems.length > 0 ? (
+                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                    {data.solvedProblems.map((p, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-white/5">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-bold text-slate-400 w-6">{i + 1}.</span>
+                          <div>
+                            <p className="font-medium text-sm text-slate-900 dark:text-white">{p.title}</p>
+                            <p className="text-xs text-slate-500 dark:text-slate-400">{p.category}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                            p.difficulty === 'Easy' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' :
+                            p.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                            'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                          }`}>{p.difficulty}</span>
+                          {p.completedAt && (
+                            <span className="text-xs text-slate-400">{new Date(p.completedAt).toLocaleDateString()}</span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-slate-500 dark:text-slate-400 py-4">No problems solved yet.</p>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -99,7 +149,7 @@ const CategoryAdminManager = ({ user, toggleMutation }: { user: AdminUser, toggl
 export default function AdminUsers() {
   const [activeTab, setActiveTab] = useState<'SUPER_ADMINS' | 'ADMINS' | 'USERS'>('SUPER_ADMINS');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedUserForProgress, setSelectedUserForProgress] = useState<AdminUser | null>(null);
+  const [selectedUserIdForProgress, setSelectedUserIdForProgress] = useState<string | null>(null);
 
   const { user } = useAuth();
   const { toast } = useToast();
@@ -298,6 +348,8 @@ export default function AdminUsers() {
                 <th className="px-6 md:px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Name</th>
                 <th className="px-6 md:px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Status</th>
                 <th className="px-6 md:px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Email</th>
+                <th className="px-6 md:px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Joined</th>
+                <th className="px-6 md:px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Active Days</th>
                 <th className="px-6 md:px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Role</th>
                 <th className="px-6 md:px-8 py-5 text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 text-right">Actions</th>
               </tr>
@@ -323,6 +375,28 @@ export default function AdminUsers() {
                   </td>
                   <td className="px-6 py-4 text-slate-500 dark:text-slate-400">{u.email}</td>
                   <td className="px-6 py-4">
+                    {(() => {
+                      if (!u.createdAt) return <span className="text-sm text-slate-500">N/A</span>;
+                      const joinDate = new Date(u.createdAt + 'Z');
+                      const daysAgo = Math.floor((Date.now() - joinDate.getTime()) / 86400000);
+                      return (
+                        <div className="flex flex-col">
+                          <span className="text-sm text-slate-900 dark:text-white flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {joinDate.toLocaleDateString()}
+                          </span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400">{daysAgo} days ago</span>
+                        </div>
+                      );
+                    })()}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-400">
+                      <Activity className="w-3.5 h-3.5" />
+                      {u.totalActiveDays ?? 0}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
                     {u.role === 'ADMIN' ? (
                       <span className="text-xs font-bold px-2.5 py-1 rounded-md bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400">
                         SUPER_ADMIN
@@ -342,7 +416,7 @@ export default function AdminUsers() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <button
-                      onClick={() => setSelectedUserForProgress(u)}
+                      onClick={() => setSelectedUserIdForProgress(u.id)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors mr-2"
                     >
                       <BarChart2 className="w-3.5 h-3.5" /> Progress
@@ -418,7 +492,7 @@ export default function AdminUsers() {
               ))}
               {displayedUsers.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-4 text-center text-slate-500 dark:text-slate-400">No users found in this category</td>
+                  <td colSpan={7} className="px-6 py-4 text-center text-slate-500 dark:text-slate-400">No users found in this category</td>
                 </tr>
               )}
             </tbody>
@@ -426,10 +500,10 @@ export default function AdminUsers() {
         </div>
       </div>
       
-      {selectedUserForProgress && (
+      {selectedUserIdForProgress && (
         <UserProgressModal 
-          user={selectedUserForProgress} 
-          onClose={() => setSelectedUserForProgress(null)} 
+          userId={selectedUserIdForProgress} 
+          onClose={() => setSelectedUserIdForProgress(null)} 
         />
       )}
     </div>

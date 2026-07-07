@@ -56,6 +56,16 @@ public class User {
 
     private LocalDateTime lastActiveTime;
 
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
+
+    @Column(name = "total_active_days", nullable = false, columnDefinition = "integer default 0")
+    @Builder.Default
+    private Integer totalActiveDays = 0;
+
+    @Column(name = "last_active_date")
+    private LocalDate lastActiveDate;
+
     @Column(nullable = false, columnDefinition = "integer default 1")
     @Builder.Default
     private Integer tokenVersion = 1;

@@ -11,4 +11,5 @@ import java.util.UUID;
     private String email;
     private Role role;
     private java.util.Set<String> adminCategories;
+    private String profilePictureUrl;
 }

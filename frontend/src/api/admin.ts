@@ -17,6 +17,27 @@ export interface AdminUser {
   lastActiveTime?: string;
   isBlocked?: boolean;
   progress?: Record<string, number>;
+  createdAt?: string;
+  totalActiveDays?: number;
+  profilePictureUrl?: string;
+}
+
+export interface DetailedUserProgress {
+  userId: string;
+  name: string;
+  email: string;
+  currentStreak: number;
+  maxStreak: number;
+  totalActiveDays: number;
+  createdAt: string;
+  totalSolved: number;
+  solvedProblems: {
+    problemId: string;
+    title: string;
+    difficulty: string;
+    category: string;
+    completedAt: string | null;
+  }[];
 }
 
 export interface AdminInsights {
@@ -67,6 +88,11 @@ export const adminApi = {
 
   deleteUser: async (userId: string): Promise<void> => {
     await apiClient.delete(`/admin/users/${userId}`);
+  },
+
+  getUserDetailedProgress: async (userId: string): Promise<DetailedUserProgress> => {
+    const response = await apiClient.get(`/admin/users/${userId}/progress`);
+    return response.data;
   },
 
   // Concept CRUD
