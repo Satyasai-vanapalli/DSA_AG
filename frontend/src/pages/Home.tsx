@@ -242,7 +242,7 @@ export default function Home({ category }: { category: string }) {
               />
             </div>
             <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-hide">
-              {['All', 'Easy', 'Medium', 'Hard'].map((diff) => (
+              {(isAuthenticated ? ['All', 'Easy', 'Medium', 'Hard', 'Solved', 'Unsolved'] : ['All', 'Easy', 'Medium', 'Hard']).map((diff) => (
                 <button
                   key={diff}
                   onClick={() => setDifficultyFilter(diff)}
@@ -359,7 +359,13 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     if (!problems) return [];
     let result = problems;
     if (difficultyFilter !== 'All') {
-      result = result.filter(p => p.difficulty === difficultyFilter);
+      if (difficultyFilter === 'Solved') {
+        result = result.filter(p => userProgress?.some(up => up.problemId === p.id && up.completed));
+      } else if (difficultyFilter === 'Unsolved') {
+        result = result.filter(p => !userProgress?.some(up => up.problemId === p.id && up.completed));
+      } else {
+        result = result.filter(p => p.difficulty === difficultyFilter);
+      }
     }
     if (searchQuery) {
       result = result.filter(p => (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()));

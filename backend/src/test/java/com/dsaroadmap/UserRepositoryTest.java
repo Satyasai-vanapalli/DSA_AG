@@ -21,7 +21,7 @@ public class UserRepositoryTest {
         u.setEmail("test@test.com");
         u.setPassword("pass");
         u.setName("Test");
-        u.setRole(Role.USER);
+        u.setRole(Role.STUDENT);
         userRepository.save(u);
 
         var list = userRepository.getLeaderboardByCategory("PRACTICE", PageRequest.of(0, 50));
