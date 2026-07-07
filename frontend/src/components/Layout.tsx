@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
@@ -5,6 +6,10 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 export default function Layout() {
   const location = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
     <div className="min-h-screen flex bg-slate-50 dark:bg-dark-bg transition-colors duration-200 relative overflow-hidden">

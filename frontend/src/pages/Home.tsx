@@ -97,12 +97,16 @@ export default function Home({ category }: { category: string }) {
       <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div className="space-y-3 w-full max-w-sm">
-            <div className="h-10 bg-slate-200 dark:bg-slate-800/60 rounded-xl overflow-hidden relative">
+            <div className="h-10 w-64 bg-slate-200 dark:bg-slate-800/60 rounded-xl overflow-hidden relative">
               <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
             </div>
-            <div className="h-5 bg-slate-200 dark:bg-slate-800/60 rounded-lg w-2/3 overflow-hidden relative">
+            <div className="h-5 bg-slate-200 dark:bg-slate-800/60 rounded-lg w-48 overflow-hidden relative">
               <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.1 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
             </div>
+          </div>
+          <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 font-medium">
+            <div className="w-5 h-5 border-2 border-slate-300 border-t-transparent dark:border-slate-600 dark:border-t-transparent rounded-full animate-spin" />
+            Loading content...
           </div>
         </div>
         <div className="space-y-4">
