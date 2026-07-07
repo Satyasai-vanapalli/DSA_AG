@@ -102,25 +102,25 @@ export default function ProblemDetail() {
   if (isLoading) {
     return (
       <div className="max-w-6xl mx-auto p-4 md:p-8 space-y-6">
-        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="h-6 w-24 bg-slate-200 dark:bg-slate-800/60 rounded-md relative overflow-hidden">
+        <div className="h-6 w-24 bg-slate-200 dark:bg-slate-800/60 rounded-md relative overflow-hidden">
            <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
         </motion.div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 space-y-6">
             <div className="glass-card rounded-3xl p-6 md:p-8 space-y-6 relative overflow-hidden">
-               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="h-8 w-16 bg-slate-200 dark:bg-slate-800/60 rounded-lg relative overflow-hidden">
+               <div className="h-8 w-16 bg-slate-200 dark:bg-slate-800/60 rounded-lg relative overflow-hidden">
                  <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
-               </motion.div>
-               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="h-10 w-3/4 bg-slate-200 dark:bg-slate-800/60 rounded-xl relative overflow-hidden">
+               </div>
+               <div className="h-10 w-3/4 bg-slate-200 dark:bg-slate-800/60 rounded-xl relative overflow-hidden">
                  <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.2 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
-               </motion.div>
+               </div>
                <div className="flex gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="h-14 w-full bg-slate-200 dark:bg-slate-800/60 rounded-xl relative overflow-hidden">
+                  <div className="h-14 w-full bg-slate-200 dark:bg-slate-800/60 rounded-xl relative overflow-hidden">
                     <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.3 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
-                  </motion.div>
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="h-14 w-full bg-slate-200 dark:bg-slate-800/60 rounded-xl relative overflow-hidden">
+                  </div>
+                  <div className="h-14 w-full bg-slate-200 dark:bg-slate-800/60 rounded-xl relative overflow-hidden">
                     <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.4 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
-                  </motion.div>
+                  </div>
                </div>
             </div>
           </div>
@@ -128,14 +128,14 @@ export default function ProblemDetail() {
              <div className="glass-card rounded-3xl p-4 md:p-6 min-h-[600px] relative overflow-hidden">
                 <div className="flex gap-2 mb-6">
                   {[1,2,3].map(i => (
-                     <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 + (i * 0.1) }} className="h-10 w-24 bg-slate-200 dark:bg-slate-800/60 rounded-lg relative overflow-hidden">
+                     <div key={i} className="h-10 w-24 bg-slate-200 dark:bg-slate-800/60 rounded-lg relative overflow-hidden">
                        <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.2 + (i * 0.1) }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
-                     </motion.div>
+                     </div>
                   ))}
                 </div>
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="h-[500px] w-full bg-slate-200 dark:bg-slate-800/60 rounded-2xl relative overflow-hidden">
+                <div className="h-[500px] w-full bg-slate-200 dark:bg-slate-800/60 rounded-2xl relative overflow-hidden">
                   <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.5 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
-                </motion.div>
+                </div>
              </div>
           </div>
         </div>
