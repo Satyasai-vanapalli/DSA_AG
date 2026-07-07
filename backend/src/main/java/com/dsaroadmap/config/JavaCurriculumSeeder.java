@@ -11,16 +11,19 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JavaCurriculumSeeder implements CommandLineRunner {
 
-    private final ConceptRepository conceptRepository;
+    private final JdbcTemplate jdbcTemplate;
     private final ObjectMapper objectMapper;
 
     @Data
@@ -33,41 +36,35 @@ public class JavaCurriculumSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // FORCE RE-SEED LEARN JAVA
-        List<Concept> existingLearnConcepts = conceptRepository.findAll().stream().filter(c -> "LEARN".equals(c.getCategory()) && c.getParentId() == null).toList();
-        if (!existingLearnConcepts.isEmpty()) {
-            log.info("Deleting existing LEARN concepts to re-seed...");
-            conceptRepository.deleteAll(existingLearnConcepts);
-            conceptRepository.flush(); // Force delete in DB before inserting to prevent unique constraint violation
-        }
+        log.info("Deleting existing LEARN concepts to re-seed...");
+        jdbcTemplate.execute("DELETE FROM concepts WHERE category = 'LEARN'");
 
         log.info("Seeding Learn Java Curriculum...");
         try (InputStream is = new ClassPathResource("java-curriculum.json").getInputStream()) {
             List<CurriculumNode> curriculum = objectMapper.readValue(is, new TypeReference<List<CurriculumNode>>() {});
             log.info("Read {} phases from java-curriculum.json", curriculum.size());
 
+            List<Object[]> batchArgs = new ArrayList<>();
             for (int i = 0; i < curriculum.size(); i++) {
-                seedNode(curriculum.get(i), null, i);
+                buildBatchArgs(curriculum.get(i), null, i, batchArgs);
             }
-            log.info("Successfully seeded Java curriculum concepts!");
+            
+            String sql = "INSERT INTO concepts (id, name, description, order_index, category, is_material_only, parent_id) VALUES (?, ?, ?, ?, 'LEARN', true, ?)";
+            jdbcTemplate.batchUpdate(sql, batchArgs);
+            
+            log.info("Successfully seeded {} Java curriculum concepts!", batchArgs.size());
         } catch (Exception e) {
             log.error("Failed to seed Java curriculum: ", e);
         }
     }
 
-    private void seedNode(CurriculumNode node, java.util.UUID parentId, int orderIndex) {
-        Concept concept = new Concept();
-        concept.setName(node.getName());
-        concept.setDescription(node.getDescription());
-        concept.setOrderIndex(orderIndex);
-        concept.setCategory("LEARN");
-        concept.setMaterialOnly(true);
-        concept.setParentId(parentId);
-        concept = conceptRepository.save(concept);
+    private void buildBatchArgs(CurriculumNode node, UUID parentId, int orderIndex, List<Object[]> batchArgs) {
+        UUID id = UUID.randomUUID();
+        batchArgs.add(new Object[]{ id, node.getName(), node.getDescription(), orderIndex, parentId });
 
         if (node.getSubTopics() != null && !node.getSubTopics().isEmpty()) {
             for (int i = 0; i < node.getSubTopics().size(); i++) {
-                seedNode(node.getSubTopics().get(i), concept.getId(), i);
+                buildBatchArgs(node.getSubTopics().get(i), id, i, batchArgs);
             }
         }
     }
