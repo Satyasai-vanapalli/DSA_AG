@@ -47,7 +47,7 @@ public class Problem {
     private String category = "PRACTICE";
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "concept_id", nullable = false)
+    @JoinColumn(name = "concept_id", nullable = true)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "problems"})
     private Concept concept;
 

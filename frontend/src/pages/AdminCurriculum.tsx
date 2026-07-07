@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { roadmapApi, type Concept } from '../api/roadmap';
 import { adminApi } from '../api/admin';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
 import { Link, Navigate } from 'react-router-dom';
-import { ArrowLeft, Plus, Trash2, GripVertical, ChevronDown, X, Edit2, FolderPlus, BookOpen } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, GripVertical, ChevronDown, X, Edit2, FolderPlus, BookOpen, ListChecks, Search, ArrowRightLeft } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,6 +18,10 @@ export default function AdminCurriculum({ category, title }: { category: string,
   const [newConceptName, setNewConceptName] = useState('');
   const [newConceptDescription, setNewConceptDescription] = useState('');
   const [newConceptIsMaterialOnly, setNewConceptIsMaterialOnly] = useState(false);
+  const [showProblemManager, setShowProblemManager] = useState(false);
+  const [pmSearch, setPmSearch] = useState('');
+  const [pmDifficultyFilter, setPmDifficultyFilter] = useState<string>('All');
+  const [pmConceptFilter, setPmConceptFilter] = useState<string>('All');
 
   if (user?.role !== 'ADMIN' && !user?.adminCategories?.includes(category)) return <Navigate to="/" replace />;
 
@@ -25,6 +29,50 @@ export default function AdminCurriculum({ category, title }: { category: string,
     queryKey: ['concepts', category],
     queryFn: () => roadmapApi.getConceptsByCategory(category),
   });
+
+  const { data: allProblems, isLoading: isLoadingProblems } = useQuery({
+    queryKey: ['allProblems', category],
+    queryFn: () => roadmapApi.getProblemsByCategory(category),
+    enabled: showProblemManager,
+  });
+
+  const moveProblemMutation = useMutation({
+    mutationFn: ({ problemId, conceptId }: { problemId: string; conceptId: string | null }) =>
+      roadmapApi.moveProblemToConcept(problemId, conceptId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['allProblems', category] });
+      queryClient.invalidateQueries({ queryKey: ['concepts', category] });
+      toast('Problem moved successfully', 'success');
+    },
+    onError: () => toast('Failed to move problem', 'error'),
+  });
+
+  // Flatten concepts tree into a flat list with indentation info for the dropdown
+  const flatConcepts = useMemo(() => {
+    if (!concepts) return [];
+    const result: { id: string; name: string; depth: number }[] = [];
+    const flatten = (items: Concept[], depth: number) => {
+      for (const c of items) {
+        if (!c.isMaterialOnly) {
+          result.push({ id: c.id, name: c.name, depth });
+        }
+        if (c.children && c.children.length > 0) flatten(c.children, depth + 1);
+      }
+    };
+    flatten(concepts, 0);
+    return result;
+  }, [concepts]);
+
+  const filteredProblems = useMemo(() => {
+    if (!allProblems) return [];
+    return allProblems.filter(p => {
+      const matchesSearch = !pmSearch || p.title.toLowerCase().includes(pmSearch.toLowerCase());
+      const matchesDifficulty = pmDifficultyFilter === 'All' || p.difficulty === pmDifficultyFilter;
+      const matchesConcept = pmConceptFilter === 'All' ||
+        (pmConceptFilter === 'Unassigned' ? !p.concept : p.concept?.id === pmConceptFilter);
+      return matchesSearch && matchesDifficulty && matchesConcept;
+    });
+  }, [allProblems, pmSearch, pmDifficultyFilter, pmConceptFilter]);
 
   const createConceptMutation = useMutation({
     mutationFn: () => adminApi.createConcept({ 
@@ -84,12 +132,20 @@ export default function AdminCurriculum({ category, title }: { category: string,
           </Link>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{title}</h1>
         </div>
-        <button 
-          onClick={() => setShowAddConcept(true)} 
-          className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-xl transition-colors"
-        >
-          <Plus className="w-5 h-5" /> Add Concept
-        </button>
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setShowProblemManager(true)} 
+            className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-xl transition-colors"
+          >
+            <ListChecks className="w-5 h-5" /> Problem Manager
+          </button>
+          <button 
+            onClick={() => setShowAddConcept(true)} 
+            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-xl transition-colors"
+          >
+            <Plus className="w-5 h-5" /> Add Concept
+          </button>
+        </div>
       </div>
 
       {showAddConcept && (
@@ -184,6 +240,163 @@ export default function AdminCurriculum({ category, title }: { category: string,
           </Droppable>
         </DragDropContext>
       )}
+
+      {/* Problem Manager Modal */}
+      <AnimatePresence>
+        {showProblemManager && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+            onClick={() => setShowProblemManager(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="w-full max-w-5xl max-h-[90vh] bg-white dark:bg-dark-card rounded-2xl shadow-2xl border border-slate-200 dark:border-dark-border flex flex-col overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-dark-border shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-xl">
+                    <ListChecks className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Problem Manager</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
+                      {allProblems?.length ?? 0} problems total
+                    </p>
+                  </div>
+                </div>
+                <button onClick={() => setShowProblemManager(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors">
+                  <X className="w-5 h-5 text-slate-500" />
+                </button>
+              </div>
+
+              {/* Filters */}
+              <div className="p-4 border-b border-slate-200 dark:border-dark-border shrink-0 flex flex-wrap items-center gap-3">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={pmSearch}
+                    onChange={(e) => setPmSearch(e.target.value)}
+                    placeholder="Search problems..."
+                    className="w-full pl-10 pr-4 py-2 border border-slate-300 dark:border-dark-border rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 dark:bg-dark-bg dark:text-white text-sm"
+                  />
+                </div>
+                <select
+                  value={pmDifficultyFilter}
+                  onChange={(e) => setPmDifficultyFilter(e.target.value)}
+                  className="px-3 py-2 border border-slate-300 dark:border-dark-border rounded-xl bg-white dark:bg-dark-bg dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="All">All Difficulties</option>
+                  <option value="Easy">Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Hard">Hard</option>
+                </select>
+                <select
+                  value={pmConceptFilter}
+                  onChange={(e) => setPmConceptFilter(e.target.value)}
+                  className="px-3 py-2 border border-slate-300 dark:border-dark-border rounded-xl bg-white dark:bg-dark-bg dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 max-w-[250px]"
+                >
+                  <option value="All">All Concepts</option>
+                  <option value="Unassigned">Unassigned</option>
+                  {flatConcepts.map(fc => (
+                    <option key={fc.id} value={fc.id}>
+                      {'—'.repeat(fc.depth)} {fc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Table */}
+              <div className="flex-1 overflow-y-auto">
+                {isLoadingProblems ? (
+                  <div className="flex justify-center items-center p-12">
+                    <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : filteredProblems.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-12 text-slate-400">
+                    <Search className="w-12 h-12 mb-3 opacity-40" />
+                    <p className="text-lg font-medium">No problems found</p>
+                    <p className="text-sm">Try adjusting your search or filters</p>
+                  </div>
+                ) : (
+                  <table className="w-full">
+                    <thead className="sticky top-0 bg-slate-50 dark:bg-slate-800/80 backdrop-blur-sm">
+                      <tr>
+                        <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-6 py-3">Problem</th>
+                        <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3 w-24">Difficulty</th>
+                        <th className="text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-4 py-3 w-64">
+                          <div className="flex items-center gap-1">
+                            <ArrowRightLeft className="w-3.5 h-3.5" /> Move to Concept
+                          </div>
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                      {filteredProblems.map((problem) => (
+                        <tr key={problem.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                          <td className="px-6 py-3">
+                            <div className="font-medium text-sm text-slate-900 dark:text-white">{problem.title}</div>
+                            <div className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                              {problem.concept ? problem.concept.name : <span className="italic text-amber-500">Unassigned</span>}
+                            </div>
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-semibold ${
+                              problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                              problem.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                              'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                            }`}>
+                              {problem.difficulty}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">
+                            <select
+                              value={problem.concept?.id || ''}
+                              onChange={(e) => {
+                                const newConceptId = e.target.value || null;
+                                moveProblemMutation.mutate({ problemId: problem.id, conceptId: newConceptId });
+                              }}
+                              className="w-full px-3 py-1.5 border border-slate-300 dark:border-dark-border rounded-lg bg-white dark:bg-dark-bg dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            >
+                              <option value="">Unassigned</option>
+                              {flatConcepts.map(fc => (
+                                <option key={fc.id} value={fc.id}>
+                                  {'—'.repeat(fc.depth)} {fc.name}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 border-t border-slate-200 dark:border-dark-border shrink-0 flex items-center justify-between">
+                <p className="text-xs text-slate-400">
+                  Showing {filteredProblems.length} of {allProblems?.length ?? 0} problems
+                </p>
+                <button
+                  onClick={() => setShowProblemManager(false)}
+                  className="px-5 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold rounded-xl transition-colors text-sm"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

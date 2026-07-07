@@ -32,6 +32,7 @@ export interface Problem {
   estimatedTime?: string;
   constraints?: string;
   conceptId?: string;
+  concept?: { id: string; name: string };
   problemLink?: string;
   youtubeLink?: string;
   documentationLink?: string;
@@ -92,6 +93,11 @@ export const roadmapApi = {
     return response.data;
   },
 
+  getProblemsByCategory: async (category: string): Promise<Problem[]> => {
+    const response = await apiClient.get<Problem[]>(`/problems/category/${category}`);
+    return response.data;
+  },
+
   getProblemById: async (id: string): Promise<Problem> => {
     const response = await apiClient.get<Problem>(`/problems/${id}`);
     return response.data;
@@ -110,5 +116,10 @@ export const roadmapApi = {
   getSolutions: async (problemId: string): Promise<Solution[]> => {
     const response = await apiClient.get<Solution[]>(`/solutions/problem/${problemId}`);
     return response.data;
-  }
+  },
+
+  moveProblemToConcept: async (problemId: string, conceptId: string | null): Promise<Problem> => {
+    const response = await apiClient.patch<Problem>(`/problems/${problemId}/move`, { conceptId });
+    return response.data;
+  },
 };

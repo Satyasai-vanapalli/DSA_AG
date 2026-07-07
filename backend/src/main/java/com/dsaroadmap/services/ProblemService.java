@@ -113,4 +113,15 @@ public class ProblemService {
             problemRepository.save(problem);
         }
     }
+
+    public Problem moveProblemToConcept(UUID problemId, UUID conceptId) {
+        Problem problem = getProblemById(problemId);
+        if (conceptId == null) {
+            problem.setConcept(null);
+        } else {
+            Concept concept = conceptService.getConceptById(conceptId);
+            problem.setConcept(concept);
+        }
+        return problemRepository.save(problem);
+    }
 }

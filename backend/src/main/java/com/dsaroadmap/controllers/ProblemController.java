@@ -72,4 +72,12 @@ public class ProblemController {
         problemService.reorderProblems(problemIds);
         return ResponseEntity.ok().build();
     }
+
+    @PatchMapping("/{id}/move")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Problem> moveProblem(@PathVariable UUID id, @RequestBody java.util.Map<String, String> body) {
+        String conceptIdStr = body.get("conceptId");
+        UUID conceptId = (conceptIdStr != null && !conceptIdStr.isEmpty()) ? UUID.fromString(conceptIdStr) : null;
+        return ResponseEntity.ok(problemService.moveProblemToConcept(id, conceptId));
+    }
 }
