@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const API_URL = 'http://localhost:8081/api/users';
+import apiClient from './client';
 
 export interface LeaderboardUser {
   name: string;
@@ -8,21 +6,16 @@ export interface LeaderboardUser {
   currentStreak: number;
 }
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  return { Authorization: `Bearer ${token}` };
-};
-
 export const usersApi = {
   getLeaderboard: async (category?: string): Promise<LeaderboardUser[]> => {
-    const url = category ? `${API_URL}/leaderboard?category=${category}` : `${API_URL}/leaderboard`;
-    const response = await axios.get(url, { headers: getAuthHeaders() });
+    const url = category ? `/users/leaderboard?category=${category}` : `/users/leaderboard`;
+    const response = await apiClient.get<LeaderboardUser[]>(url);
     return response.data;
   },
   ping: async (): Promise<void> => {
-    await axios.post(`${API_URL}/ping`, {}, { headers: getAuthHeaders() });
+    await apiClient.post(`/users/ping`, {});
   },
   logout: async (): Promise<void> => {
-    await axios.post(`${API_URL}/logout`, {}, { headers: getAuthHeaders() });
+    await apiClient.post(`/users/logout`, {});
   },
 };
