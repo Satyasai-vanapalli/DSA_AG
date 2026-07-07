@@ -40,13 +40,27 @@ public class UserController {
         if (authentication != null && authentication.isAuthenticated()) {
             String email = authentication.getName();
             userRepository.findByEmail(email).ifPresent(user -> {
-                user.setLastActiveTime(LocalDateTime.now());
-                // Increment active days if this is a new calendar day
                 LocalDate today = LocalDate.now();
-                if (user.getLastActiveDate() == null || !user.getLastActiveDate().equals(today)) {
+
+                if (user.getLastActiveDate() == null) {
+                    user.setCurrentStreak(1);
+                    user.setMaxStreak(Math.max(user.getMaxStreak() == null ? 0 : user.getMaxStreak(), 1));
+                    user.setLastActiveDate(today);
+                    user.setTotalActiveDays((user.getTotalActiveDays() == null ? 0 : user.getTotalActiveDays()) + 1);
+                } else if (!user.getLastActiveDate().equals(today)) {
+                    if (user.getLastActiveDate().isEqual(today.minusDays(1))) {
+                        int newStreak = (user.getCurrentStreak() == null ? 0 : user.getCurrentStreak()) + 1;
+                        user.setCurrentStreak(newStreak);
+                        user.setMaxStreak(Math.max(user.getMaxStreak() == null ? 0 : user.getMaxStreak(), newStreak));
+                    } else if (user.getLastActiveDate().isBefore(today.minusDays(1))) {
+                        user.setCurrentStreak(1);
+                        user.setMaxStreak(Math.max(user.getMaxStreak() == null ? 0 : user.getMaxStreak(), 1));
+                    }
                     user.setLastActiveDate(today);
                     user.setTotalActiveDays((user.getTotalActiveDays() == null ? 0 : user.getTotalActiveDays()) + 1);
                 }
+
+                user.setLastActiveTime(LocalDateTime.now());
                 userRepository.save(user);
             });
         }

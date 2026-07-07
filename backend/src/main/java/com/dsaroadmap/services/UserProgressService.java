@@ -49,7 +49,6 @@ public class UserProgressService {
         progress.setCompleted(!progress.isCompleted());
         if (progress.isCompleted()) {
             progress.setCompletedAt(LocalDate.now());
-            updateUserStreak(user);
         }
         if (timeSpent != null) {
             progress.setTimeSpent(timeSpent);
@@ -58,24 +57,7 @@ public class UserProgressService {
         return userProgressRepository.save(progress);
     }
 
-    private void updateUserStreak(User user) {
-        LocalDate today = LocalDate.now();
-        if (user.getLastActiveTime() == null) {
-            user.setCurrentStreak(1);
-            user.setMaxStreak(Math.max(user.getMaxStreak(), 1));
-            user.setLastActiveTime(LocalDateTime.now());
-        } else if (user.getLastActiveTime().toLocalDate().isEqual(today.minusDays(1))) {
-            int newStreak = user.getCurrentStreak() + 1;
-            user.setCurrentStreak(newStreak);
-            user.setMaxStreak(Math.max(user.getMaxStreak(), newStreak));
-            user.setLastActiveTime(LocalDateTime.now());
-        } else if (user.getLastActiveTime().toLocalDate().isBefore(today.minusDays(1))) {
-            user.setCurrentStreak(1);
-            user.setMaxStreak(Math.max(user.getMaxStreak(), 1));
-            user.setLastActiveTime(LocalDateTime.now());
-        }
-        userRepository.save(user);
-    }
+
 
     @Transactional
     public UserProgress toggleRevision(String userEmail, UUID problemId) {
@@ -177,7 +159,6 @@ public class UserProgressService {
         progress.setCompleted(!progress.isCompleted());
         if (progress.isCompleted()) {
             progress.setCompletedAt(LocalDate.now());
-            updateUserStreak(user);
         }
         return conceptProgressRepository.save(progress);
     }
