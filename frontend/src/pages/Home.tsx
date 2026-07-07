@@ -307,6 +307,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['progress'] });
       queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['analytics'] });
     }
   });
 
@@ -315,6 +316,7 @@ function ConceptAccordion({ concept, index, difficultyFilter, searchQuery, depth
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['conceptProgress'] });
       queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['analytics'] });
     }
   });
 
