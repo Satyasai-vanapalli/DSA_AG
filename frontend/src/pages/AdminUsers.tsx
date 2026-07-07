@@ -5,6 +5,47 @@ import { useAuth } from '../context/AuthContext';
 import { Shield, ShieldOff, Settings, Ban, Trash2, CheckCircle } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import { useToast } from '../components/Toast';
+import { Download, Search, X, BarChart2 } from 'lucide-react';
+
+// Progress Modal Component
+const UserProgressModal = ({ user, onClose }: { user: AdminUser; onClose: () => void }) => {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200 dark:border-white/10">
+        <div className="px-6 py-4 border-b border-slate-200 dark:border-white/10 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+          <div>
+            <h3 className="font-bold text-lg text-slate-900 dark:text-white flex items-center gap-2">
+              <BarChart2 className="w-5 h-5 text-primary-500" />
+              User Progress
+            </h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400">{user.name}</p>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-500 dark:text-slate-400">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="p-6">
+          <div className="space-y-4">
+            {user.progress && Object.keys(user.progress).length > 0 ? (
+              Object.entries(user.progress).map(([category, count]) => (
+                <div key={category} className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-white/5">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">
+                    {category.replace('LEARN_', '').replace('_', ' ')}
+                  </span>
+                  <span className="font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20 px-3 py-1 rounded-lg">
+                    {count} solved
+                  </span>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-slate-500 dark:text-slate-400 py-4">No progress data available for this user.</p>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CategoryAdminManager = ({ user, toggleMutation }: { user: AdminUser, toggleMutation: any }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,6 +98,9 @@ const CategoryAdminManager = ({ user, toggleMutation }: { user: AdminUser, toggl
 
 export default function AdminUsers() {
   const [activeTab, setActiveTab] = useState<'SUPER_ADMINS' | 'ADMINS' | 'USERS'>('SUPER_ADMINS');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedUserForProgress, setSelectedUserForProgress] = useState<AdminUser | null>(null);
+
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -141,42 +185,108 @@ export default function AdminUsers() {
     );
   }
 
-  const superAdmins = users?.filter(u => u.role === 'ADMIN') || [];
-  const partialAdmins = users?.filter(u => u.role !== 'ADMIN' && u.adminCategories && u.adminCategories.length > 0) || [];
-  const students = users?.filter(u => u.role !== 'ADMIN' && (!u.adminCategories || u.adminCategories.length === 0)) || [];
+  const filteredUsers = users?.filter(u => 
+    u.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    u.email.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
+
+  const superAdmins = filteredUsers.filter(u => u.role === 'ADMIN');
+  const partialAdmins = filteredUsers.filter(u => u.role !== 'ADMIN' && u.adminCategories && u.adminCategories.length > 0);
+  const students = filteredUsers.filter(u => u.role !== 'ADMIN' && (!u.adminCategories || u.adminCategories.length === 0));
   
   const displayedUsers = activeTab === 'SUPER_ADMINS' ? superAdmins : (activeTab === 'ADMINS' ? partialAdmins : students);
+
+  const exportToCSV = () => {
+    if (!users) return;
+    const headers = ['Name', 'Email', 'Role', 'Status', 'Last Active'];
+    // Add dynamic headers for progress
+    const allCategories = new Set<string>();
+    users.forEach(u => {
+      if (u.progress) Object.keys(u.progress).forEach(cat => allCategories.add(cat));
+    });
+    const categoryHeaders = Array.from(allCategories);
+    
+    const csvRows = [];
+    csvRows.push([...headers, ...categoryHeaders].join(','));
+    
+    users.forEach(u => {
+      const row = [
+        `"${u.name}"`,
+        `"${u.email}"`,
+        u.role,
+        u.isBlocked ? 'Blocked' : 'Active',
+        u.lastActiveTime ? new Date(u.lastActiveTime + 'Z').toLocaleString() : 'Never'
+      ];
+      categoryHeaders.forEach(cat => {
+        row.push(u.progress && u.progress[cat] ? u.progress[cat].toString() : '0');
+      });
+      csvRows.push(row.join(','));
+    });
+    
+    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `user_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-4 md:p-8 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-primary-500/10 rounded-full blur-[100px] -z-10 pointer-events-none" />
       
-      <div className="mb-10 relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="mb-10 relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white mb-2 tracking-tighter">
-            User <span className="glow-text">Management</span>
-          </h1>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white tracking-tighter">
+              User <span className="glow-text">Management</span>
+            </h1>
+            <div className="px-3 py-1 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-bold text-sm">
+              Total Users: {users?.length || 0}
+            </div>
+          </div>
           <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">Promote users to Admin or demote them to regular User role.</p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => setActiveTab('SUPER_ADMINS')}
-            className={`font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 ${activeTab === 'SUPER_ADMINS' ? 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-lg shadow-purple-500/25 scale-105' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'}`}
-          >
-            {superAdmins.length} Super Admins
-          </button>
-          <button
-            onClick={() => setActiveTab('ADMINS')}
-            className={`font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 ${activeTab === 'ADMINS' ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-lg shadow-sky-500/25 scale-105' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'}`}
-          >
-            {partialAdmins.length} Admins
-          </button>
-          <button
-            onClick={() => setActiveTab('USERS')}
-            className={`font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 ${activeTab === 'USERS' ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white shadow-lg shadow-primary-500/25 scale-105' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'}`}
-          >
-            {students.length} Users
-          </button>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input 
+                type="text" 
+                placeholder="Search users..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-9 pr-4 py-2.5 rounded-xl text-sm border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 w-full md:w-64"
+              />
+            </div>
+            <button
+              onClick={exportToCSV}
+              className="inline-flex items-center gap-2 font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 bg-emerald-500 text-white shadow-lg shadow-emerald-500/25 hover:scale-105"
+            >
+              <Download className="w-4 h-4" /> Export
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => setActiveTab('SUPER_ADMINS')}
+              className={`font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 ${activeTab === 'SUPER_ADMINS' ? 'bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white shadow-lg shadow-purple-500/25 scale-105' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'}`}
+            >
+              {superAdmins.length} Super Admins
+            </button>
+            <button
+              onClick={() => setActiveTab('ADMINS')}
+              className={`font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 ${activeTab === 'ADMINS' ? 'bg-gradient-to-r from-sky-600 to-blue-600 text-white shadow-lg shadow-sky-500/25 scale-105' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'}`}
+            >
+              {partialAdmins.length} Admins
+            </button>
+            <button
+              onClick={() => setActiveTab('USERS')}
+              className={`font-bold px-4 py-2.5 rounded-xl text-sm transition-all duration-300 ${activeTab === 'USERS' ? 'bg-gradient-to-r from-primary-600 to-accent-600 text-white shadow-lg shadow-primary-500/25 scale-105' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-300 hover:bg-white dark:hover:bg-white/10 border border-slate-200 dark:border-white/5'}`}
+            >
+              {students.length} Users
+            </button>
+          </div>
         </div>
       </div>
 
@@ -231,6 +341,12 @@ export default function AdminUsers() {
                     )}
                   </td>
                   <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => setSelectedUserForProgress(u)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-primary-50 text-primary-600 dark:bg-primary-900/20 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors mr-2"
+                    >
+                      <BarChart2 className="w-3.5 h-3.5" /> Progress
+                    </button>
                     {u.email !== user?.email && u.role === 'ADMIN' && (
                       <button
                         onClick={() => demoteMutation.mutate(u.id)}
@@ -309,6 +425,13 @@ export default function AdminUsers() {
           </table>
         </div>
       </div>
+      
+      {selectedUserForProgress && (
+        <UserProgressModal 
+          user={selectedUserForProgress} 
+          onClose={() => setSelectedUserForProgress(null)} 
+        />
+      )}
     </div>
   );
 }

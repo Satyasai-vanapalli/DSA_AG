@@ -16,6 +16,7 @@ export interface AdminUser {
   adminCategories: string[];
   lastActiveTime?: string;
   isBlocked?: boolean;
+  progress?: Record<string, number>;
 }
 
 export interface AdminInsights {

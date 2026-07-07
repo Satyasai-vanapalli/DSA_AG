@@ -24,6 +24,21 @@ public interface UserProgressRepository extends JpaRepository<UserProgress, UUID
     java.util.List<java.time.LocalDate> findCompletedDatesByUserAndCategory(@org.springframework.data.repository.query.Param("user") com.dsaroadmap.models.User user, @org.springframework.data.repository.query.Param("category") String category);
 
 
+    interface UserCategoryProgressProjection {
+        UUID getUserId();
+        String getCategory();
+        Long getCompletedCount();
+    }
+
+    @org.springframework.data.jpa.repository.Query(
+        "SELECT up.user.id AS userId, p.category AS category, COUNT(up.id) AS completedCount " +
+        "FROM UserProgress up JOIN up.problem p " +
+        "WHERE up.completed = true " +
+        "GROUP BY up.user.id, p.category"
+    )
+    java.util.List<UserCategoryProgressProjection> getUserProgressPerCategory();
+
+
     interface PopularProblemProjection {
         String getTitle();
         Long getCompletedCount();

@@ -52,6 +52,12 @@ public class AdminController {
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Map<String, Object>>> getAllUsers() {
+        var progressList = userProgressRepository.getUserProgressPerCategory();
+        java.util.Map<UUID, java.util.Map<String, Long>> progressMap = new java.util.HashMap<>();
+        for (var p : progressList) {
+            progressMap.computeIfAbsent(p.getUserId(), k -> new java.util.HashMap<>()).put(p.getCategory(), p.getCompletedCount());
+        }
+
         List<Map<String, Object>> users = userRepository.findAll().stream()
                 .map(user -> {
                     java.util.Map<String, Object> map = new java.util.HashMap<>();
@@ -62,6 +68,10 @@ public class AdminController {
                     map.put("isBlocked", user.isBlocked());
                     map.put("lastActiveTime", user.getLastActiveTime() != null ? user.getLastActiveTime().toString() : null);
                     map.put("adminCategories", user.getAdminCategories() != null ? user.getAdminCategories() : new java.util.HashSet<>());
+                    
+                    java.util.Map<String, Long> userProgress = progressMap.getOrDefault(user.getId(), new java.util.HashMap<>());
+                    map.put("progress", userProgress);
+                    
                     return map;
                 })
                 .toList();

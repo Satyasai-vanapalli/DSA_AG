@@ -1,13 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '../api/users';
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Trophy, Medal, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 
 export default function Leaderboard({ category }: { category?: string }) {
   const { data: leaderboard, isLoading } = useQuery({
     queryKey: ['leaderboard', category],
     queryFn: () => usersApi.getLeaderboard(category),
   });
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   if (isLoading) {
     return (
@@ -18,6 +22,11 @@ export default function Leaderboard({ category }: { category?: string }) {
       </div>
     );
   }
+
+  const totalItems = leaderboard?.length || 0;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedLeaderboard = leaderboard?.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-8 relative">
@@ -47,8 +56,8 @@ export default function Leaderboard({ category }: { category?: string }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-white/5">
-            {leaderboard?.map((user, index) => {
-              const rank = index + 1;
+            {paginatedLeaderboard?.map((user, index) => {
+              const rank = startIndex + index + 1;
               const isTop3 = rank <= 3;
               return (
                 <motion.tr 
@@ -88,7 +97,7 @@ export default function Leaderboard({ category }: { category?: string }) {
                 </motion.tr>
               );
             })}
-            {leaderboard?.length === 0 && (
+            {totalItems === 0 && (
               <tr>
                 <td colSpan={3} className="px-6 py-12 text-center text-slate-500 font-medium">
                   No users on the leaderboard yet. Be the first!
@@ -97,6 +106,48 @@ export default function Leaderboard({ category }: { category?: string }) {
             )}
           </tbody>
         </table>
+        
+        {totalItems > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between p-4 border-t border-slate-200 dark:border-white/10 bg-white/30 dark:bg-black/10 backdrop-blur-md gap-4">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-600 dark:text-slate-400 font-medium">Show:</span>
+              <select
+                value={itemsPerPage}
+                onChange={(e) => {
+                  setItemsPerPage(Number(e.target.value));
+                  setCurrentPage(1); // Reset to first page on size change
+                }}
+                className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block p-2 outline-none font-medium transition-colors cursor-pointer"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-slate-600 dark:text-slate-400 font-medium mr-2">
+                Page {currentPage} of {totalPages || 1}
+              </span>
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Previous page"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage >= totalPages}
+                className="p-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                aria-label="Next page"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
