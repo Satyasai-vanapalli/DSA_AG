@@ -1,0 +1,146 @@
+[
+  {
+    "name": "1. Java Basics & Fundamentals",
+    "description": "# Introduction to Java\nJava is a high-level, class-based, object-oriented programming language designed to have as few implementation dependencies as possible.\n\n### The JVM Architecture\n```mermaid\ngraph TD;\n    A[Source Code .java] -->|Compiler javac| B[Bytecode .class];\n    B --> C[Class Loader Subsystem];\n    C --> D[JVM Memory Area];\n    D --> E[Execution Engine JIT];\n    E --> F[Operating System];\n```\n\n### Key Features\n- **Platform Independent**: Write Once, Run Anywhere (WORA).\n- **Object-Oriented**: Everything is an object.\n- **Robust**: Strong memory management and automatic garbage collection.\n- **Multithreaded**: Built-in support for concurrent programming.",
+    "subTopics": [
+      {
+        "name": "1.1 Data Types & Variables",
+        "description": "# Variables and Data Types\nJava is statically-typed, meaning all variables must first be declared before they can be used.\n\n### Primitive Data Types\n| Type | Size | Range/Values |\n|---|---|---|\n| `byte` | 1 byte | -128 to 127 |\n| `short` | 2 bytes | -32,768 to 32,767 |\n| `int` | 4 bytes | -2^31 to 2^31-1 |\n| `long` | 8 bytes | -2^63 to 2^63-1 |\n| `float` | 4 bytes | Single-precision 32-bit IEEE 754 |\n| `double` | 8 bytes | Double-precision 64-bit IEEE 754 |\n| `char` | 2 bytes | 0 to 65,535 (Unicode) |\n| `boolean`| 1 bit | `true` or `false` |\n\n### Code Example\n```java\nint age = 25;\ndouble price = 19.99;\nchar grade = 'A';\nboolean isValid = true;\n```"
+      },
+      {
+        "name": "1.2 Operators",
+        "description": "# Operators in Java\nJava provides a rich set of operators to manipulate variables.\n\n### 1. Arithmetic Operators\n`+`, `-`, `*`, `/`, `%`\n\n### 2. Relational Operators\n`==`, `!=`, `>`, `<`, `>=`, `<=`\n\n### 3. Logical Operators\n`&&` (Logical AND), `||` (Logical OR), `!` (Logical NOT)\n\n### 4. Bitwise Operators\n`&`, `|`, `^`, `~`, `<<`, `>>`, `>>>` (Unsigned right shift)\n\n### 5. Ternary Operator\n```java\nint max = (a > b) ? a : b;\n```"
+      },
+      {
+        "name": "1.3 Control Flow Statements",
+        "description": "# Control Flow\nControl flow statements break up the flow of execution by employing decision making, looping, and branching.\n\n### If-Else\n```java\nif (score >= 90) {\n    System.out.println(\"A\");\n} else if (score >= 80) {\n    System.out.println(\"B\");\n} else {\n    System.out.println(\"C\");\n}\n```\n\n### Switch Statement (Java 14+ Enhanced)\n```java\nString dayType = switch (day) {\n    case MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY -> \"Weekday\";\n    case SATURDAY, SUNDAY -> \"Weekend\";\n    default -> throw new IllegalArgumentException(\"Invalid day\");\n};\n```\n\n### Loops\n- **For Loop**: `for (int i = 0; i < 10; i++) { ... }`\n- **Enhanced For-Each**: `for (String name : names) { ... }`\n- **While Loop**: `while (condition) { ... }`\n- **Do-While Loop**: `do { ... } while (condition);`"
+      }
+    ]
+  },
+  {
+    "name": "2. Arrays & Strings",
+    "description": "# Arrays and Strings\nHandling collections of data and text manipulation in Java.",
+    "subTopics": [
+      {
+        "name": "2.1 Arrays",
+        "description": "# Arrays\nAn array is a container object that holds a fixed number of values of a single type.\n\n### Declaration and Initialization\n```java\n// 1D Array\nint[] numbers = new int[5];\nint[] primes = {2, 3, 5, 7, 11};\n\n// 2D Array\nint[][] matrix = new int[3][3];\nint[][] grid = { {1, 2}, {3, 4} };\n```\n\n### Iterating over Arrays\n```java\nfor(int i=0; i<primes.length; i++) {\n    System.out.println(primes[i]);\n}\n```"
+      },
+      {
+        "name": "2.2 Strings & String Pool",
+        "description": "# Strings\nStrings in Java are objects that are backed internally by a char array (or byte array in newer versions).\n\n### The String Pool\nStrings are **immutable**. When you create a String literal, it is cached in the String Pool in the Heap memory to save space.\n\n```mermaid\ngraph LR;\n    Stack[Stack] -->|str1, str2 reference| Pool[String Pool: 'Hello'];\n```\n\n```java\nString str1 = \"Hello\";\nString str2 = \"Hello\";\nSystem.out.println(str1 == str2); // true (same reference in pool)\n\nString str3 = new String(\"Hello\");\nSystem.out.println(str1 == str3); // false (str3 is a new object in heap)\nSystem.out.println(str1.equals(str3)); // true (same value)\n```"
+      },
+      {
+        "name": "2.3 StringBuilder & StringBuffer",
+        "description": "# Mutable Strings\nSince `String` is immutable, modifying it creates a new object every time. Use `StringBuilder` or `StringBuffer` for mutable strings.\n\n### StringBuilder\nFast, but **not thread-safe**.\n```java\nStringBuilder sb = new StringBuilder(\"Hello\");\nsb.append(\" World\");\nSystem.out.println(sb.toString());\n```\n\n### StringBuffer\nSlower, but **thread-safe** (synchronized).\n```java\nStringBuffer sbf = new StringBuffer(\"Hello\");\nsbf.append(\" Safe World\");\n```"
+      }
+    ]
+  },
+  {
+    "name": "3. Object-Oriented Programming (OOP)",
+    "description": "# Object-Oriented Programming\nJava's core paradigm is OOP. It revolves around the concept of \"objects\", which contain data (attributes) and code (methods).\n\n### The 4 Pillars of OOP\n1. **Encapsulation**: Hiding internal state and requiring all interaction to be performed through an object's methods.\n2. **Inheritance**: A mechanism where a new class inherits properties and behaviors from an existing class.\n3. **Polymorphism**: The ability of an object to take on many forms (Overloading and Overriding).\n4. **Abstraction**: Hiding complex implementation details and showing only the essential features.",
+    "subTopics": [
+      {
+        "name": "3.1 Classes, Objects & Constructors",
+        "description": "# Classes & Objects\n- **Class**: A blueprint for creating objects.\n- **Object**: An instance of a class.\n\n### Memory Visualization\nWhen you use `new`, memory is allocated on the **Heap**. The reference variable is stored on the **Stack**.\n\n```mermaid\ngraph LR;\n    Stack[Stack Memory: Car myCar] -->|References| Heap[Heap Memory: Car Object {color, speed}];\n```\n\n### Example\n```java\npublic class Car {\n    String color; // Instance variable\n    \n    public Car(String color) { // Constructor\n        this.color = color;\n    }\n    \n    public void drive() { // Method\n        System.out.println(\"Driving a \" + color + \" car.\");\n    }\n}\n\n// Usage\nCar myCar = new Car(\"Red\");\nmyCar.drive();\n```"
+      },
+      {
+        "name": "3.2 Inheritance & Polymorphism",
+        "description": "# Inheritance & Polymorphism\n\n### Inheritance (`extends`)\nJava supports single class inheritance. A subclass inherits non-private members of its superclass.\n\n```java\nclass Animal {\n    void eat() { System.out.println(\"Eating...\"); }\n}\nclass Dog extends Animal {\n    void bark() { System.out.println(\"Barking...\"); }\n}\n```\n\n### Polymorphism\n- **Compile-time (Method Overloading)**: Same method name, different parameters.\n- **Runtime (Method Overriding)**: Subclass provides a specific implementation of a method defined in its superclass using `@Override`.\n\n```java\nclass Cat extends Animal {\n    @Override\n    void eat() {\n        System.out.println(\"Cat is eating fish...\");\n    }\n}\n\nAnimal myAnimal = new Cat();\nmyAnimal.eat(); // Output: Cat is eating fish...\n```"
+      },
+      {
+        "name": "3.3 Interfaces & Abstract Classes",
+        "description": "# Abstraction in Java\n\n### Abstract Classes\n- Can have both abstract (no body) and concrete methods.\n- Cannot be instantiated directly.\n- Can have state (instance variables).\n\n```java\nabstract class Shape {\n    abstract void draw();\n}\n```\n\n### Interfaces (`implements`)\n- A contract that classes must follow.\n- Methods are implicitly `public abstract` (prior to Java 8).\n- Java 8 introduced `default` and `static` methods in interfaces.\n- A class can implement multiple interfaces.\n\n```java\ninterface Drawable {\n    void draw();\n    default void printInfo() {\n        System.out.println(\"This is a drawable object.\");\n    }\n}\n```"
+      },
+      {
+        "name": "3.4 Keywords: static, final, this, super",
+        "description": "# Important Keywords\n\n### `static`\nBelongs to the class, not instances. Shared among all objects.\n```java\nclass Counter {\n    static int count = 0; // Shared across all instances\n}\n```\n\n### `final`\n- **Variable**: Cannot be reassigned (acts as a constant).\n- **Method**: Cannot be overridden by subclasses.\n- **Class**: Cannot be inherited.\n\n### `this`\nRefers to the current object instance.\n```java\npublic void setName(String name) {\n    this.name = name; // Resolves shadowing\n}\n```\n\n### `super`\nRefers to the parent class instance (used to call parent constructor or overridden methods).\n```java\nsuper(); // Calls parent constructor\nsuper.methodName();\n```"
+      }
+    ]
+  },
+  {
+    "name": "4. Exception Handling",
+    "description": "# Exception Handling\nAn exception is an unwanted event that interrupts normal execution.",
+    "subTopics": [
+      {
+        "name": "4.1 Exception Hierarchy",
+        "description": "# Exception Hierarchy\n```mermaid\ngraph TD;\n    A[Throwable] --> B[Error];\n    A --> C[Exception];\n    C --> D[RuntimeException (Unchecked)];\n    C --> E[IOException (Checked)];\n```\n\n- **Error**: Irrecoverable conditions (e.g. OutOfMemoryError).\n- **Checked Exceptions**: Must be handled or declared (`throws`). Checked at compile-time.\n- **Unchecked Exceptions**: Extend RuntimeException. Checked at runtime (e.g. NullPointerException)."
+      },
+      {
+        "name": "4.2 Try-Catch-Finally",
+        "description": "# Handling Exceptions\n\n### Example\n```java\ntry {\n    int result = 10 / 0;\n} catch (ArithmeticException e) {\n    System.out.println(\"Cannot divide by zero!\");\n} finally {\n    System.out.println(\"Execution complete.\");\n}\n```\n\n### Try-with-Resources (Java 7+)\nAutomatically closes resources that implement `AutoCloseable`.\n```java\ntry (BufferedReader br = new BufferedReader(new FileReader(\"file.txt\"))) {\n    System.out.println(br.readLine());\n} catch (IOException e) {\n    e.printStackTrace();\n}\n```"
+      },
+      {
+        "name": "4.3 Custom Exceptions",
+        "description": "# Creating Custom Exceptions\nYou can create your own exception classes by extending `Exception` or `RuntimeException`.\n\n```java\npublic class InvalidAgeException extends Exception {\n    public InvalidAgeException(String message) {\n        super(message);\n    }\n}\n\n// Usage\npublic void checkAge(int age) throws InvalidAgeException {\n    if (age < 18) {\n        throw new InvalidAgeException(\"Age must be 18 or older.\");\n    }\n}\n```"
+      }
+    ]
+  },
+  {
+    "name": "5. Collections Framework",
+    "description": "# The Collections Framework\nA unified architecture for representing and manipulating collections (groups of objects).",
+    "subTopics": [
+      {
+        "name": "5.1 Lists",
+        "description": "# Lists\nOrdered collections that allow duplicates.\n\n### ArrayList\nBacked by a dynamic array. Fast random access `O(1)`, slow insertion/deletion in middle `O(n)`.\n```java\nList<String> list = new ArrayList<>();\nlist.add(\"Apple\");\nlist.add(\"Banana\");\n```\n\n### LinkedList\nBacked by a doubly-linked list. Fast insertion/deletion `O(1)`, slow random access `O(n)`.\n```java\nList<String> list = new LinkedList<>();\nlist.add(\"Apple\");\n```"
+      },
+      {
+        "name": "5.2 Sets",
+        "description": "# Sets\nCollections that do not allow duplicate elements.\n\n### HashSet\nBacked by a HashMap. No guaranteed order. `O(1)` operations.\n```java\nSet<Integer> set = new HashSet<>();\nset.add(1);\nset.add(1); // Ignored\n```\n\n### TreeSet\nBacked by a TreeMap (Red-Black Tree). Elements are sorted in natural order. `O(log n)` operations.\n```java\nSet<Integer> set = new TreeSet<>();\nset.add(5);\nset.add(2); // Iterator will return 2 then 5\n```"
+      },
+      {
+        "name": "5.3 Maps",
+        "description": "# Maps\nKey-Value pairs. Keys must be unique.\n\n### HashMap\nFast `O(1)` operations. Uses a hash table internally.\n\n```mermaid\ngraph LR;\n    Key[Key] -->|hashCode| Hash[Hash Function];\n    Hash --> Index[Array Index];\n    Index --> Bucket[Bucket Node containing Key, Value, Next];\n```\n\n```java\nMap<String, Integer> map = new HashMap<>();\nmap.put(\"Alice\", 25);\nmap.put(\"Bob\", 30);\n```\n\n### TreeMap\nSorted by keys in natural order. `O(log n)` operations."
+      }
+    ]
+  },
+  {
+    "name": "6. Generics",
+    "description": "# Generics\nGenerics enable types (classes and interfaces) to be parameters when defining classes, interfaces and methods.",
+    "subTopics": [
+      {
+        "name": "6.1 Generic Classes & Methods",
+        "description": "# Generics\n\n### Generic Class\n```java\nclass Box<T> {\n    private T item;\n    public void setItem(T item) { this.item = item; }\n    public T getItem() { return item; }\n}\n\nBox<String> stringBox = new Box<>();\nstringBox.setItem(\"Hello\");\n```\n\n### Generic Method\n```java\npublic <T> void printArray(T[] array) {\n    for (T element : array) {\n        System.out.println(element);\n    }\n}\n```"
+      },
+      {
+        "name": "6.2 Bounds & Wildcards",
+        "description": "# Bounds & Wildcards\n\n### Upper Bounded Wildcards\nRestricts the unknown type to be a specific type or a subtype of that type.\n```java\npublic void processShapes(List<? extends Shape> shapes) {\n    for (Shape s : shapes) {\n        s.draw();\n    }\n}\n```\n\n### Lower Bounded Wildcards\nRestricts the unknown type to be a specific type or a super type of that type.\n```java\npublic void addIntegers(List<? super Integer> list) {\n    list.add(5);\n}\n```"
+      }
+    ]
+  },
+  {
+    "name": "7. Multithreading & Concurrency",
+    "description": "# Multithreading\nExecuting multiple threads simultaneously to maximize CPU utilization.",
+    "subTopics": [
+      {
+        "name": "7.1 Thread Lifecycle",
+        "description": "# Thread Lifecycle\n```mermaid\ngraph LR;\n    New -->|start| Runnable;\n    Runnable -->|scheduler| Running;\n    Running -->|sleep/wait| Blocked;\n    Blocked -->|notify| Runnable;\n    Running -->|finish| Terminated;\n```\n\n### Creating a Thread\n1. Extending `Thread` class.\n2. Implementing `Runnable` interface (Preferred).\n\n```java\nclass MyTask implements Runnable {\n    public void run() {\n        System.out.println(\"Running in thread: \" + Thread.currentThread().getName());\n    }\n}\n\nThread t1 = new Thread(new MyTask());\nt1.start();\n```"
+      },
+      {
+        "name": "7.2 Synchronization & Locks",
+        "description": "# Synchronization\nUsed to prevent thread interference (Race Conditions).\n\n### Synchronized Method\n```java\npublic synchronized void increment() {\n    count++;\n}\n```\n\n### Synchronized Block\nProvides finer granularity.\n```java\npublic void process() {\n    synchronized(this) {\n        // critical section\n    }\n}\n```\n\n### ReentrantLock\nProvides more flexibility than intrinsic locks.\n```java\nLock lock = new ReentrantLock();\nlock.lock();\ntry {\n    // critical section\n} finally {\n    lock.unlock();\n}\n```"
+      },
+      {
+        "name": "7.3 Executors & Thread Pools",
+        "description": "# Thread Pools\nCreating new threads is expensive. Thread pools manage a pool of worker threads.\n\n### ExecutorService\n```java\nExecutorService executor = Executors.newFixedThreadPool(5);\nfor (int i = 0; i < 10; i++) {\n    executor.submit(() -> {\n        System.out.println(\"Task executed by \" + Thread.currentThread().getName());\n    });\n}\nexecutor.shutdown();\n```"
+      }
+    ]
+  },
+  {
+    "name": "8. Java 8+ Features",
+    "description": "# Modern Java\nJava 8 introduced functional programming concepts, significantly changing how Java code is written.",
+    "subTopics": [
+      {
+        "name": "8.1 Lambda Expressions",
+        "description": "# Lambdas\nA short block of code which takes in parameters and returns a value. Used to implement functional interfaces (interfaces with exactly one abstract method).\n\n```java\n// Before Java 8\nRunnable r1 = new Runnable() {\n    @Override\n    public void run() {\n        System.out.println(\"Running\");\n    }\n};\n\n// Java 8 Lambda\nRunnable r2 = () -> System.out.println(\"Running\");\n```\n\n### Common Functional Interfaces\n- `Predicate<T>`: Returns boolean.\n- `Consumer<T>`: Accepts an argument, returns nothing.\n- `Function<T, R>`: Accepts an argument, returns a result.\n- `Supplier<T>`: Takes nothing, returns a result."
+      },
+      {
+        "name": "8.2 Streams API",
+        "description": "# Streams API\nUsed to process collections of objects in a declarative way.\n- **Intermediate Operations**: return a new stream (`filter`, `map`, `sorted`). Lazy execution.\n- **Terminal Operations**: return a non-stream result (`collect`, `forEach`, `reduce`, `count`). Triggers execution.\n\n### Example\n```java\nList<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5, 6);\nint sumOfSquaresOfEvens = numbers.stream()\n    .filter(n -> n % 2 == 0)   // Keep evens: 2, 4, 6\n    .map(n -> n * n)           // Square them: 4, 16, 36\n    .reduce(0, Integer::sum);  // Sum them up: 56\n```"
+      },
+      {
+        "name": "8.3 Optional",
+        "description": "# Optional\nA container object which may or may not contain a non-null value. Helps prevent `NullPointerException`.\n\n```java\nOptional<String> opt = Optional.ofNullable(getName());\n\n// If value is present, print it\nopt.ifPresent(name -> System.out.println(name));\n\n// Provide a default value\nString name = opt.orElse(\"Unknown\");\n\n// Throw exception if empty\nString strictName = opt.orElseThrow(() -> new IllegalArgumentException(\"Name is required\"));\n```"
+      }
+    ]
+  }
+]

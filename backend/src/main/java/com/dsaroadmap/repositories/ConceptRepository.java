@@ -13,4 +13,5 @@ public interface ConceptRepository extends JpaRepository<Concept, UUID> {
     java.util.List<Concept> findByCategoryAndParentIdIsNullOrderByOrderIndexAsc(String category);
     java.util.List<Concept> findByParentIdOrderByOrderIndexAsc(UUID parentId);
     java.util.List<Concept> findByNameContainingIgnoreCaseOrderByOrderIndexAsc(String name);
+    long countByCategory(String category);
 }
