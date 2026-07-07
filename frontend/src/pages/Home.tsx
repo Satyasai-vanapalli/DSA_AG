@@ -94,10 +94,34 @@ export default function Home({ category }: { category: string }) {
 
   if (isLoading) {
     return (
-      <div className="max-w-5xl mx-auto p-6 md:p-8 space-y-4">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="h-20 bg-slate-200 dark:bg-slate-800 rounded-xl animate-pulse"></div>
-        ))}
+      <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+          <div className="space-y-3 w-full max-w-sm">
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="h-10 bg-slate-200 dark:bg-slate-800/60 rounded-xl overflow-hidden relative">
+              <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
+            </motion.div>
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5, delay: 0.1 }} className="h-5 bg-slate-200 dark:bg-slate-800/60 rounded-lg w-2/3 overflow-hidden relative">
+              <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.1 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
+            </motion.div>
+          </div>
+        </div>
+        <div className="space-y-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.1 }}
+              className="h-20 bg-slate-200 dark:bg-slate-800/60 rounded-2xl overflow-hidden relative border border-slate-300/50 dark:border-white/5"
+            >
+              <motion.div 
+                animate={{ x: ['-100%', '200%'] }} 
+                transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: i * 0.1 }} 
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" 
+              />
+            </motion.div>
+          ))}
+        </div>
       </div>
     );
   }

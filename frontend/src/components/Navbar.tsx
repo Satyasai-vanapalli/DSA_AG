@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Moon, Sun, User as UserIcon } from 'lucide-react';
+import { Moon, Sun, User as UserIcon, Flame } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useQuery } from '@tanstack/react-query';
@@ -70,8 +71,13 @@ export default function Navbar() {
                   <div className="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-700">
                     {stats && stats.currentStreak > 0 && (
                       <div className="flex flex-col items-center justify-center mr-2 text-orange-500" title={`${stats.currentStreak} day streak`}>
-                        <span className="text-lg leading-none">🔥</span>
-                        <span className="text-[10px] font-bold leading-none">{stats.currentStreak}</span>
+                        <motion.div
+                          animate={{ scale: [1, 1.15, 1], filter: ["brightness(1)", "brightness(1.3)", "brightness(1)"] }}
+                          transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                        >
+                          <Flame className="w-5 h-5 text-orange-500 drop-shadow-[0_0_8px_rgba(249,115,22,0.8)] fill-orange-500/20" />
+                        </motion.div>
+                        <span className="text-[10px] font-bold leading-none mt-0.5">{stats.currentStreak}</span>
                       </div>
                     )}
                     <button
