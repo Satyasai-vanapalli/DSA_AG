@@ -10,7 +10,9 @@ export default function Sidebar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>('Learn');
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletePhase, setDeletePhase] = useState<'CONFIRM' | 'OTP'>('CONFIRM');
   const [otp, setOtp] = useState('');
   const { isAuthenticated, logout, user } = useAuth();
 
@@ -35,8 +37,14 @@ export default function Sidebar() {
   });
 
   const handleDeleteInitiate = () => {
-    sendOtpMutation.mutate();
+    setDeletePhase('CONFIRM');
+    setOtp('');
     setShowDeleteModal(true);
+  };
+
+  const handleProceedToOtp = () => {
+    sendOtpMutation.mutate();
+    setDeletePhase('OTP');
   };
 
   const confirmDelete = () => {
@@ -174,7 +182,7 @@ export default function Sidebar() {
         {/* Bottom Actions */}
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
           <button 
-            onClick={logout}
+            onClick={() => setShowLogoutModal(true)}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white transition-colors"
           >
             <LogOut className="w-5 h-5" />
@@ -193,72 +201,137 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Delete Account Modal */}
+      {/* Logout Modal */}
       <AnimatePresence>
-        {showDeleteModal && (
+        {showLogoutModal && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowLogoutModal(false)} />
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-md bg-white dark:bg-dark-card rounded-2xl shadow-xl border border-slate-200 dark:border-dark-border p-6"
+              className="relative w-full max-w-sm bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-white/10 p-6 flex flex-col items-center text-center"
             >
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Delete Account</h3>
+              <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center mb-4">
+                <LogOut className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Ready to Leave?</h3>
+              <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
+                Are you sure you want to log out of your account? You will need to sign in again to access your progress.
+              </p>
               
-              {sendOtpMutation.isPending ? (
-                <div className="py-8 flex flex-col items-center justify-center">
-                  <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <p className="text-slate-500 dark:text-slate-400">Sending OTP to your email...</p>
-                </div>
-              ) : (
-                <>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
-                    Are you absolutely sure you want to delete your account? This action is <strong>permanent</strong> and will delete all your progress. 
-                    <br/><br/>
-                    Please enter the 6-digit OTP sent to <strong>{user?.email}</strong>.
-                  </p>
-                  
-                  {verifyDeleteMutation.isError && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
-                      Invalid OTP or it has expired.
-                    </div>
-                  )}
-
-                  <div className="space-y-4">
-                    <input
-                      type="text"
-                      placeholder="Enter 6-digit OTP"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
-                    />
-                    
-                    <div className="flex justify-end gap-3 pt-2">
-                      <button
-                        onClick={() => setShowDeleteModal(false)}
-                        className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        onClick={confirmDelete}
-                        disabled={otp.length !== 6 || verifyDeleteMutation.isPending}
-                        className="px-4 py-2 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
-                      >
-                        {verifyDeleteMutation.isPending && (
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        )}
-                        Permanently Delete
-                      </button>
-                    </div>
-                  </div>
-                </>
-              )}
+              <div className="w-full flex gap-3">
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLogoutModal(false);
+                    logout();
+                  }}
+                  className="flex-1 px-4 py-3 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors"
+                >
+                  Yes, Log Out
+                </button>
+              </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+
+      {/* Delete Account Modal */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowDeleteModal(false)} />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-white/10 p-6"
+            >
+              {deletePhase === 'CONFIRM' ? (
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 text-red-500 flex items-center justify-center mb-4">
+                    <Trash2 className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Delete Account</h3>
+                  <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
+                    This is a <strong>permanent</strong> action. All your progress, solved problems, and data will be erased forever. 
+                    <br/><br/>
+                    Are you absolutely sure you want to proceed?
+                  </p>
+                  <div className="w-full flex gap-3">
+                    <button
+                      onClick={() => setShowDeleteModal(false)}
+                      className="flex-1 px-4 py-3 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleProceedToOtp}
+                      className="flex-1 px-4 py-3 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-500/30 transition-colors"
+                    >
+                      Yes, Proceed
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Verify Deletion</h3>
+                  
+                  {sendOtpMutation.isPending ? (
+                    <div className="py-8 flex flex-col items-center justify-center">
+                      <div className="w-8 h-8 border-4 border-red-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                      <p className="text-slate-500 dark:text-slate-400">Sending OTP to your email...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-slate-600 dark:text-slate-400 text-sm mb-6">
+                        Please enter the 6-digit OTP sent to <strong>{user?.email}</strong> to permanently delete your account.
+                      </p>
+                      
+                      {verifyDeleteMutation.isError && (
+                        <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm">
+                          Invalid OTP or it has expired.
+                        </div>
+                      )}
+
+                      <div className="space-y-4">
+                        <input
+                          type="text"
+                          placeholder="Enter 6-digit OTP"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value.replace(/[^0-9]/g, '').slice(0, 6))}
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800/50 text-slate-900 dark:text-white focus:ring-2 focus:ring-red-500 outline-none"
+                        />
+                        
+                        <div className="flex justify-end gap-3 pt-2">
+                          <button
+                            onClick={() => setShowDeleteModal(false)}
+                            className="px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            onClick={confirmDelete}
+                            disabled={otp.length !== 6 || verifyDeleteMutation.isPending}
+                            className="px-4 py-2.5 rounded-xl text-sm font-semibold bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                          >
+                            {verifyDeleteMutation.isPending && (
+                              <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            )}
+                            Permanently Delete
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
     </>
   );
 }

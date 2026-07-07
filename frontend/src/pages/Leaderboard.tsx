@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { usersApi } from '../api/users';
-import { Trophy, Medal, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Trophy, Medal, Award, ChevronLeft, ChevronRight, User as UserIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 
@@ -78,15 +78,24 @@ export default function Leaderboard({ category }: { category?: string }) {
                      <span className="text-slate-500 dark:text-slate-500">#{rank}</span>}
                   </td>
                   <td className="px-6 py-5">
-                    <div className="flex items-center gap-3">
-                      <span className={`font-bold text-lg ${isTop3 ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
-                        {user.name}
-                      </span>
-                      {user.currentStreak > 0 && (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-orange-500 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 rounded-full shadow-sm" title={`${user.currentStreak} day streak`}>
-                          🔥 {user.currentStreak}
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-slate-200 dark:border-slate-700 flex-shrink-0 flex items-center justify-center bg-slate-100 dark:bg-slate-800">
+                        {user.profilePictureUrl ? (
+                          <img src={user.profilePictureUrl} alt="Profile" className="w-full h-full object-cover" />
+                        ) : (
+                          <UserIcon className="w-5 h-5 text-slate-400" />
+                        )}
+                      </div>
+                      <div className="flex flex-col items-start gap-1">
+                        <span className={`font-bold text-lg leading-none ${isTop3 ? 'text-slate-900 dark:text-white' : 'text-slate-700 dark:text-slate-300'}`}>
+                          {user.name}
                         </span>
-                      )}
+                        {user.currentStreak > 0 && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-orange-500 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded shadow-sm leading-none" title={`${user.currentStreak} day streak`}>
+                            🔥 {user.currentStreak}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-5 text-right">

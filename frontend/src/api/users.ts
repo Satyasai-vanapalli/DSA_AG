@@ -4,6 +4,7 @@ export interface LeaderboardUser {
   name: string;
   completedCount: number;
   currentStreak: number;
+  profilePictureUrl?: string;
 }
 
 export const usersApi = {

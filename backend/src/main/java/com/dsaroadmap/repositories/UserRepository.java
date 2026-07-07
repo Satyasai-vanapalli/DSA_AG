@@ -13,20 +13,21 @@ public interface UserRepository extends JpaRepository<User, UUID> {
         String getName();
         Long getCompletedCount();
         Integer getCurrentStreak();
+        String getProfilePictureUrl();
     }
 
     @org.springframework.data.jpa.repository.Query(
-           "SELECT u.name AS name, SUM(CASE WHEN up.completed = true THEN 1L ELSE 0L END) AS completedCount, u.currentStreak AS currentStreak " +
+           "SELECT u.name AS name, SUM(CASE WHEN up.completed = true THEN 1L ELSE 0L END) AS completedCount, u.currentStreak AS currentStreak, u.profilePictureUrl AS profilePictureUrl " +
            "FROM User u LEFT JOIN u.progress up " +
-           "GROUP BY u.id, u.name, u.currentStreak " +
+           "GROUP BY u.id, u.name, u.currentStreak, u.profilePictureUrl " +
            "ORDER BY SUM(CASE WHEN up.completed = true THEN 1L ELSE 0L END) DESC, u.name ASC")
     java.util.List<LeaderboardProjection> getLeaderboard(org.springframework.data.domain.Pageable pageable);
 
     @org.springframework.data.jpa.repository.Query(
-           "SELECT u.name AS name, SUM(CASE WHEN up.completed = true AND UPPER(p.category) = UPPER(:category) THEN 1L ELSE 0L END) AS completedCount, u.currentStreak AS currentStreak " +
+           "SELECT u.name AS name, SUM(CASE WHEN up.completed = true AND UPPER(p.category) = UPPER(:category) THEN 1L ELSE 0L END) AS completedCount, u.currentStreak AS currentStreak, u.profilePictureUrl AS profilePictureUrl " +
            "FROM User u LEFT JOIN u.progress up " +
            "LEFT JOIN up.problem p " +
-           "GROUP BY u.id, u.name, u.currentStreak " +
+           "GROUP BY u.id, u.name, u.currentStreak, u.profilePictureUrl " +
            "ORDER BY SUM(CASE WHEN up.completed = true AND UPPER(p.category) = UPPER(:category) THEN 1L ELSE 0L END) DESC, u.name ASC")
     java.util.List<LeaderboardProjection> getLeaderboardByCategory(@org.springframework.data.repository.query.Param("category") String category, org.springframework.data.domain.Pageable pageable);
 
