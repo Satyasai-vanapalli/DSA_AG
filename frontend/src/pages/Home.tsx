@@ -30,6 +30,36 @@ export default function Home({ category }: { category: string }) {
     enabled: isAuthenticated,
   });
 
+  const { data: userAnalytics } = useQuery({
+    queryKey: ['analytics', category],
+    queryFn: () => progressApi.getMyAnalytics(category),
+    enabled: isAuthenticated,
+  });
+
+  const categoryStats = useMemo(() => {
+    let easy = 0, medium = 0, hard = 0, total = 0;
+    if (!concepts) return { total, easy, medium, hard };
+    
+    const countProblems = (conceptList: Concept[]) => {
+      conceptList.forEach(c => {
+        if (c.problems) {
+          c.problems.forEach(p => {
+            total++;
+            if (p.difficulty === 'Easy') easy++;
+            else if (p.difficulty === 'Medium') medium++;
+            else if (p.difficulty === 'Hard') hard++;
+          });
+        }
+        if (c.children) {
+          countProblems(c.children);
+        }
+      });
+    };
+    
+    countProblems(concepts);
+    return { total, easy, medium, hard };
+  }, [concepts]);
+
   const filteredConcepts = useMemo(() => {
     if (!concepts) return [];
     if (!searchQuery) return concepts;
@@ -102,20 +132,54 @@ export default function Home({ category }: { category: string }) {
           )}
         </div>
 
-        {isAuthenticated && userStats && (
-          <div className="flex gap-4">
-            <div className="glass-card px-6 py-4 rounded-2xl relative overflow-hidden group min-w-[130px] flex flex-col items-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <span className="text-3xl font-extrabold text-green-500 drop-shadow-[0_0_10px_rgba(34,197,94,0.4)] relative z-10">
-                {userStats.completed} <span className="text-xl text-slate-500 dark:text-slate-400">/ {userStats.total}</span>
+        {isAuthenticated && userStats && userAnalytics && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full md:w-auto mt-6 md:mt-0">
+            {/* Total Progress */}
+            <div className="glass-card p-4 rounded-2xl relative overflow-hidden group min-w-[120px] flex flex-col items-center justify-center border border-primary-500/20 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-accent-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-1000" style={{ width: `${categoryStats.total > 0 ? (userStats.completed / categoryStats.total) * 100 : 0}%` }} />
+              <span className="text-2xl md:text-3xl font-extrabold text-primary-500 drop-shadow-[0_0_10px_rgba(139,92,246,0.4)] relative z-10 flex items-baseline gap-1">
+                <AnimatedCounter value={userStats.completed} /> <span className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-bold">/ <AnimatedCounter value={categoryStats.total} /></span>
               </span>
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">Completed</span>
+              <span className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">Total</span>
             </div>
-            <div className="glass-card px-6 py-4 rounded-2xl relative overflow-hidden group min-w-[130px] flex flex-col items-center">
-              <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <span className="text-3xl font-extrabold text-yellow-500 drop-shadow-[0_0_10px_rgba(234,179,8,0.4)] relative z-10">{userStats.revision}</span>
-              <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">To Revise</span>
+
+            {/* Easy Progress */}
+            <div className="glass-card p-4 rounded-2xl relative overflow-hidden group min-w-[120px] flex flex-col items-center justify-center border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 left-0 h-1 bg-emerald-500 transition-all duration-1000" style={{ width: `${categoryStats.easy > 0 ? (userAnalytics.easy / categoryStats.easy) * 100 : 0}%` }} />
+              <span className="text-2xl md:text-3xl font-extrabold text-emerald-500 drop-shadow-[0_0_10px_rgba(16,185,129,0.4)] relative z-10 flex items-baseline gap-1">
+                <AnimatedCounter value={userAnalytics.easy} /> <span className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-bold">/ <AnimatedCounter value={categoryStats.easy} /></span>
+              </span>
+              <span className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">Easy</span>
             </div>
+
+            {/* Medium Progress */}
+            <div className="glass-card p-4 rounded-2xl relative overflow-hidden group min-w-[120px] flex flex-col items-center justify-center border border-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 left-0 h-1 bg-amber-500 transition-all duration-1000" style={{ width: `${categoryStats.medium > 0 ? (userAnalytics.medium / categoryStats.medium) * 100 : 0}%` }} />
+              <span className="text-2xl md:text-3xl font-extrabold text-amber-500 drop-shadow-[0_0_10px_rgba(245,158,11,0.4)] relative z-10 flex items-baseline gap-1">
+                <AnimatedCounter value={userAnalytics.medium} /> <span className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-bold">/ <AnimatedCounter value={categoryStats.medium} /></span>
+              </span>
+              <span className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">Medium</span>
+            </div>
+
+            {/* Hard Progress */}
+            <div className="glass-card p-4 rounded-2xl relative overflow-hidden group min-w-[120px] flex flex-col items-center justify-center border border-rose-500/20 shadow-[0_0_15px_rgba(243,62,112,0.1)]">
+              <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute top-0 left-0 h-1 bg-rose-500 transition-all duration-1000" style={{ width: `${categoryStats.hard > 0 ? (userAnalytics.hard / categoryStats.hard) * 100 : 0}%` }} />
+              <span className="text-2xl md:text-3xl font-extrabold text-rose-500 drop-shadow-[0_0_10px_rgba(243,62,112,0.4)] relative z-10 flex items-baseline gap-1">
+                <AnimatedCounter value={userAnalytics.hard} /> <span className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-bold">/ <AnimatedCounter value={categoryStats.hard} /></span>
+              </span>
+              <span className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">Hard</span>
+            </div>
+            
+            {/* Revision Badge (Optional if > 0) */}
+            {userStats.revision > 0 && (
+              <div className="absolute -top-3 -right-3 md:-top-4 md:-right-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-slate-900 font-extrabold text-xs px-3 py-1.5 rounded-full shadow-lg shadow-amber-500/30 border-2 border-white dark:border-dark-bg z-20 flex items-center gap-1">
+                <AlertCircle className="w-3 h-3" /> {userStats.revision} To Revise
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -807,4 +871,33 @@ function SolutionModal({ problem, onClose }: { problem: any, onClose: () => void
       </motion.div>
     </div>
   );
+}
+
+function AnimatedCounter({ value, duration = 2 }: { value: number, duration?: number }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTimestamp: number;
+    let animationFrameId: number;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / (duration * 1000), 1);
+      
+      // easeOutQuart
+      const easeProgress = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(easeProgress * value));
+      
+      if (progress < 1) {
+        animationFrameId = window.requestAnimationFrame(step);
+      } else {
+        setCount(value);
+      }
+    };
+    
+    animationFrameId = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(animationFrameId);
+  }, [value, duration]);
+
+  return <span>{count}</span>;
 }
