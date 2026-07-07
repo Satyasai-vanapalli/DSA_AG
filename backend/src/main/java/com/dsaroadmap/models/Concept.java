@@ -53,4 +53,8 @@ public class Concept {
     @OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({"concept", "companies", "topics", "platformLinks", "videos", "solutions"})
     private List<Problem> problems = new ArrayList<>();
+
+    @OneToMany(mappedBy = "concept", cascade = CascadeType.ALL, orphanRemoval = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private List<ConceptProgress> conceptProgresses = new ArrayList<>();
 }
