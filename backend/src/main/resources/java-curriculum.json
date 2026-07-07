@@ -1,147 +1,4675 @@
 [
   {
     "name": "PHASE 1: THE BEDROCK (Syntax, Keywords, Core Libs)",
-    "description": "# Phase 1: The Bedrock\n\nThis phase covers the fundamental building blocks of Java. You will learn about the environment, the compilation process, strict keywords, identifiers, primitive types, and control flow.",
+    "description": "PHASE 1: THE BEDROCK (Syntax, Keywords, Core Libs)",
     "subTopics": [
       {
         "name": "1.1 Environment & Toolchain",
-        "description": "# Environment & Toolchain\n\nJava operates on the **Write Once, Run Anywhere** (WORA) principle.\n\n## 1. JDK (Java Development Kit)\nThe full kit required to *develop* Java applications.\n- **`javac`**: The compiler that turns `.java` source files into `.class` bytecode.\n- **`jar`**: Archiver tool to package multiple files into a single `.jar` archive.\n- **`javadoc`**: Generator for HTML documentation from source code comments.\n\n## 2. JRE (Java Runtime Environment)\nThe environment required to *run* Java applications.\n- **JVM**: The Virtual Machine.\n- **Core Libraries**: `rt.jar`, containing standard classes like `String`, `Math`, etc.\n\n## 3. JVM (Java Virtual Machine)\nThe engine that executes bytecode.\n- **Interpreter**: Executes bytecode instruction by instruction.\n- **JIT (Just-In-Time) Compiler**: Translates frequently executed bytecode (hotspots) into native machine code at runtime for performance.\n\n## 4. Compilation Lifecycle\n```mermaid\ngraph LR\n    A[Source File .java] -->|javac| B[Bytecode File .class]\n    B -->|java Launcher| C[JVM Execution]\n    C -->|JIT/Interpreter| D[Machine Code]\n```"
+        "description": "1.1 Environment & Toolchain",
+        "subTopics": [
+          {
+            "name": "JDK (Java Development Kit)",
+            "description": "JDK (Java Development Kit)",
+            "subTopics": [
+              {
+                "name": "javac (Compiler)",
+                "description": "javac (Compiler)"
+              },
+              {
+                "name": "jar (Archiver)",
+                "description": "jar (Archiver)"
+              },
+              {
+                "name": "javadoc (Documentation Generator)",
+                "description": "javadoc (Documentation Generator)"
+              }
+            ]
+          },
+          {
+            "name": "JRE (Java Runtime Environment)",
+            "description": "JRE (Java Runtime Environment)",
+            "subTopics": [
+              {
+                "name": "JVM (Java Virtual Machine)",
+                "description": "JVM (Java Virtual Machine)"
+              },
+              {
+                "name": "Core Runtime Libraries",
+                "description": "Core Runtime Libraries"
+              }
+            ]
+          },
+          {
+            "name": "JVM (Java Virtual Machine)",
+            "description": "JVM (Java Virtual Machine)",
+            "subTopics": [
+              {
+                "name": "Interpreter (Bytecode to Machine Code)",
+                "description": "Interpreter (Bytecode to Machine Code)"
+              },
+              {
+                "name": "JIT (Just-In-Time Compiler)",
+                "description": "JIT (Just-In-Time Compiler)"
+              }
+            ]
+          },
+          {
+            "name": "Environment Variables",
+            "description": "Environment Variables",
+            "subTopics": [
+              {
+                "name": "JAVA_HOME (Points to JDK installation directory)",
+                "description": "JAVA_HOME (Points to JDK installation directory)"
+              },
+              {
+                "name": "PATH (Allows OS to find java/javac executables)",
+                "description": "PATH (Allows OS to find java/javac executables)"
+              }
+            ]
+          },
+          {
+            "name": "Compilation Lifecycle",
+            "description": "Compilation Lifecycle",
+            "subTopics": [
+              {
+                "name": "Source File (.java)",
+                "description": "Source File (.java)"
+              },
+              {
+                "name": "javac Compilation Step",
+                "description": "javac Compilation Step"
+              },
+              {
+                "name": "Bytecode File (.class)",
+                "description": "Bytecode File (.class)"
+              },
+              {
+                "name": "java Launcher Step",
+                "description": "java Launcher Step"
+              },
+              {
+                "name": "JVM Execution Step",
+                "description": "JVM Execution Step"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "1.2 Keywords & Identifiers",
-        "description": "# Keywords & Identifiers\n\nJava has over 50 strict reserved keywords that cannot be used as variable names.\n\n## Access Modifiers\n| Modifier | Class | Package | Subclass | World |\n|---|---|---|---|---|\n| `public` | ✅ | ✅ | ✅ | ✅ |\n| `protected` | ✅ | ✅ | ✅ | ❌ |\n| (default) | ✅ | ✅ | ❌ | ❌ |\n| `private` | ✅ | ❌ | ❌ | ❌ |\n\n## Core Keywords\n- **`class`, `interface`, `enum`, `record`**: Object definitions.\n- **`new`**: Allocates memory on the Heap.\n- **`this`**: Reference to the current instance.\n- **`super`**: Reference to the parent instance.\n- **`static`**: Belongs to the class, not the instance.\n- **`final`**: Cannot be modified, overridden, or extended.\n\n## Naming Rules\n- Must start with a letter, `_`, or `$`. Cannot start with a digit.\n- **Conventions:**\n  - `camelCase`: methods, variables.\n  - `PascalCase`: Classes, Interfaces.\n  - `UPPER_SNAKE_CASE`: Constants."
+        "name": "1.2 Keywords (Strictly Reserved Words - 50+)",
+        "description": "1.2 Keywords (Strictly Reserved Words - 50+)",
+        "subTopics": [
+          {
+            "name": "Access Modifiers",
+            "description": "Access Modifiers",
+            "subTopics": [
+              {
+                "name": "public (Global access)",
+                "description": "public (Global access)"
+              },
+              {
+                "name": "protected (Package + Subclass access)",
+                "description": "protected (Package + Subclass access)"
+              },
+              {
+                "name": "private (Class-only access)",
+                "description": "private (Class-only access)"
+              },
+              {
+                "name": "default (Package-private - no explicit keyword)",
+                "description": "default (Package-private - no explicit keyword)"
+              }
+            ]
+          },
+          {
+            "name": "Class/Instance Definition",
+            "description": "Class/Instance Definition",
+            "subTopics": [
+              {
+                "name": "class (Declares a class)",
+                "description": "class (Declares a class)"
+              },
+              {
+                "name": "interface (Declares a contract)",
+                "description": "interface (Declares a contract)"
+              },
+              {
+                "name": "enum (Declares a fixed set of constants)",
+                "description": "enum (Declares a fixed set of constants)"
+              },
+              {
+                "name": "record (Declares a data carrier - Java 14+)",
+                "description": "record (Declares a data carrier - Java 14+)"
+              }
+            ]
+          },
+          {
+            "name": "Object & Reference Management",
+            "description": "Object & Reference Management",
+            "subTopics": [
+              {
+                "name": "new (Allocates memory on the Heap)",
+                "description": "new (Allocates memory on the Heap)"
+              },
+              {
+                "name": "this (Reference to the current instance)",
+                "description": "this (Reference to the current instance)"
+              },
+              {
+                "name": "super (Reference to the immediate parent instance)",
+                "description": "super (Reference to the immediate parent instance)"
+              }
+            ]
+          },
+          {
+            "name": "Inheritance & Implementation",
+            "description": "Inheritance & Implementation",
+            "subTopics": [
+              {
+                "name": "extends (Single inheritance of a class)",
+                "description": "extends (Single inheritance of a class)"
+              },
+              {
+                "name": "implements (Multiple inheritance of interfaces)",
+                "description": "implements (Multiple inheritance of interfaces)"
+              }
+            ]
+          },
+          {
+            "name": "Flow Control",
+            "description": "Flow Control",
+            "subTopics": [
+              {
+                "name": "if (Conditional branch)",
+                "description": "if (Conditional branch)"
+              },
+              {
+                "name": "else (Alternative branch)",
+                "description": "else (Alternative branch)"
+              },
+              {
+                "name": "switch (Multi-way branch)",
+                "description": "switch (Multi-way branch)"
+              },
+              {
+                "name": "case (Label within switch)",
+                "description": "case (Label within switch)"
+              },
+              {
+                "name": "default (Fallback label in switch)",
+                "description": "default (Fallback label in switch)"
+              },
+              {
+                "name": "for (Counter-controlled loop)",
+                "description": "for (Counter-controlled loop)"
+              },
+              {
+                "name": "while (Entry-controlled loop)",
+                "description": "while (Entry-controlled loop)"
+              },
+              {
+                "name": "do (Exit-controlled loop)",
+                "description": "do (Exit-controlled loop)"
+              },
+              {
+                "name": "break (Exit current block/loop)",
+                "description": "break (Exit current block/loop)"
+              },
+              {
+                "name": "continue (Skip current iteration)",
+                "description": "continue (Skip current iteration)"
+              },
+              {
+                "name": "return (Exit method and return value)",
+                "description": "return (Exit method and return value)"
+              }
+            ]
+          },
+          {
+            "name": "Exception Handling",
+            "description": "Exception Handling",
+            "subTopics": [
+              {
+                "name": "try (Monitor a block for exceptions)",
+                "description": "try (Monitor a block for exceptions)"
+              },
+              {
+                "name": "catch (Handle a specific exception type)",
+                "description": "catch (Handle a specific exception type)"
+              },
+              {
+                "name": "finally (Block that always executes)",
+                "description": "finally (Block that always executes)"
+              },
+              {
+                "name": "throw (Manually throw an exception)",
+                "description": "throw (Manually throw an exception)"
+              },
+              {
+                "name": "throws (Declare exceptions in method signature)",
+                "description": "throws (Declare exceptions in method signature)"
+              }
+            ]
+          },
+          {
+            "name": "Core Modifiers",
+            "description": "Core Modifiers",
+            "subTopics": [
+              {
+                "name": "abstract (Incomplete class or method)",
+                "description": "abstract (Incomplete class or method)"
+              },
+              {
+                "name": "static (Class-level member)",
+                "description": "static (Class-level member)"
+              },
+              {
+                "name": "final (Constant / No-override / No-extend)",
+                "description": "final (Constant / No-override / No-extend)"
+              },
+              {
+                "name": "synchronized (Thread lock / monitor)",
+                "description": "synchronized (Thread lock / monitor)"
+              },
+              {
+                "name": "volatile (Visibility guarantee across threads)",
+                "description": "volatile (Visibility guarantee across threads)"
+              },
+              {
+                "name": "transient (Skip field during serialization)",
+                "description": "transient (Skip field during serialization)"
+              },
+              {
+                "name": "native (Native method implementation - JNI)",
+                "description": "native (Native method implementation - JNI)"
+              },
+              {
+                "name": "strictfp (Strict floating-point calculations)",
+                "description": "strictfp (Strict floating-point calculations)"
+              }
+            ]
+          },
+          {
+            "name": "Type Checking",
+            "description": "Type Checking",
+            "subTopics": [
+              {
+                "name": "instanceof (Runtime type comparison)",
+                "description": "instanceof (Runtime type comparison)"
+              }
+            ]
+          },
+          {
+            "name": "Unused Reserved Words",
+            "description": "Unused Reserved Words",
+            "subTopics": [
+              {
+                "name": "goto (Reserved but not used)",
+                "description": "goto (Reserved but not used)"
+              },
+              {
+                "name": "const (Reserved but not used)",
+                "description": "const (Reserved but not used)"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "1.3 Primitive Data Types",
-        "description": "# Primitive Data Types\n\nJava has 8 primitive data types stored directly on the Stack.\n\n## Integer Family\n- `byte` (8-bit): -128 to 127\n- `short` (16-bit): -32,768 to 32,767\n- `int` (32-bit): Default for integers.\n- `long` (64-bit): Requires `L` suffix (e.g., `100L`).\n\n## Floating Family\n- `float` (32-bit): Requires `f` suffix (e.g., `3.14f`).\n- `double` (64-bit): Default for decimals.\n\n## Others\n- `char` (16-bit): Unsigned Unicode, single quotes (`'A'`).\n- `boolean` (1-bit): `true` or `false`.\n\n## Type Conversion (Casting)\n```java\n// Widening (Implicit)\nint a = 100;\nlong b = a;\n\n// Narrowing (Explicit Cast)\ndouble pi = 3.14;\nint intPi = (int) pi; // 3\n```\n\n> **Wrapper Caching:** `Integer.valueOf()` caches values from -128 to 127 to save memory (Flyweight Pattern)."
+        "name": "1.3 Identifiers & Naming Rules",
+        "description": "1.3 Identifiers & Naming Rules",
+        "subTopics": [
+          {
+            "name": "Rules for Identifiers",
+            "description": "Rules for Identifiers",
+            "subTopics": [
+              {
+                "name": "Must start with a letter",
+                "description": "Must start with a letter"
+              },
+              {
+                "name": "Must start with an underscore (_)",
+                "description": "Must start with an underscore (_)"
+              },
+              {
+                "name": "Must start with a dollar sign ($)",
+                "description": "Must start with a dollar sign ($)"
+              },
+              {
+                "name": "Cannot start with a digit",
+                "description": "Cannot start with a digit"
+              },
+              {
+                "name": "Cannot be a reserved keyword",
+                "description": "Cannot be a reserved keyword"
+              },
+              {
+                "name": "Is case-sensitive",
+                "description": "Is case-sensitive"
+              },
+              {
+                "name": "Has no length limit",
+                "description": "Has no length limit"
+              }
+            ]
+          },
+          {
+            "name": "Naming Conventions",
+            "description": "Naming Conventions",
+            "subTopics": [
+              {
+                "name": "camelCase (For methods and variables)",
+                "description": "camelCase (For methods and variables)"
+              },
+              {
+                "name": "PascalCase (For classes and interfaces)",
+                "description": "PascalCase (For classes and interfaces)"
+              },
+              {
+                "name": "UPPER_SNAKE_CASE (For static final constants)",
+                "description": "UPPER_SNAKE_CASE (For static final constants)"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "1.4 Operators & Control Flow",
-        "description": "# Operators & Control Flow\n\n## Operators\n- **Arithmetic**: `+`, `-`, `*`, `/`, `%`\n- **Relational**: `==`, `!=`, `>`, `<`, `>=`, `<=`\n- **Logical**: `&&` (Short-circuit AND), `||` (Short-circuit OR), `!` (NOT)\n- **Bitwise**: `&`, `|`, `^`, `~`, `<<`, `>>`, `>>>` (Unsigned right shift)\n- **Ternary**: `condition ? trueVal : falseVal`\n\n## Control Flow Statements\n\n### Switch (Enhanced Java 14+)\n```java\nString type = switch(day) {\n    case MONDAY, FRIDAY, SUNDAY -> \"Gym\";\n    case TUESDAY, THURSDAY -> \"Run\";\n    default -> \"Rest\";\n};\n```\n\n### Loops\n```java\n// For Loop\nfor(int i = 0; i < 5; i++) { ... }\n\n// Enhanced For-Each\nfor(String name : names) { ... }\n\n// While Loop\nwhile(condition) { ... }\n\n// Do-While (Runs at least once)\ndo { ... } while(condition);\n```"
+        "name": "1.4 Primitive Data Types (Stack Stored)",
+        "description": "1.4 Primitive Data Types (Stack Stored)",
+        "subTopics": [
+          {
+            "name": "Integer Family",
+            "description": "Integer Family",
+            "subTopics": [
+              {
+                "name": "byte (8-bit)",
+                "description": "byte (8-bit)",
+                "subTopics": [
+                  {
+                    "name": "Range: -128 to 127",
+                    "description": "Range: -128 to 127"
+                  },
+                  {
+                    "name": "Default Value: 0",
+                    "description": "Default Value: 0"
+                  }
+                ]
+              },
+              {
+                "name": "short (16-bit)",
+                "description": "short (16-bit)",
+                "subTopics": [
+                  {
+                    "name": "Range: -32,768 to 32,767",
+                    "description": "Range: -32,768 to 32,767"
+                  },
+                  {
+                    "name": "Default Value: 0",
+                    "description": "Default Value: 0"
+                  }
+                ]
+              },
+              {
+                "name": "int (32-bit - Default for integers)",
+                "description": "int (32-bit - Default for integers)",
+                "subTopics": [
+                  {
+                    "name": "Range: -2^31 to 2^31-1",
+                    "description": "Range: -2^31 to 2^31-1"
+                  },
+                  {
+                    "name": "Default Value: 0",
+                    "description": "Default Value: 0"
+                  }
+                ]
+              },
+              {
+                "name": "long (64-bit)",
+                "description": "long (64-bit)",
+                "subTopics": [
+                  {
+                    "name": "Requires 'L' or 'l' suffix",
+                    "description": "Requires 'L' or 'l' suffix"
+                  },
+                  {
+                    "name": "Range: -2^63 to 2^63-1",
+                    "description": "Range: -2^63 to 2^63-1"
+                  },
+                  {
+                    "name": "Default Value: 0L",
+                    "description": "Default Value: 0L"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Floating Family",
+            "description": "Floating Family",
+            "subTopics": [
+              {
+                "name": "float (32-bit)",
+                "description": "float (32-bit)",
+                "subTopics": [
+                  {
+                    "name": "IEEE 754 standard",
+                    "description": "IEEE 754 standard"
+                  },
+                  {
+                    "name": "Requires 'F' or 'f' suffix",
+                    "description": "Requires 'F' or 'f' suffix"
+                  },
+                  {
+                    "name": "Default Value: 0.0f",
+                    "description": "Default Value: 0.0f"
+                  }
+                ]
+              },
+              {
+                "name": "double (64-bit - Default for decimals)",
+                "description": "double (64-bit - Default for decimals)",
+                "subTopics": [
+                  {
+                    "name": "IEEE 754 standard",
+                    "description": "IEEE 754 standard"
+                  },
+                  {
+                    "name": "Default Value: 0.0d",
+                    "description": "Default Value: 0.0d"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Character Type",
+            "description": "Character Type",
+            "subTopics": [
+              {
+                "name": "char (16-bit unsigned Unicode)",
+                "description": "char (16-bit unsigned Unicode)",
+                "subTopics": [
+                  {
+                    "name": "Enclosed in single quotes (' ')",
+                    "description": "Enclosed in single quotes (' ')"
+                  },
+                  {
+                    "name": "Supports escape sequences",
+                    "description": "Supports escape sequences",
+                    "subTopics": [
+                      {
+                        "name": "n (Newline)",
+                        "description": "n (Newline)"
+                      },
+                      {
+                        "name": "t (Tab)",
+                        "description": "t (Tab)"
+                      },
+                      {
+                        "name": "r (Carriage return)",
+                        "description": "r (Carriage return)"
+                      },
+                      {
+                        "name": "b (Backspace)",
+                        "description": "b (Backspace)",
+                        "subTopics": [
+                          {
+                            "name": "Single quote)",
+                            "description": "Single quote)"
+                          },
+                          {
+                            "name": "Double quote)",
+                            "description": "Double quote)"
+                          },
+                          {
+                            "name": "Backslash)",
+                            "description": "Backslash)"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Default Value: '\\u0000'",
+                    "description": "Default Value: '\\u0000'"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Boolean Type",
+            "description": "Boolean Type",
+            "subTopics": [
+              {
+                "name": "boolean (Represents true or false)",
+                "description": "boolean (Represents true or false)"
+              },
+              {
+                "name": "Default Value: false",
+                "description": "Default Value: false"
+              }
+            ]
+          },
+          {
+            "name": "Default Values Summary",
+            "description": "Default Values Summary",
+            "subTopics": [
+              {
+                "name": "byte/short/int/long = 0",
+                "description": "byte/short/int/long = 0"
+              },
+              {
+                "name": "float/double = 0.0",
+                "description": "float/double = 0.0"
+              },
+              {
+                "name": "char = '\\u0000'",
+                "description": "char = '\\u0000'"
+              },
+              {
+                "name": "boolean = false",
+                "description": "boolean = false"
+              }
+            ]
+          },
+          {
+            "name": "Wrapper Caching (Flyweight Pattern)",
+            "description": "Wrapper Caching (Flyweight Pattern)",
+            "subTopics": [
+              {
+                "name": "Integer.valueOf() caches values from -128 to 127",
+                "description": "Integer.valueOf() caches values from -128 to 127"
+              }
+            ]
+          },
+          {
+            "name": "Type Conversions",
+            "description": "Type Conversions",
+            "subTopics": [
+              {
+                "name": "Implicit (Widening - Automatic)",
+                "description": "Implicit (Widening - Automatic)",
+                "subTopics": [
+                  {
+                    "name": "byte -> short",
+                    "description": "byte -> short"
+                  },
+                  {
+                    "name": "short -> int",
+                    "description": "short -> int"
+                  },
+                  {
+                    "name": "int -> long",
+                    "description": "int -> long"
+                  },
+                  {
+                    "name": "long -> float",
+                    "description": "long -> float"
+                  },
+                  {
+                    "name": "float -> double",
+                    "description": "float -> double"
+                  }
+                ]
+              },
+              {
+                "name": "Explicit (Narrowing - Requires Cast)",
+                "description": "Explicit (Narrowing - Requires Cast)",
+                "subTopics": [
+                  {
+                    "name": "double -> float",
+                    "description": "double -> float"
+                  },
+                  {
+                    "name": "float -> long",
+                    "description": "float -> long"
+                  },
+                  {
+                    "name": "long -> int",
+                    "description": "long -> int"
+                  },
+                  {
+                    "name": "int -> short",
+                    "description": "int -> short"
+                  },
+                  {
+                    "name": "short -> byte",
+                    "description": "short -> byte"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "1.5 Arrays",
-        "description": "# Arrays\n\nArrays are fixed-size collections of elements of the same type. They are objects and stored in the Heap.\n\n## Declaration & Initialization\n```java\nint[] arr = new int[5]; // Default initialized to 0\nint[] primes = {2, 3, 5, 7, 11}; // Anonymous literal\n```\n\n## Multidimensional Arrays\n```java\n// Rectangular\nint[][] matrix = new int[3][3];\n\n// Jagged (Varying inner lengths)\nint[][] jagged = new int[3][];\njagged[0] = new int[2];\njagged[1] = new int[4];\n```\n\n## java.util.Arrays Utility\n```java\nimport java.util.Arrays;\n\nArrays.sort(arr); // Dual-Pivot Quicksort for primitives\nint idx = Arrays.binarySearch(arr, 7);\nArrays.fill(arr, 1);\nSystem.out.println(Arrays.toString(arr));\n```"
+        "name": "1.5 Operators (Evaluation Order & Precedence)",
+        "description": "1.5 Operators (Evaluation Order & Precedence)",
+        "subTopics": [
+          {
+            "name": "Arithmetic Operators",
+            "description": "Arithmetic Operators",
+            "subTopics": [
+              {
+                "name": "Addition / String concatenation)",
+                "description": "Addition / String concatenation)"
+              },
+              {
+                "name": "Subtraction)",
+                "description": "Subtraction)"
+              },
+              {
+                "name": "Multiplication)",
+                "description": "Multiplication)"
+              },
+              {
+                "name": "Division - Integer truncation)",
+                "description": "Division - Integer truncation)"
+              },
+              {
+                "name": "Modulo / Remainder)",
+                "description": "Modulo / Remainder)"
+              }
+            ]
+          },
+          {
+            "name": "Relational Operators (Return boolean)",
+            "description": "Relational Operators (Return boolean)",
+            "subTopics": [
+              {
+                "name": "Equality - value for primitives, reference for objects)",
+                "description": "Equality - value for primitives, reference for objects)"
+              },
+              {
+                "name": "Inequality)",
+                "description": "Inequality)"
+              },
+              {
+                "name": "Greater than)",
+                "description": "Greater than)"
+              },
+              {
+                "name": "Less than)",
+                "description": "Less than)",
+                "subTopics": [
+                  {
+                    "name": "Greater than or equal to)",
+                    "description": "Greater than or equal to)"
+                  },
+                  {
+                    "name": "Less than or equal to)",
+                    "description": "Less than or equal to)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Logical Operators (Short-circuit)",
+            "description": "Logical Operators (Short-circuit)",
+            "subTopics": [
+              {
+                "name": "AND - stops if left is false)",
+                "description": "AND - stops if left is false)"
+              },
+              {
+                "name": "OR - stops if left is true)",
+                "description": "OR - stops if left is true)"
+              },
+              {
+                "name": "NOT - inverts boolean)",
+                "description": "NOT - inverts boolean)"
+              }
+            ]
+          },
+          {
+            "name": "Bitwise Operators (Integer bit-level)",
+            "description": "Bitwise Operators (Integer bit-level)",
+            "subTopics": [
+              {
+                "name": "AND)",
+                "description": "AND)"
+              },
+              {
+                "name": "OR)",
+                "description": "OR)"
+              },
+              {
+                "name": "XOR)",
+                "description": "XOR)"
+              },
+              {
+                "name": "Complement / Bitwise NOT)",
+                "description": "Complement / Bitwise NOT)",
+                "subTopics": [
+                  {
+                    "name": "Left shift - multiply by 2)",
+                    "description": "Left shift - multiply by 2)"
+                  },
+                  {
+                    "name": "Signed right shift - preserves sign)",
+                    "description": "Signed right shift - preserves sign)",
+                    "subTopics": [
+                      {
+                        "name": "Unsigned right shift - zero fill)",
+                        "description": "Unsigned right shift - zero fill)"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Assignment Operators",
+            "description": "Assignment Operators",
+            "subTopics": [
+              {
+                "name": "Simple assignment)",
+                "description": "Simple assignment)",
+                "subTopics": [
+                  {
+                    "name": "Add and assign)",
+                    "description": "Add and assign)"
+                  },
+                  {
+                    "name": "Subtract and assign)",
+                    "description": "Subtract and assign)"
+                  },
+                  {
+                    "name": "Multiply and assign)",
+                    "description": "Multiply and assign)"
+                  },
+                  {
+                    "name": "Divide and assign)",
+                    "description": "Divide and assign)"
+                  },
+                  {
+                    "name": "Modulo and assign)",
+                    "description": "Modulo and assign)"
+                  },
+                  {
+                    "name": "Bitwise AND and assign)",
+                    "description": "Bitwise AND and assign)"
+                  },
+                  {
+                    "name": "Bitwise OR and assign)",
+                    "description": "Bitwise OR and assign)"
+                  },
+                  {
+                    "name": "Bitwise XOR and assign)",
+                    "description": "Bitwise XOR and assign)",
+                    "subTopics": [
+                      {
+                        "name": "Left shift and assign)",
+                        "description": "Left shift and assign)"
+                      },
+                      {
+                        "name": "Right shift and assign)",
+                        "description": "Right shift and assign)",
+                        "subTopics": [
+                          {
+                            "name": "Unsigned right shift and assign)",
+                            "description": "Unsigned right shift and assign)"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Ternary Operator",
+            "description": "Ternary Operator",
+            "subTopics": [
+              {
+                "name": "condition ? expression1 : expression2)",
+                "description": "condition ? expression1 : expression2)"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "1.6 java.lang Core Classes",
-        "description": "# The `java.lang` Package\nImplicitly imported in every Java program.\n\n## 1. String, StringBuilder, StringBuffer\n- **String**: Immutable. Backed by `byte[]` (Java 9+). Uses String Pool.\n- **StringBuilder**: Mutable, not synchronized (Fastest).\n- **StringBuffer**: Mutable, synchronized (Thread-safe, slower).\n\n```java\nString s = \"Java\";\ns = s.concat(\" 17\"); // Creates new object\n\nStringBuilder sb = new StringBuilder(\"Java\");\nsb.append(\" 17\"); // Modifies in place\n```\n\n## 2. Object Class (Root Parent)\nKey methods to override:\n- `toString()`: Meaningful representation.\n- `equals(Object)`: Deep content equality.\n- `hashCode()`: Formula `31 * field + field`.\n- `clone()`: Needs `Cloneable` interface.\n\n## 3. Math & System\n```java\nMath.pow(2, 3); // 8.0\nMath.random(); // 0.0 to 1.0\n\nSystem.out.println(System.currentTimeMillis()); // Epoch time\nSystem.arraycopy(src, 0, dest, 0, length); // Fast native copy\n```"
+        "name": "1.6 Control Flow Statements",
+        "description": "1.6 Control Flow Statements",
+        "subTopics": [
+          {
+            "name": "Conditional Statements",
+            "description": "Conditional Statements",
+            "subTopics": [
+              {
+                "name": "if-else Ladder",
+                "description": "if-else Ladder",
+                "subTopics": [
+                  {
+                    "name": "if (condition) { }",
+                    "description": "if (condition) { }"
+                  },
+                  {
+                    "name": "else if (condition) { }",
+                    "description": "else if (condition) { }"
+                  },
+                  {
+                    "name": "else { }",
+                    "description": "else { }"
+                  }
+                ]
+              },
+              {
+                "name": "switch-case",
+                "description": "switch-case",
+                "subTopics": [
+                  {
+                    "name": "Supported Types",
+                    "description": "Supported Types",
+                    "subTopics": [
+                      {
+                        "name": "int",
+                        "description": "int"
+                      },
+                      {
+                        "name": "char",
+                        "description": "char"
+                      },
+                      {
+                        "name": "String",
+                        "description": "String"
+                      },
+                      {
+                        "name": "enum",
+                        "description": "enum"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "case (Labels for matching values)",
+                    "description": "case (Labels for matching values)"
+                  },
+                  {
+                    "name": "default (Fallback case)",
+                    "description": "default (Fallback case)"
+                  },
+                  {
+                    "name": "break (Prevents fall-through)",
+                    "description": "break (Prevents fall-through)"
+                  },
+                  {
+                    "name": "yield (Returns a value in switch expressions - Java 13+)",
+                    "description": "yield (Returns a value in switch expressions - Java 13+)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Loops",
+            "description": "Loops",
+            "subTopics": [
+              {
+                "name": "for Loop (Counter-controlled)",
+                "description": "for Loop (Counter-controlled)",
+                "subTopics": [
+                  {
+                    "name": "Initialization",
+                    "description": "Initialization"
+                  },
+                  {
+                    "name": "Condition",
+                    "description": "Condition"
+                  },
+                  {
+                    "name": "Increment/Decrement",
+                    "description": "Increment/Decrement"
+                  }
+                ]
+              },
+              {
+                "name": "Enhanced for-each Loop (Iteration over arrays/collections)",
+                "description": "Enhanced for-each Loop (Iteration over arrays/collections)",
+                "subTopics": [
+                  {
+                    "name": "for (Type var : iterable) { }",
+                    "description": "for (Type var : iterable) { }"
+                  }
+                ]
+              },
+              {
+                "name": "while Loop (Entry-controlled)",
+                "description": "while Loop (Entry-controlled)",
+                "subTopics": [
+                  {
+                    "name": "while (condition) { }",
+                    "description": "while (condition) { }"
+                  }
+                ]
+              },
+              {
+                "name": "do-while Loop (Exit-controlled - runs at least once)",
+                "description": "do-while Loop (Exit-controlled - runs at least once)",
+                "subTopics": [
+                  {
+                    "name": "do { } while (condition);",
+                    "description": "do { } while (condition);"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "1.7 Arrays (Objects stored in Heap)",
+        "description": "1.7 Arrays (Objects stored in Heap)",
+        "subTopics": [
+          {
+            "name": "Declaration Styles",
+            "description": "Declaration Styles",
+            "subTopics": [
+              {
+                "name": "int[] arr (Preferred)",
+                "description": "int[] arr (Preferred)"
+              },
+              {
+                "name": "int arr[] (Alternative C-style)",
+                "description": "int arr[] (Alternative C-style)"
+              }
+            ]
+          },
+          {
+            "name": "Instantiation & Initialization",
+            "description": "Instantiation & Initialization",
+            "subTopics": [
+              {
+                "name": "new int[5] (Default zeros)",
+                "description": "new int[5] (Default zeros)",
+                "subTopics": [
+                  {
+                    "name": "1, 2, 3} (Anonymous array literal)",
+                    "description": "1, 2, 3} (Anonymous array literal)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Multidimensional Arrays",
+            "description": "Multidimensional Arrays",
+            "subTopics": [
+              {
+                "name": "int[][] matrix = new int[3][3] (Rectangular)",
+                "description": "int[][] matrix = new int[3][3] (Rectangular)"
+              }
+            ]
+          },
+          {
+            "name": "Jagged Arrays (Varying inner lengths)",
+            "description": "Jagged Arrays (Varying inner lengths)",
+            "subTopics": [
+              {
+                "name": "int[][] jagged = new int[3][]",
+                "description": "int[][] jagged = new int[3][]"
+              },
+              {
+                "name": "jagged[0] = new int[2]",
+                "description": "jagged[0] = new int[2]"
+              },
+              {
+                "name": "jagged[1] = new int[4]",
+                "description": "jagged[1] = new int[4]"
+              },
+              {
+                "name": "jagged[2] = new int[1]",
+                "description": "jagged[2] = new int[1]"
+              }
+            ]
+          },
+          {
+            "name": "Length Property",
+            "description": "Length Property",
+            "subTopics": [
+              {
+                "name": "arr.length (Not a method)",
+                "description": "arr.length (Not a method)"
+              }
+            ]
+          },
+          {
+            "name": "java.util.Arrays Utility Class",
+            "description": "java.util.Arrays Utility Class",
+            "subTopics": [
+              {
+                "name": "sort() (Sorts the array)",
+                "description": "sort() (Sorts the array)",
+                "subTopics": [
+                  {
+                    "name": "Dual-Pivot QuickSort (For primitives)",
+                    "description": "Dual-Pivot QuickSort (For primitives)"
+                  },
+                  {
+                    "name": "TimSort (For objects)",
+                    "description": "TimSort (For objects)"
+                  }
+                ]
+              },
+              {
+                "name": "binarySearch() (Searches sorted array)",
+                "description": "binarySearch() (Searches sorted array)",
+                "subTopics": [
+                  {
+                    "name": "Returns insertion point as -(index) - 1",
+                    "description": "Returns insertion point as -(index) - 1"
+                  }
+                ]
+              },
+              {
+                "name": "fill() (Populates with a value)",
+                "description": "fill() (Populates with a value)"
+              },
+              {
+                "name": "copyOf() (Copies array with new length)",
+                "description": "copyOf() (Copies array with new length)"
+              },
+              {
+                "name": "copyOfRange() (Copies a range)",
+                "description": "copyOfRange() (Copies a range)"
+              },
+              {
+                "name": "equals() (Checks deep equality of contents)",
+                "description": "equals() (Checks deep equality of contents)"
+              },
+              {
+                "name": "deepToString() (Prints nested array contents)",
+                "description": "deepToString() (Prints nested array contents)"
+              },
+              {
+                "name": "asList() (Converts array to fixed-size List)",
+                "description": "asList() (Converts array to fixed-size List)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "1.8 The `java.lang` Package (Implicitly Imported)",
+        "description": "1.8 The `java.lang` Package (Implicitly Imported)",
+        "subTopics": [
+          {
+            "name": "`String` Class (Immutable)",
+            "description": "`String` Class (Immutable)",
+            "subTopics": [
+              {
+                "name": "Backing Storage: private final byte[] or char[]",
+                "description": "Backing Storage: private final byte[] or char[]"
+              },
+              {
+                "name": "Inspection Methods",
+                "description": "Inspection Methods",
+                "subTopics": [
+                  {
+                    "name": "length()",
+                    "description": "length()"
+                  },
+                  {
+                    "name": "charAt()",
+                    "description": "charAt()"
+                  },
+                  {
+                    "name": "isEmpty()",
+                    "description": "isEmpty()"
+                  },
+                  {
+                    "name": "isBlank()",
+                    "description": "isBlank()"
+                  }
+                ]
+              },
+              {
+                "name": "Comparison Methods",
+                "description": "Comparison Methods",
+                "subTopics": [
+                  {
+                    "name": "equals() (Content comparison)",
+                    "description": "equals() (Content comparison)"
+                  },
+                  {
+                    "name": "equalsIgnoreCase() (Case-insensitive content)",
+                    "description": "equalsIgnoreCase() (Case-insensitive content)"
+                  },
+                  {
+                    "name": "compareTo() (Lexicographic ordering)",
+                    "description": "compareTo() (Lexicographic ordering)",
+                    "subTopics": [
+                      {
+                        "name": "Reference comparison - use with caution)",
+                        "description": "Reference comparison - use with caution)"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "Search Methods",
+                "description": "Search Methods",
+                "subTopics": [
+                  {
+                    "name": "indexOf()",
+                    "description": "indexOf()"
+                  },
+                  {
+                    "name": "lastIndexOf()",
+                    "description": "lastIndexOf()"
+                  },
+                  {
+                    "name": "startsWith()",
+                    "description": "startsWith()"
+                  },
+                  {
+                    "name": "endsWith()",
+                    "description": "endsWith()"
+                  },
+                  {
+                    "name": "contains()",
+                    "description": "contains()"
+                  }
+                ]
+              },
+              {
+                "name": "Manipulation Methods (Return new String)",
+                "description": "Manipulation Methods (Return new String)",
+                "subTopics": [
+                  {
+                    "name": "substring()",
+                    "description": "substring()"
+                  },
+                  {
+                    "name": "concat()",
+                    "description": "concat()"
+                  },
+                  {
+                    "name": "replace() (Char/CharSequence)",
+                    "description": "replace() (Char/CharSequence)"
+                  },
+                  {
+                    "name": "replaceAll() (Regex replacement)",
+                    "description": "replaceAll() (Regex replacement)"
+                  },
+                  {
+                    "name": "replaceFirst() (Regex replacement - first match)",
+                    "description": "replaceFirst() (Regex replacement - first match)"
+                  }
+                ]
+              },
+              {
+                "name": "Trimming Methods",
+                "description": "Trimming Methods",
+                "subTopics": [
+                  {
+                    "name": "trim() (Removes <= U+0020 whitespace)",
+                    "description": "trim() (Removes <= U+0020 whitespace)"
+                  },
+                  {
+                    "name": "strip() (Removes Unicode whitespace - Java 11)",
+                    "description": "strip() (Removes Unicode whitespace - Java 11)"
+                  },
+                  {
+                    "name": "stripLeading() (Java 11)",
+                    "description": "stripLeading() (Java 11)"
+                  },
+                  {
+                    "name": "stripTrailing() (Java 11)",
+                    "description": "stripTrailing() (Java 11)"
+                  }
+                ]
+              },
+              {
+                "name": "Case Conversion Methods",
+                "description": "Case Conversion Methods",
+                "subTopics": [
+                  {
+                    "name": "toLowerCase()",
+                    "description": "toLowerCase()"
+                  },
+                  {
+                    "name": "toUpperCase()",
+                    "description": "toUpperCase()"
+                  }
+                ]
+              },
+              {
+                "name": "Splitting & Joining Methods",
+                "description": "Splitting & Joining Methods",
+                "subTopics": [
+                  {
+                    "name": "split() (Regex, with limit)",
+                    "description": "split() (Regex, with limit)"
+                  },
+                  {
+                    "name": "join() (Static method - CharSequence delimiter)",
+                    "description": "join() (Static method - CharSequence delimiter)"
+                  }
+                ]
+              },
+              {
+                "name": "Interning Method",
+                "description": "Interning Method",
+                "subTopics": [
+                  {
+                    "name": "intern() (Manual string pool management)",
+                    "description": "intern() (Manual string pool management)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "`StringBuilder` Class (Mutable, Non-Synchronized - Fast)",
+            "description": "`StringBuilder` Class (Mutable, Non-Synchronized - Fast)",
+            "subTopics": [
+              {
+                "name": "append()",
+                "description": "append()"
+              },
+              {
+                "name": "insert()",
+                "description": "insert()"
+              },
+              {
+                "name": "delete()",
+                "description": "delete()"
+              },
+              {
+                "name": "deleteCharAt()",
+                "description": "deleteCharAt()"
+              },
+              {
+                "name": "reverse()",
+                "description": "reverse()"
+              },
+              {
+                "name": "setCharAt()",
+                "description": "setCharAt()"
+              },
+              {
+                "name": "capacity()",
+                "description": "capacity()"
+              }
+            ]
+          },
+          {
+            "name": "`StringBuffer` Class (Mutable, Synchronized - Thread-safe, Slower)",
+            "description": "`StringBuffer` Class (Mutable, Synchronized - Thread-safe, Slower)",
+            "subTopics": [
+              {
+                "name": "append()",
+                "description": "append()"
+              },
+              {
+                "name": "insert()",
+                "description": "insert()"
+              },
+              {
+                "name": "delete()",
+                "description": "delete()"
+              },
+              {
+                "name": "deleteCharAt()",
+                "description": "deleteCharAt()"
+              },
+              {
+                "name": "reverse()",
+                "description": "reverse()"
+              },
+              {
+                "name": "setCharAt()",
+                "description": "setCharAt()"
+              },
+              {
+                "name": "capacity()",
+                "description": "capacity()"
+              }
+            ]
+          },
+          {
+            "name": "`Object` Class (Root Parent)",
+            "description": "`Object` Class (Root Parent)",
+            "subTopics": [
+              {
+                "name": "toString() (Override for meaningful representation)",
+                "description": "toString() (Override for meaningful representation)"
+              },
+              {
+                "name": "equals(Object obj) (Override with contract)",
+                "description": "equals(Object obj) (Override with contract)",
+                "subTopics": [
+                  {
+                    "name": "check (reference)",
+                    "description": "check (reference)"
+                  },
+                  {
+                    "name": "instanceof check",
+                    "description": "instanceof check"
+                  },
+                  {
+                    "name": "Casting to target type",
+                    "description": "Casting to target type"
+                  },
+                  {
+                    "name": "Field-by-field comparison",
+                    "description": "Field-by-field comparison"
+                  }
+                ]
+              },
+              {
+                "name": "hashCode() (Must override with equals)",
+                "description": "hashCode() (Must override with equals)",
+                "subTopics": [
+                  {
+                    "name": "Formula: 31 * field + field",
+                    "description": "Formula: 31 * field + field"
+                  }
+                ]
+              },
+              {
+                "name": "getClass() (Returns runtime class for reflection)",
+                "description": "getClass() (Returns runtime class for reflection)"
+              },
+              {
+                "name": "clone() (Protected, requires Cloneable marker)",
+                "description": "clone() (Protected, requires Cloneable marker)",
+                "subTopics": [
+                  {
+                    "name": "Performs shallow copy",
+                    "description": "Performs shallow copy"
+                  }
+                ]
+              },
+              {
+                "name": "finalize() (Deprecated - cleanup before GC)",
+                "description": "finalize() (Deprecated - cleanup before GC)"
+              },
+              {
+                "name": "Thread Communication Methods (Monitor lock)",
+                "description": "Thread Communication Methods (Monitor lock)",
+                "subTopics": [
+                  {
+                    "name": "wait()",
+                    "description": "wait()"
+                  },
+                  {
+                    "name": "wait(long timeout)",
+                    "description": "wait(long timeout)"
+                  },
+                  {
+                    "name": "wait(long timeout, int nanos)",
+                    "description": "wait(long timeout, int nanos)"
+                  },
+                  {
+                    "name": "notify()",
+                    "description": "notify()"
+                  },
+                  {
+                    "name": "notifyAll()",
+                    "description": "notifyAll()"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Wrapper Classes (Immutable, Flyweight)",
+            "description": "Wrapper Classes (Immutable, Flyweight)",
+            "subTopics": [
+              {
+                "name": "Byte",
+                "description": "Byte"
+              },
+              {
+                "name": "Short",
+                "description": "Short"
+              },
+              {
+                "name": "Integer",
+                "description": "Integer"
+              },
+              {
+                "name": "Long",
+                "description": "Long"
+              },
+              {
+                "name": "Float",
+                "description": "Float"
+              },
+              {
+                "name": "Double",
+                "description": "Double"
+              },
+              {
+                "name": "Boolean",
+                "description": "Boolean"
+              },
+              {
+                "name": "Character",
+                "description": "Character"
+              },
+              {
+                "name": "Autoboxing (Primitive to Wrapper)",
+                "description": "Autoboxing (Primitive to Wrapper)",
+                "subTopics": [
+                  {
+                    "name": "Compiler calls valueOf()",
+                    "description": "Compiler calls valueOf()"
+                  }
+                ]
+              },
+              {
+                "name": "Unboxing (Wrapper to Primitive)",
+                "description": "Unboxing (Wrapper to Primitive)",
+                "subTopics": [
+                  {
+                    "name": "Compiler calls xxxValue()",
+                    "description": "Compiler calls xxxValue()"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "`Math` Class (Static Utilities)",
+            "description": "`Math` Class (Static Utilities)",
+            "subTopics": [
+              {
+                "name": "Constants",
+                "description": "Constants",
+                "subTopics": [
+                  {
+                    "name": "PI",
+                    "description": "PI"
+                  },
+                  {
+                    "name": "E",
+                    "description": "E"
+                  }
+                ]
+              },
+              {
+                "name": "Basic Functions",
+                "description": "Basic Functions",
+                "subTopics": [
+                  {
+                    "name": "abs() (Absolute value)",
+                    "description": "abs() (Absolute value)"
+                  },
+                  {
+                    "name": "max() (Maximum of two)",
+                    "description": "max() (Maximum of two)"
+                  },
+                  {
+                    "name": "min() (Minimum of two)",
+                    "description": "min() (Minimum of two)"
+                  },
+                  {
+                    "name": "round() (Rounds to nearest long/int)",
+                    "description": "round() (Rounds to nearest long/int)"
+                  },
+                  {
+                    "name": "floor() (Largest integer <= value)",
+                    "description": "floor() (Largest integer <= value)"
+                  },
+                  {
+                    "name": "ceil() (Smallest integer >= value)",
+                    "description": "ceil() (Smallest integer >= value)"
+                  }
+                ]
+              },
+              {
+                "name": "Exponent & Root Functions",
+                "description": "Exponent & Root Functions",
+                "subTopics": [
+                  {
+                    "name": "pow() (Power)",
+                    "description": "pow() (Power)"
+                  },
+                  {
+                    "name": "sqrt() (Square root)",
+                    "description": "sqrt() (Square root)"
+                  },
+                  {
+                    "name": "cbrt() (Cube root)",
+                    "description": "cbrt() (Cube root)"
+                  }
+                ]
+              },
+              {
+                "name": "Trigonometric Functions",
+                "description": "Trigonometric Functions",
+                "subTopics": [
+                  {
+                    "name": "sin()",
+                    "description": "sin()"
+                  },
+                  {
+                    "name": "cos()",
+                    "description": "cos()"
+                  },
+                  {
+                    "name": "tan()",
+                    "description": "tan()"
+                  },
+                  {
+                    "name": "asin()",
+                    "description": "asin()"
+                  },
+                  {
+                    "name": "acos()",
+                    "description": "acos()"
+                  },
+                  {
+                    "name": "atan()",
+                    "description": "atan()"
+                  },
+                  {
+                    "name": "toRadians() (Converts degrees to radians)",
+                    "description": "toRadians() (Converts degrees to radians)"
+                  },
+                  {
+                    "name": "toDegrees() (Converts radians to degrees)",
+                    "description": "toDegrees() (Converts radians to degrees)"
+                  }
+                ]
+              },
+              {
+                "name": "Random Generation",
+                "description": "Random Generation",
+                "subTopics": [
+                  {
+                    "name": "random() (Returns double from 0.0 to 1.0)",
+                    "description": "random() (Returns double from 0.0 to 1.0)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "`System` Class (Static Utilities - Cannot instantiate)",
+            "description": "`System` Class (Static Utilities - Cannot instantiate)",
+            "subTopics": [
+              {
+                "name": "I/O Streams",
+                "description": "I/O Streams",
+                "subTopics": [
+                  {
+                    "name": "out (Standard output - PrintStream)",
+                    "description": "out (Standard output - PrintStream)"
+                  },
+                  {
+                    "name": "err (Standard error - PrintStream)",
+                    "description": "err (Standard error - PrintStream)"
+                  },
+                  {
+                    "name": "in (Standard input - InputStream)",
+                    "description": "in (Standard input - InputStream)"
+                  }
+                ]
+              },
+              {
+                "name": "Time Methods",
+                "description": "Time Methods",
+                "subTopics": [
+                  {
+                    "name": "currentTimeMillis() (UTC epoch in milliseconds)",
+                    "description": "currentTimeMillis() (UTC epoch in milliseconds)"
+                  },
+                  {
+                    "name": "nanoTime() (High-resolution benchmarking)",
+                    "description": "nanoTime() (High-resolution benchmarking)"
+                  }
+                ]
+              },
+              {
+                "name": "Array Copy (Native - Fast)",
+                "description": "Array Copy (Native - Fast)",
+                "subTopics": [
+                  {
+                    "name": "arraycopy(Object src, int srcPos, Object dest, int destPos, int length)",
+                    "description": "arraycopy(Object src, int srcPos, Object dest, int destPos, int length)"
+                  }
+                ]
+              },
+              {
+                "name": "Properties Methods",
+                "description": "Properties Methods",
+                "subTopics": [
+                  {
+                    "name": "getProperties() (Returns all system properties)",
+                    "description": "getProperties() (Returns all system properties)"
+                  },
+                  {
+                    "name": "getProperty(String key) (Fetches a specific property)",
+                    "description": "getProperty(String key) (Fetches a specific property)"
+                  }
+                ]
+              },
+              {
+                "name": "Garbage Collection Hint",
+                "description": "Garbage Collection Hint",
+                "subTopics": [
+                  {
+                    "name": "gc() (Suggests JVM to run GC - no guarantee)",
+                    "description": "gc() (Suggests JVM to run GC - no guarantee)"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   },
   {
-    "name": "PHASE 2: OBJECT-ORIENTED PROGRAMMING",
-    "description": "# Phase 2: Object-Oriented Programming (OOP)\n\nJava is strictly object-oriented. This phase covers classes, the 4 pillars of OOP, interfaces, and advanced class structures like Enums and Records.",
+    "name": "PHASE 2: OBJECT-ORIENTED PROGRAMMING (OOP)",
+    "description": "PHASE 2: OBJECT-ORIENTED PROGRAMMING (OOP)",
     "subTopics": [
       {
-        "name": "2.1 Classes & Objects",
-        "description": "# Classes & Objects\n\nA `class` is a blueprint. An `object` is an instance of that blueprint allocated on the Heap.\n\n## Class Components\n```java\npublic class Car {\n    // Fields (State)\n    String brand;\n    static int totalCars = 0;\n\n    // Instance Initializer Block (Runs before constructor)\n    {\n        System.out.println(\"Preparing Car...\");\n    }\n\n    // Constructor\n    public Car(String brand) {\n        this.brand = brand; // 'this' resolves ambiguity\n        totalCars++;\n    }\n\n    // Methods (Behavior)\n    public void drive() {\n        System.out.println(this.brand + \" is driving\");\n    }\n}\n```\n\n## `this` and `super`\n- **`this`**: Current instance. Used for constructor chaining (`this()`).\n- **`super`**: Parent instance. Used to call parent constructor (`super()`).\n  - Note: Constructor chaining calls must be the **first line** in the constructor."
+        "name": "2.1 Classes & Objects (Blueprint & Instance)",
+        "description": "2.1 Classes & Objects (Blueprint & Instance)",
+        "subTopics": [
+          {
+            "name": "Class Components",
+            "description": "Class Components",
+            "subTopics": [
+              {
+                "name": "Fields (Instance variables - state)",
+                "description": "Fields (Instance variables - state)"
+              },
+              {
+                "name": "Static Fields (Class variables - shared)",
+                "description": "Static Fields (Class variables - shared)"
+              },
+              {
+                "name": "Methods (Instance methods - behavior)",
+                "description": "Methods (Instance methods - behavior)"
+              },
+              {
+                "name": "Static Methods (Utility behavior - no `this`)",
+                "description": "Static Methods (Utility behavior - no `this`)"
+              },
+              {
+                "name": "Constructors (Special method)",
+                "description": "Constructors (Special method)",
+                "subTopics": [
+                  {
+                    "name": "Default Constructor (Provided by compiler)",
+                    "description": "Default Constructor (Provided by compiler)"
+                  },
+                  {
+                    "name": "No-Arg Constructor (Explicit, zero parameters)",
+                    "description": "No-Arg Constructor (Explicit, zero parameters)"
+                  },
+                  {
+                    "name": "Parameterized Constructor (Accepts arguments)",
+                    "description": "Parameterized Constructor (Accepts arguments)"
+                  },
+                  {
+                    "name": "Copy Constructor (Takes same class object)",
+                    "description": "Copy Constructor (Takes same class object)"
+                  }
+                ]
+              },
+              {
+                "name": "Instance Initializer Block",
+                "description": "Instance Initializer Block",
+                "subTopics": [
+                  {
+                    "name": "runs before constructor body",
+                    "description": "runs before constructor body"
+                  }
+                ]
+              },
+              {
+                "name": "Static Initializer Block",
+                "description": "Static Initializer Block",
+                "subTopics": [
+                  {
+                    "name": "static { ... } runs once on class load",
+                    "description": "static { ... } runs once on class load"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Object Instantiation (`new` keyword)",
+            "description": "Object Instantiation (`new` keyword)",
+            "subTopics": [
+              {
+                "name": "Step 1: Memory allocated in Heap",
+                "description": "Step 1: Memory allocated in Heap"
+              },
+              {
+                "name": "Step 2: Default values assigned to fields",
+                "description": "Step 2: Default values assigned to fields"
+              },
+              {
+                "name": "Step 3: Instance initializers run",
+                "description": "Step 3: Instance initializers run"
+              },
+              {
+                "name": "Step 4: Constructor body executes",
+                "description": "Step 4: Constructor body executes"
+              },
+              {
+                "name": "Step 5: Reference returned to variable",
+                "description": "Step 5: Reference returned to variable"
+              }
+            ]
+          },
+          {
+            "name": "`this` Keyword (Current instance reference)",
+            "description": "`this` Keyword (Current instance reference)",
+            "subTopics": [
+              {
+                "name": "Disambiguation: this.field = parameter",
+                "description": "Disambiguation: this.field = parameter"
+              },
+              {
+                "name": "Constructor Chaining: this(parameters)",
+                "description": "Constructor Chaining: this(parameters)",
+                "subTopics": [
+                  {
+                    "name": "Must be the first line in constructor",
+                    "description": "Must be the first line in constructor"
+                  }
+                ]
+              },
+              {
+                "name": "Method Call: this.method()",
+                "description": "Method Call: this.method()"
+              }
+            ]
+          },
+          {
+            "name": "`super` Keyword (Parent instance reference)",
+            "description": "`super` Keyword (Parent instance reference)",
+            "subTopics": [
+              {
+                "name": "Access Parent Field: super.field",
+                "description": "Access Parent Field: super.field"
+              },
+              {
+                "name": "Access Parent Method: super.method()",
+                "description": "Access Parent Method: super.method()"
+              },
+              {
+                "name": "Constructor Chaining: super(parameters)",
+                "description": "Constructor Chaining: super(parameters)",
+                "subTopics": [
+                  {
+                    "name": "Must be the first line in constructor",
+                    "description": "Must be the first line in constructor"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
         "name": "2.2 The Four Pillars of OOP",
-        "description": "# The Four Pillars of OOP\n\n## 1. Encapsulation (Data Hiding)\nProtect state by making fields `private` and exposing `public` getters/setters.\n\n## 2. Inheritance (IS-A Relationship)\nUse `extends`. Java supports single inheritance only (to avoid the Diamond Problem).\n```java\nclass Dog extends Animal {\n    @Override\n    void speak() {\n        System.out.println(\"Woof\");\n    }\n}\n```\n- Subclasses must implicitly or explicitly call `super()`.\n\n## 3. Polymorphism (Many Forms)\n- **Compile-time (Overloading)**: Same method name, different parameters.\n- **Run-time (Overriding)**: Subclass replaces parent's method implementation.\n```java\nAnimal a = new Dog(); \na.speak(); // Dynamic Method Dispatch executes Dog's speak()\n```\n\n## 4. Abstraction\nHiding complex implementation details using Abstract Classes or Interfaces."
+        "description": "2.2 The Four Pillars of OOP",
+        "subTopics": [
+          {
+            "name": "Encapsulation (Data Hiding)",
+            "description": "Encapsulation (Data Hiding)",
+            "subTopics": [
+              {
+                "name": "Declare fields as private",
+                "description": "Declare fields as private"
+              },
+              {
+                "name": "Expose public getters (Read access)",
+                "description": "Expose public getters (Read access)"
+              },
+              {
+                "name": "Expose public setters (Write access with validation)",
+                "description": "Expose public setters (Write access with validation)"
+              },
+              {
+                "name": "Protects internal state integrity",
+                "description": "Protects internal state integrity"
+              }
+            ]
+          },
+          {
+            "name": "Inheritance (`extends` - IS-A relationship)",
+            "description": "Inheritance (`extends` - IS-A relationship)",
+            "subTopics": [
+              {
+                "name": "Single Inheritance (Only one direct parent)",
+                "description": "Single Inheritance (Only one direct parent)"
+              },
+              {
+                "name": "Transitive Inheritance (Child inherits from Parent, Parent from Grandparent)",
+                "description": "Transitive Inheritance (Child inherits from Parent, Parent from Grandparent)"
+              },
+              {
+                "name": "Constructor Invocation Rule",
+                "description": "Constructor Invocation Rule",
+                "subTopics": [
+                  {
+                    "name": "Child must call super() (explicit or implicit)",
+                    "description": "Child must call super() (explicit or implicit)"
+                  }
+                ]
+              },
+              {
+                "name": "Method Overriding (`@Override`)",
+                "description": "Method Overriding (`@Override`)",
+                "subTopics": [
+                  {
+                    "name": "Runtime Polymorphism (Dynamic Method Dispatch)",
+                    "description": "Runtime Polymorphism (Dynamic Method Dispatch)"
+                  },
+                  {
+                    "name": "Rule: Same name, parameters, return type (Covariant allowed)",
+                    "description": "Rule: Same name, parameters, return type (Covariant allowed)"
+                  },
+                  {
+                    "name": "Rule: Cannot reduce visibility (protected -> public OK)",
+                    "description": "Rule: Cannot reduce visibility (protected -> public OK)"
+                  },
+                  {
+                    "name": "Rule: Cannot throw broader checked exceptions",
+                    "description": "Rule: Cannot throw broader checked exceptions"
+                  }
+                ]
+              },
+              {
+                "name": "Field Hiding (Child declares same field name)",
+                "description": "Field Hiding (Child declares same field name)",
+                "subTopics": [
+                  {
+                    "name": "Use super.field to access parent's hidden field",
+                    "description": "Use super.field to access parent's hidden field"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Polymorphism (Many Forms)",
+            "description": "Polymorphism (Many Forms)",
+            "subTopics": [
+              {
+                "name": "Compile-time Polymorphism (Overloading)",
+                "description": "Compile-time Polymorphism (Overloading)",
+                "subTopics": [
+                  {
+                    "name": "Same method name",
+                    "description": "Same method name"
+                  },
+                  {
+                    "name": "Different number of parameters",
+                    "description": "Different number of parameters"
+                  },
+                  {
+                    "name": "Different types of parameters",
+                    "description": "Different types of parameters"
+                  },
+                  {
+                    "name": "Different order of parameters",
+                    "description": "Different order of parameters"
+                  },
+                  {
+                    "name": "Return type NOT considered (cannot overload on return type)",
+                    "description": "Return type NOT considered (cannot overload on return type)"
+                  }
+                ]
+              },
+              {
+                "name": "Runtime Polymorphism (Overriding)",
+                "description": "Runtime Polymorphism (Overriding)",
+                "subTopics": [
+                  {
+                    "name": "Parent reference to Child object: Animal a = new Dog()",
+                    "description": "Parent reference to Child object: Animal a = new Dog()"
+                  },
+                  {
+                    "name": "Method invoked depends on actual object type",
+                    "description": "Method invoked depends on actual object type"
+                  },
+                  {
+                    "name": "Resolved at runtime via vtable",
+                    "description": "Resolved at runtime via vtable"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Abstraction (Hiding Implementation)",
+            "description": "Abstraction (Hiding Implementation)",
+            "subTopics": [
+              {
+                "name": "Achieved via Abstract Classes",
+                "description": "Achieved via Abstract Classes"
+              },
+              {
+                "name": "Achieved via Interfaces",
+                "description": "Achieved via Interfaces"
+              },
+              {
+                "name": "Achieved via Encapsulation",
+                "description": "Achieved via Encapsulation"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "2.3 Abstract Classes vs Interfaces",
-        "description": "# Abstract Classes vs Interfaces\n\n## Abstract Class\n- Keyword: `abstract`\n- Can have state (instance variables) and constructors.\n- Can have both abstract (no body) and concrete methods.\n- A class can extend only ONE abstract class.\n\n## Interface\n- Keyword: `interface`\n- A contract indicating capabilities (e.g., `Runnable`).\n- A class can implement MULTIPLE interfaces.\n- **Java 8+**: Can have `default` and `static` methods with bodies.\n- **Java 9+**: Can have `private` methods.\n\n```java\ninterface Flyable {\n    void fly(); // implicitly public abstract\n    \n    default void land() {\n        System.out.println(\"Landing\");\n    }\n}\n```"
+        "name": "2.3 Abstract Classes vs Interfaces (Deep Dive)",
+        "description": "2.3 Abstract Classes vs Interfaces (Deep Dive)",
+        "subTopics": [
+          {
+            "name": "Abstract Class (`abstract` keyword)",
+            "description": "Abstract Class (`abstract` keyword)",
+            "subTopics": [
+              {
+                "name": "Cannot be instantiated (no `new`)",
+                "description": "Cannot be instantiated (no `new`)"
+              },
+              {
+                "name": "Can have constructors (called via super())",
+                "description": "Can have constructors (called via super())"
+              },
+              {
+                "name": "Can have state (instance variables)",
+                "description": "Can have state (instance variables)"
+              },
+              {
+                "name": "Can have abstract methods (no body)",
+                "description": "Can have abstract methods (no body)"
+              },
+              {
+                "name": "Can have concrete methods (with body)",
+                "description": "Can have concrete methods (with body)"
+              },
+              {
+                "name": "Can have static methods",
+                "description": "Can have static methods"
+              },
+              {
+                "name": "Can have final methods",
+                "description": "Can have final methods"
+              },
+              {
+                "name": "Use Case: Common base code (e.g., Vehicle)",
+                "description": "Use Case: Common base code (e.g., Vehicle)"
+              }
+            ]
+          },
+          {
+            "name": "Interface (`interface` keyword)",
+            "description": "Interface (`interface` keyword)",
+            "subTopics": [
+              {
+                "name": "Before Java 8: 100% abstract",
+                "description": "Before Java 8: 100% abstract",
+                "subTopics": [
+                  {
+                    "name": "Only public abstract methods + public static final fields",
+                    "description": "Only public abstract methods + public static final fields"
+                  }
+                ]
+              },
+              {
+                "name": "Java 8+ Features",
+                "description": "Java 8+ Features",
+                "subTopics": [
+                  {
+                    "name": "default methods (Provide implementation)",
+                    "description": "default methods (Provide implementation)"
+                  },
+                  {
+                    "name": "static methods (Utility in interfaces)",
+                    "description": "static methods (Utility in interfaces)"
+                  }
+                ]
+              },
+              {
+                "name": "Java 9+ Features",
+                "description": "Java 9+ Features",
+                "subTopics": [
+                  {
+                    "name": "private methods (Code reuse within default/static)",
+                    "description": "private methods (Code reuse within default/static)"
+                  }
+                ]
+              },
+              {
+                "name": "Java 14+ Features",
+                "description": "Java 14+ Features",
+                "subTopics": [
+                  {
+                    "name": "record can implement interfaces",
+                    "description": "record can implement interfaces"
+                  }
+                ]
+              },
+              {
+                "name": "Multiple Inheritance of Type",
+                "description": "Multiple Inheritance of Type",
+                "subTopics": [
+                  {
+                    "name": "class implements multiple interfaces",
+                    "description": "class implements multiple interfaces"
+                  }
+                ]
+              },
+              {
+                "name": "Marker Interface (No methods)",
+                "description": "Marker Interface (No methods)",
+                "subTopics": [
+                  {
+                    "name": "Serializable",
+                    "description": "Serializable"
+                  },
+                  {
+                    "name": "Cloneable",
+                    "description": "Cloneable"
+                  },
+                  {
+                    "name": "Remote",
+                    "description": "Remote"
+                  }
+                ]
+              },
+              {
+                "name": "Functional Interface (`@FunctionalInterface`)",
+                "description": "Functional Interface (`@FunctionalInterface`)",
+                "subTopics": [
+                  {
+                    "name": "Exactly one abstract method (basis for Lambdas)",
+                    "description": "Exactly one abstract method (basis for Lambdas)"
+                  }
+                ]
+              },
+              {
+                "name": "Use Case: Capabilities (e.g., Runnable, Comparable)",
+                "description": "Use Case: Capabilities (e.g., Runnable, Comparable)"
+              }
+            ]
+          }
+        ]
       },
       {
         "name": "2.4 Advanced Class Features",
-        "description": "# Advanced Class Features\n\n## Inner Classes\n1. **Member Inner Class**: Has access to outer's private fields. Needs outer instance.\n2. **Static Nested Class**: Does not need outer instance.\n3. **Local Inner Class**: Inside a method. Accesses effectively final locals.\n4. **Anonymous Inner Class**: Inline implementation without a name (often replaced by Lambdas).\n\n## Enums\nFixed set of constants. Implicitly extend `java.lang.Enum`.\n```java\npublic enum Size {\n    SMALL(10), MEDIUM(20), LARGE(30);\n    \n    private final int value;\n    Size(int value) { this.value = value; }\n    public int getValue() { return value; }\n}\n```\n\n## Records (Java 14+)\nImmutable data carriers that auto-generate boilerplate (constructor, equals, hashCode, toString).\n```java\npublic record User(String name, int age) { }\n// Usage: User u = new User(\"Alice\", 25);\n// System.out.println(u.name());\n```"
+        "description": "2.4 Advanced Class Features",
+        "subTopics": [
+          {
+            "name": "`static` Keyword (Class-level binding)",
+            "description": "`static` Keyword (Class-level binding)",
+            "subTopics": [
+              {
+                "name": "Static Variables (Shared memory across instances)",
+                "description": "Static Variables (Shared memory across instances)"
+              },
+              {
+                "name": "Static Methods (Only access static members)",
+                "description": "Static Methods (Only access static members)",
+                "subTopics": [
+                  {
+                    "name": "Cannot use `this` or `super`",
+                    "description": "Cannot use `this` or `super`"
+                  }
+                ]
+              },
+              {
+                "name": "Static Blocks (Run once during class loading)",
+                "description": "Static Blocks (Run once during class loading)"
+              },
+              {
+                "name": "Static Nested Class (Instantiated without outer instance)",
+                "description": "Static Nested Class (Instantiated without outer instance)"
+              }
+            ]
+          },
+          {
+            "name": "`final` Keyword (Restricting modification)",
+            "description": "`final` Keyword (Restricting modification)",
+            "subTopics": [
+              {
+                "name": "final Variable (Cannot reassign)",
+                "description": "final Variable (Cannot reassign)",
+                "subTopics": [
+                  {
+                    "name": "Compile-time constant (if primitive)",
+                    "description": "Compile-time constant (if primitive)"
+                  },
+                  {
+                    "name": "Immutable reference (if object)",
+                    "description": "Immutable reference (if object)"
+                  }
+                ]
+              },
+              {
+                "name": "final Method (Cannot be overridden)",
+                "description": "final Method (Cannot be overridden)"
+              },
+              {
+                "name": "final Class (Cannot be extended)",
+                "description": "final Class (Cannot be extended)",
+                "subTopics": [
+                  {
+                    "name": "Examples: String, Integer",
+                    "description": "Examples: String, Integer"
+                  }
+                ]
+              },
+              {
+                "name": "final Parameters (Cannot be modified inside method)",
+                "description": "final Parameters (Cannot be modified inside method)"
+              }
+            ]
+          },
+          {
+            "name": "Inner Classes (Nested Classes - 4 types)",
+            "description": "Inner Classes (Nested Classes - 4 types)",
+            "subTopics": [
+              {
+                "name": "Member Inner Class (Non-static)",
+                "description": "Member Inner Class (Non-static)",
+                "subTopics": [
+                  {
+                    "name": "Has access to all outer members (including private)",
+                    "description": "Has access to all outer members (including private)"
+                  },
+                  {
+                    "name": "Needs outer instance to instantiate",
+                    "description": "Needs outer instance to instantiate"
+                  }
+                ]
+              },
+              {
+                "name": "Static Nested Class",
+                "description": "Static Nested Class",
+                "subTopics": [
+                  {
+                    "name": "Declared with `static`",
+                    "description": "Declared with `static`"
+                  },
+                  {
+                    "name": "Does not need outer instance",
+                    "description": "Does not need outer instance"
+                  },
+                  {
+                    "name": "Only accesses static members of outer",
+                    "description": "Only accesses static members of outer"
+                  }
+                ]
+              },
+              {
+                "name": "Local Inner Class (Defined inside a method)",
+                "description": "Local Inner Class (Defined inside a method)",
+                "subTopics": [
+                  {
+                    "name": "Can access final / effectively final local variables",
+                    "description": "Can access final / effectively final local variables"
+                  }
+                ]
+              },
+              {
+                "name": "Anonymous Inner Class (No name)",
+                "description": "Anonymous Inner Class (No name)",
+                "subTopics": [
+                  {
+                    "name": "Instantiated and defined in one `new` expression",
+                    "description": "Instantiated and defined in one `new` expression"
+                  },
+                  {
+                    "name": "Used heavily for Event Listeners",
+                    "description": "Used heavily for Event Listeners"
+                  },
+                  {
+                    "name": "Now replaced by Lambdas",
+                    "description": "Now replaced by Lambdas"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "`enum` (Fixed set of constants)",
+            "description": "`enum` (Fixed set of constants)",
+            "subTopics": [
+              {
+                "name": "Implicitly extends java.lang.Enum",
+                "description": "Implicitly extends java.lang.Enum"
+              },
+              {
+                "name": "Can have fields (private by default)",
+                "description": "Can have fields (private by default)"
+              },
+              {
+                "name": "Can have constructors (private by default)",
+                "description": "Can have constructors (private by default)"
+              },
+              {
+                "name": "Can have methods",
+                "description": "Can have methods"
+              },
+              {
+                "name": "Constants are public static final instances",
+                "description": "Constants are public static final instances"
+              },
+              {
+                "name": "Built-in Methods",
+                "description": "Built-in Methods",
+                "subTopics": [
+                  {
+                    "name": "values() (Returns all constants)",
+                    "description": "values() (Returns all constants)"
+                  },
+                  {
+                    "name": "valueOf() (Converts string to constant)",
+                    "description": "valueOf() (Converts string to constant)"
+                  },
+                  {
+                    "name": "ordinal() (Returns position)",
+                    "description": "ordinal() (Returns position)"
+                  }
+                ]
+              },
+              {
+                "name": "Can implement interfaces",
+                "description": "Can implement interfaces"
+              }
+            ]
+          },
+          {
+            "name": "`record` (Java 14+ - Immutable data carriers)",
+            "description": "`record` (Java 14+ - Immutable data carriers)",
+            "subTopics": [
+              {
+                "name": "Replaces verbose POJOs",
+                "description": "Replaces verbose POJOs"
+              },
+              {
+                "name": "Auto-generates private final fields",
+                "description": "Auto-generates private final fields"
+              },
+              {
+                "name": "Auto-generates canonical constructor",
+                "description": "Auto-generates canonical constructor"
+              },
+              {
+                "name": "Auto-generates equals()",
+                "description": "Auto-generates equals()"
+              },
+              {
+                "name": "Auto-generates hashCode()",
+                "description": "Auto-generates hashCode()"
+              },
+              {
+                "name": "Auto-generates toString()",
+                "description": "Auto-generates toString()"
+              },
+              {
+                "name": "Can have custom constructors (compact or canonical)",
+                "description": "Can have custom constructors (compact or canonical)"
+              },
+              {
+                "name": "Can implement interfaces",
+                "description": "Can implement interfaces"
+              },
+              {
+                "name": "Cannot extend classes",
+                "description": "Cannot extend classes"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
   {
-    "name": "PHASE 3: COLLECTIONS FRAMEWORK",
-    "description": "# Phase 3: Collections Framework\n\nThe Java Collections Framework (JCF) provides data structures and algorithms to store and manipulate groups of data.",
+    "name": "PHASE 3: COLLECTIONS FRAMEWORK (Data Structures)",
+    "description": "PHASE 3: COLLECTIONS FRAMEWORK (Data Structures)",
     "subTopics": [
       {
-        "name": "3.1 List (Ordered, Duplicates)",
-        "description": "# List Interface\nOrdered collections that allow duplicates.\n\n## `ArrayList<E>`\n- **Implementation**: Resizable Array.\n- **Growth**: 50% when full.\n- **Time Complexity**: `get()` is O(1), `add()` is amortized O(1), `insert/remove` in middle is O(n).\n- **Use Case**: Frequent retrieval, rare middle insertions.\n\n## `LinkedList<E>`\n- **Implementation**: Doubly-Linked List.\n- **Time Complexity**: `get()` is O(n), `addFirst/Last` is O(1).\n- **Use Case**: Stacks/Queues, frequent insertions at ends.\n\n> **Fail-fast Iterator**: If a list is structurally modified while iterating (except via the iterator's own remove method), a `ConcurrentModificationException` is thrown."
+        "name": "3.1 Root Interfaces",
+        "description": "3.1 Root Interfaces",
+        "subTopics": [
+          {
+            "name": "`Iterable<T>`",
+            "description": "`Iterable<T>`",
+            "subTopics": [
+              {
+                "name": "iterator() (Provides for-each loop support)",
+                "description": "iterator() (Provides for-each loop support)"
+              }
+            ]
+          },
+          {
+            "name": "`Collection<E>` (Root for List, Set, Queue)",
+            "description": "`Collection<E>` (Root for List, Set, Queue)",
+            "subTopics": [
+              {
+                "name": "add()",
+                "description": "add()"
+              },
+              {
+                "name": "remove()",
+                "description": "remove()"
+              },
+              {
+                "name": "size()",
+                "description": "size()"
+              },
+              {
+                "name": "isEmpty()",
+                "description": "isEmpty()"
+              },
+              {
+                "name": "contains()",
+                "description": "contains()"
+              },
+              {
+                "name": "clear()",
+                "description": "clear()"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "3.2 Set (No Duplicates)",
-        "description": "# Set Interface\nCollections that guarantee uniqueness. Rely heavily on `equals()` and `hashCode()`.\n\n## `HashSet<E>`\n- Backed by a HashMap.\n- **Time Complexity**: O(1) average for basic operations.\n- **Ordering**: None.\n\n## `LinkedHashSet<E>`\n- HashSet + Doubly-Linked List.\n- Maintains **insertion order**.\n\n## `TreeSet<E>`\n- Backed by a Red-Black Tree (TreeMap).\n- **Time Complexity**: O(log n).\n- **Ordering**: Sorted automatically (Natural order or via `Comparator`).\n- Implements `NavigableSet` (`ceiling`, `floor`, `higher`, `lower`)."
+        "name": "3.2 `List` (Ordered, Duplicates Allowed, Indexed)",
+        "description": "3.2 `List` (Ordered, Duplicates Allowed, Indexed)",
+        "subTopics": [
+          {
+            "name": "`ArrayList<E>` (Resizable Array)",
+            "description": "`ArrayList<E>` (Resizable Array)",
+            "subTopics": [
+              {
+                "name": "Initial Capacity: 10 (Default)",
+                "description": "Initial Capacity: 10 (Default)"
+              },
+              {
+                "name": "Growth Factor: 50% (oldCapacity >> 1)",
+                "description": "Growth Factor: 50% (oldCapacity >> 1)"
+              },
+              {
+                "name": "Time Complexity",
+                "description": "Time Complexity",
+                "subTopics": [
+                  {
+                    "name": "get() = O(1)",
+                    "description": "get() = O(1)"
+                  },
+                  {
+                    "name": "set() = O(1)",
+                    "description": "set() = O(1)"
+                  },
+                  {
+                    "name": "add() = O(1) amortized",
+                    "description": "add() = O(1) amortized"
+                  },
+                  {
+                    "name": "add(index) = O(n)",
+                    "description": "add(index) = O(n)"
+                  },
+                  {
+                    "name": "remove(index) = O(n)",
+                    "description": "remove(index) = O(n)"
+                  }
+                ]
+              },
+              {
+                "name": "Fail-fast Iterator",
+                "description": "Fail-fast Iterator",
+                "subTopics": [
+                  {
+                    "name": "Uses modCount -> throws ConcurrentModificationException",
+                    "description": "Uses modCount -> throws ConcurrentModificationException"
+                  }
+                ]
+              },
+              {
+                "name": "Use Case: Frequent retrieval, rare insertion in middle",
+                "description": "Use Case: Frequent retrieval, rare insertion in middle"
+              }
+            ]
+          },
+          {
+            "name": "`LinkedList<E>` (Doubly-Linked List)",
+            "description": "`LinkedList<E>` (Doubly-Linked List)",
+            "subTopics": [
+              {
+                "name": "Implements List and Deque",
+                "description": "Implements List and Deque"
+              },
+              {
+                "name": "Node Structure (prev, element, next)",
+                "description": "Node Structure (prev, element, next)"
+              },
+              {
+                "name": "Higher memory overhead",
+                "description": "Higher memory overhead"
+              },
+              {
+                "name": "Time Complexity",
+                "description": "Time Complexity",
+                "subTopics": [
+                  {
+                    "name": "get(index) = O(n)",
+                    "description": "get(index) = O(n)"
+                  },
+                  {
+                    "name": "addFirst() = O(1)",
+                    "description": "addFirst() = O(1)"
+                  },
+                  {
+                    "name": "addLast() = O(1)",
+                    "description": "addLast() = O(1)"
+                  },
+                  {
+                    "name": "removeFirst() = O(1)",
+                    "description": "removeFirst() = O(1)"
+                  },
+                  {
+                    "name": "removeLast() = O(1)",
+                    "description": "removeLast() = O(1)"
+                  }
+                ]
+              },
+              {
+                "name": "Use Case: Frequent insertion/deletion at ends, Stack/Queue",
+                "description": "Use Case: Frequent insertion/deletion at ends, Stack/Queue"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "3.3 Map (Key-Value Pairs)",
-        "description": "# Map Interface\nNot technically a `Collection`, but part of the framework. Unique keys mapped to values.\n\n## `HashMap<K,V>`\n- Uses hashing. Bucket index: `(n - 1) & hash`.\n- Java 8+ converts buckets with >8 items from a LinkedList to a Red-Black Tree for performance (O(log n) worst case instead of O(n)).\n- Allows ONE null key.\n\n## `LinkedHashMap<K,V>`\n- Maintains insertion order. \n- Can be configured for **Access Order** (useful for building LRU Caches).\n\n## `TreeMap<K,V>`\n- Red-Black tree. Keys are sorted.\n- `O(log n)` operations.\n- Implements `NavigableMap`.\n\n> **Hashtable**: Legacy class. Thread-safe but slow. Does not allow nulls. Avoid in modern Java; use `ConcurrentHashMap` instead."
+        "name": "3.3 `Set` (No Duplicates - Uses equals() & hashCode())",
+        "description": "3.3 `Set` (No Duplicates - Uses equals() & hashCode())",
+        "subTopics": [
+          {
+            "name": "`HashSet<E>` (HashMap Backed)",
+            "description": "`HashSet<E>` (HashMap Backed)",
+            "subTopics": [
+              {
+                "name": "O(1) average time",
+                "description": "O(1) average time"
+              },
+              {
+                "name": "No ordering guarantee",
+                "description": "No ordering guarantee"
+              },
+              {
+                "name": "Initial Capacity: 16",
+                "description": "Initial Capacity: 16"
+              },
+              {
+                "name": "Load Factor: 0.75",
+                "description": "Load Factor: 0.75"
+              },
+              {
+                "name": "Use Case: Fast lookups, removing duplicates",
+                "description": "Use Case: Fast lookups, removing duplicates"
+              }
+            ]
+          },
+          {
+            "name": "`LinkedHashSet<E>` (HashSet + Doubly-Linked List)",
+            "description": "`LinkedHashSet<E>` (HashSet + Doubly-Linked List)",
+            "subTopics": [
+              {
+                "name": "Maintains insertion order",
+                "description": "Maintains insertion order"
+              },
+              {
+                "name": "Slightly slower than HashSet",
+                "description": "Slightly slower than HashSet"
+              },
+              {
+                "name": "Predictable iteration order",
+                "description": "Predictable iteration order"
+              }
+            ]
+          },
+          {
+            "name": "`TreeSet<E>` (TreeMap Backed - Red-Black Tree)",
+            "description": "`TreeSet<E>` (TreeMap Backed - Red-Black Tree)",
+            "subTopics": [
+              {
+                "name": "Maintains sorted order (Natural or Comparator)",
+                "description": "Maintains sorted order (Natural or Comparator)"
+              },
+              {
+                "name": "Implements NavigableSet",
+                "description": "Implements NavigableSet"
+              },
+              {
+                "name": "NavigableSet Methods",
+                "description": "NavigableSet Methods",
+                "subTopics": [
+                  {
+                    "name": "ceiling()",
+                    "description": "ceiling()"
+                  },
+                  {
+                    "name": "floor()",
+                    "description": "floor()"
+                  },
+                  {
+                    "name": "higher()",
+                    "description": "higher()"
+                  },
+                  {
+                    "name": "lower()",
+                    "description": "lower()"
+                  },
+                  {
+                    "name": "subSet()",
+                    "description": "subSet()"
+                  }
+                ]
+              },
+              {
+                "name": "O(log n) time",
+                "description": "O(log n) time"
+              },
+              {
+                "name": "Use Case: Sorted unique elements",
+                "description": "Use Case: Sorted unique elements"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "3.4 Queue, Deque & Utilities",
-        "description": "# Queue, Deque & Utilities\n\n## Queue & Deque\n- **`PriorityQueue<E>`**: Min-Heap (or Max-Heap with custom comparator). O(log n) enqueue/dequeue.\n- **`ArrayDeque<E>`**: Faster than LinkedList for Stack and Queue operations. Does not allow nulls.\n\n## Sorting & Iteration\n- **`Comparable<T>`**: Internal natural order. Must implement `int compareTo(T o)`.\n- **`Comparator<T>`**: External custom order. Functional interface `int compare(T o1, T o2)`.\n\n## Generics Wildcards\n- `<T>`: Type parameter.\n- `? extends T`: Upper bounded (Read-only collections, PECS - Producer Extends).\n- `? super T`: Lower bounded (Write-only collections, PECS - Consumer Super).\n- Type Erasure: JVM erases generic types at runtime for backward compatibility."
+        "name": "3.4 `Map` (Key-Value Pairs, Unique Keys)",
+        "description": "3.4 `Map` (Key-Value Pairs, Unique Keys)",
+        "subTopics": [
+          {
+            "name": "`HashMap<K,V>` (Hashing)",
+            "description": "`HashMap<K,V>` (Hashing)",
+            "subTopics": [
+              {
+                "name": "Bucket Index: (n - 1) & hash",
+                "description": "Bucket Index: (n - 1) & hash"
+              },
+              {
+                "name": "Collision Handling: Chaining",
+                "description": "Collision Handling: Chaining"
+              },
+              {
+                "name": "TREEIFY_THRESHOLD = 8 (Convert to Red-Black Tree)",
+                "description": "TREEIFY_THRESHOLD = 8 (Convert to Red-Black Tree)"
+              },
+              {
+                "name": "UNTREEIFY_THRESHOLD = 6 (Convert back to List)",
+                "description": "UNTREEIFY_THRESHOLD = 6 (Convert back to List)"
+              },
+              {
+                "name": "MIN_TREEIFY_CAPACITY = 64",
+                "description": "MIN_TREEIFY_CAPACITY = 64"
+              },
+              {
+                "name": "Resizing: Doubles capacity when load factor 0.75 exceeded",
+                "description": "Resizing: Doubles capacity when load factor 0.75 exceeded"
+              },
+              {
+                "name": "Allows one null key",
+                "description": "Allows one null key"
+              },
+              {
+                "name": "Allows multiple null values",
+                "description": "Allows multiple null values"
+              },
+              {
+                "name": "Non-synchronized (use ConcurrentHashMap for threads)",
+                "description": "Non-synchronized (use ConcurrentHashMap for threads)"
+              },
+              {
+                "name": "Use Case: General-purpose key-value lookup",
+                "description": "Use Case: General-purpose key-value lookup"
+              }
+            ]
+          },
+          {
+            "name": "`LinkedHashMap<K,V>` (HashMap + Doubly-Linked List)",
+            "description": "`LinkedHashMap<K,V>` (HashMap + Doubly-Linked List)",
+            "subTopics": [
+              {
+                "name": "Maintains insertion order (default)",
+                "description": "Maintains insertion order (default)"
+              },
+              {
+                "name": "Access Order Mode (new LinkedHashMap<>(cap, load, true))",
+                "description": "Access Order Mode (new LinkedHashMap<>(cap, load, true))",
+                "subTopics": [
+                  {
+                    "name": "Moves accessed entries to end (LRU cache behavior)",
+                    "description": "Moves accessed entries to end (LRU cache behavior)"
+                  }
+                ]
+              },
+              {
+                "name": "Use Case: LRU Caches",
+                "description": "Use Case: LRU Caches"
+              }
+            ]
+          },
+          {
+            "name": "`TreeMap<K,V>` (Red-Black Tree)",
+            "description": "`TreeMap<K,V>` (Red-Black Tree)",
+            "subTopics": [
+              {
+                "name": "Sorted keys (Natural or Comparator)",
+                "description": "Sorted keys (Natural or Comparator)"
+              },
+              {
+                "name": "Implements NavigableMap",
+                "description": "Implements NavigableMap"
+              },
+              {
+                "name": "NavigableMap Methods",
+                "description": "NavigableMap Methods",
+                "subTopics": [
+                  {
+                    "name": "firstKey()",
+                    "description": "firstKey()"
+                  },
+                  {
+                    "name": "lastKey()",
+                    "description": "lastKey()"
+                  },
+                  {
+                    "name": "lowerKey()",
+                    "description": "lowerKey()"
+                  },
+                  {
+                    "name": "higherKey()",
+                    "description": "higherKey()"
+                  },
+                  {
+                    "name": "subMap()",
+                    "description": "subMap()"
+                  }
+                ]
+              },
+              {
+                "name": "O(log n) operations",
+                "description": "O(log n) operations"
+              },
+              {
+                "name": "Use Case: Sorted key-value pairs",
+                "description": "Use Case: Sorted key-value pairs"
+              }
+            ]
+          },
+          {
+            "name": "`Hashtable` (Legacy - Do Not Use)",
+            "description": "`Hashtable` (Legacy - Do Not Use)",
+            "subTopics": [
+              {
+                "name": "Synchronized (thread-safe but slow)",
+                "description": "Synchronized (thread-safe but slow)"
+              },
+              {
+                "name": "Does not allow null keys",
+                "description": "Does not allow null keys"
+              },
+              {
+                "name": "Does not allow null values",
+                "description": "Does not allow null values"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "3.5 `Queue` & `Deque` (FIFO / LIFO)",
+        "description": "3.5 `Queue` & `Deque` (FIFO / LIFO)",
+        "subTopics": [
+          {
+            "name": "`PriorityQueue<E>` (Heap Implementation)",
+            "description": "`PriorityQueue<E>` (Heap Implementation)",
+            "subTopics": [
+              {
+                "name": "Natural ordering or Comparator",
+                "description": "Natural ordering or Comparator"
+              },
+              {
+                "name": "Not thread-safe",
+                "description": "Not thread-safe"
+              },
+              {
+                "name": "O(log n) for insertion",
+                "description": "O(log n) for insertion"
+              },
+              {
+                "name": "O(log n) for removal",
+                "description": "O(log n) for removal"
+              }
+            ]
+          },
+          {
+            "name": "`ArrayDeque<E>` (Resizable Array)",
+            "description": "`ArrayDeque<E>` (Resizable Array)",
+            "subTopics": [
+              {
+                "name": "Faster than LinkedList for Stack/Queue",
+                "description": "Faster than LinkedList for Stack/Queue"
+              },
+              {
+                "name": "addFirst()",
+                "description": "addFirst()"
+              },
+              {
+                "name": "addLast()",
+                "description": "addLast()"
+              },
+              {
+                "name": "pollFirst()",
+                "description": "pollFirst()"
+              },
+              {
+                "name": "pollLast()",
+                "description": "pollLast()"
+              },
+              {
+                "name": "peekFirst()",
+                "description": "peekFirst()"
+              },
+              {
+                "name": "peekLast()",
+                "description": "peekLast()"
+              },
+              {
+                "name": "Does not allow null elements",
+                "description": "Does not allow null elements"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "3.6 Utilities, Generics & Iteration",
+        "description": "3.6 Utilities, Generics & Iteration",
+        "subTopics": [
+          {
+            "name": "`Collections` Utility Class",
+            "description": "`Collections` Utility Class",
+            "subTopics": [
+              {
+                "name": "sort(List<T>) (Requires Comparable)",
+                "description": "sort(List<T>) (Requires Comparable)"
+              },
+              {
+                "name": "sort(List<T>, Comparator)",
+                "description": "sort(List<T>, Comparator)"
+              },
+              {
+                "name": "binarySearch(List, key)",
+                "description": "binarySearch(List, key)"
+              },
+              {
+                "name": "reverse(List)",
+                "description": "reverse(List)"
+              },
+              {
+                "name": "shuffle(List)",
+                "description": "shuffle(List)"
+              },
+              {
+                "name": "synchronizedCollection()",
+                "description": "synchronizedCollection()"
+              },
+              {
+                "name": "synchronizedMap()",
+                "description": "synchronizedMap()"
+              },
+              {
+                "name": "synchronizedList()",
+                "description": "synchronizedList()"
+              },
+              {
+                "name": "unmodifiableList()",
+                "description": "unmodifiableList()"
+              },
+              {
+                "name": "unmodifiableMap()",
+                "description": "unmodifiableMap()"
+              }
+            ]
+          },
+          {
+            "name": "`Comparable<T>` (Natural Ordering)",
+            "description": "`Comparable<T>` (Natural Ordering)",
+            "subTopics": [
+              {
+                "name": "int compareTo(T o) (Implemented inside class)",
+                "description": "int compareTo(T o) (Implemented inside class)"
+              }
+            ]
+          },
+          {
+            "name": "`Comparator<T>` (Custom Ordering)",
+            "description": "`Comparator<T>` (Custom Ordering)",
+            "subTopics": [
+              {
+                "name": "int compare(T o1, T o2) (External, Functional Interface)",
+                "description": "int compare(T o1, T o2) (External, Functional Interface)"
+              }
+            ]
+          },
+          {
+            "name": "`Iterator` & `ListIterator`",
+            "description": "`Iterator` & `ListIterator`",
+            "subTopics": [
+              {
+                "name": "Iterator",
+                "description": "Iterator",
+                "subTopics": [
+                  {
+                    "name": "hasNext()",
+                    "description": "hasNext()"
+                  },
+                  {
+                    "name": "next()",
+                    "description": "next()"
+                  },
+                  {
+                    "name": "remove() (Safe removal)",
+                    "description": "remove() (Safe removal)"
+                  }
+                ]
+              },
+              {
+                "name": "ListIterator (Bidirectional)",
+                "description": "ListIterator (Bidirectional)",
+                "subTopics": [
+                  {
+                    "name": "hasPrevious()",
+                    "description": "hasPrevious()"
+                  },
+                  {
+                    "name": "previous()",
+                    "description": "previous()"
+                  },
+                  {
+                    "name": "nextIndex()",
+                    "description": "nextIndex()"
+                  },
+                  {
+                    "name": "previousIndex()",
+                    "description": "previousIndex()"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Generics (Compile-time type safety)",
+            "description": "Generics (Compile-time type safety)",
+            "subTopics": [
+              {
+                "name": "Type Parameters",
+                "description": "Type Parameters",
+                "subTopics": [
+                  {
+                    "name": "T> (Single type)",
+                    "description": "T> (Single type)"
+                  },
+                  {
+                    "name": "E> (Element)",
+                    "description": "E> (Element)"
+                  },
+                  {
+                    "name": "K,V> (Key-Value)",
+                    "description": "K,V> (Key-Value)"
+                  }
+                ]
+              },
+              {
+                "name": "Upper Bounded Wildcard",
+                "description": "Upper Bounded Wildcard",
+                "subTopics": [
+                  {
+                    "name": "extends T (Read-only)",
+                    "description": "extends T (Read-only)"
+                  }
+                ]
+              },
+              {
+                "name": "Lower Bounded Wildcard",
+                "description": "Lower Bounded Wildcard",
+                "subTopics": [
+                  {
+                    "name": "super T (Write-only)",
+                    "description": "super T (Write-only)"
+                  }
+                ]
+              },
+              {
+                "name": "Unbounded Wildcard",
+                "description": "Unbounded Wildcard",
+                "subTopics": [
+                  {
+                    "name": "Unknown type)",
+                    "description": "Unknown type)"
+                  }
+                ]
+              },
+              {
+                "name": "Type Erasure",
+                "description": "Type Erasure",
+                "subTopics": [
+                  {
+                    "name": "JVM erases generics to raw types (e.g., List -> List)",
+                    "description": "JVM erases generics to raw types (e.g., List -> List)"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   },
   {
     "name": "PHASE 4: EXCEPTIONS, I/O & NIO",
-    "description": "# Phase 4: Exceptions & Input/Output\n\nHandling errors gracefully and interacting with the file system and network streams.",
+    "description": "PHASE 4: EXCEPTIONS, I/O & NIO",
     "subTopics": [
       {
         "name": "4.1 Exception Handling",
-        "description": "# Exception Hierarchy\n\n```mermaid\ngraph TD\n    A[Throwable] --> B[Error]\n    A --> C[Exception]\n    C --> D[Checked Exceptions]\n    C --> E[RuntimeException]\n```\n\n- **`Error`**: Irrecoverable (e.g., `OutOfMemoryError`).\n- **Checked Exceptions**: Compile-time enforcement (e.g., `IOException`). Must be caught or declared in `throws`.\n- **Unchecked Exceptions**: Runtime (e.g., `NullPointerException`).\n\n## `try-with-resources`\nJava 7+ feature that auto-closes resources implementing `AutoCloseable`.\n```java\ntry (BufferedReader br = new BufferedReader(new FileReader(\"file.txt\"))) {\n    System.out.println(br.readLine());\n} // br is automatically closed here\n```\n\n## Custom Exceptions\n- Extend `Exception` for Checked.\n- Extend `RuntimeException` for Unchecked."
+        "description": "4.1 Exception Handling",
+        "subTopics": [
+          {
+            "name": "Hierarchy",
+            "description": "Hierarchy",
+            "subTopics": [
+              {
+                "name": "`Throwable` (Root)",
+                "description": "`Throwable` (Root)",
+                "subTopics": [
+                  {
+                    "name": "`Error` (Irrecoverable)",
+                    "description": "`Error` (Irrecoverable)",
+                    "subTopics": [
+                      {
+                        "name": "OutOfMemoryError",
+                        "description": "OutOfMemoryError"
+                      },
+                      {
+                        "name": "StackOverflowError",
+                        "description": "StackOverflowError"
+                      },
+                      {
+                        "name": "NoClassDefFoundError",
+                        "description": "NoClassDefFoundError"
+                      }
+                    ]
+                  },
+                  {
+                    "name": "`Exception` (Recoverable)",
+                    "description": "`Exception` (Recoverable)",
+                    "subTopics": [
+                      {
+                        "name": "Checked Exceptions (Compile-time)",
+                        "description": "Checked Exceptions (Compile-time)",
+                        "subTopics": [
+                          {
+                            "name": "IOException",
+                            "description": "IOException"
+                          },
+                          {
+                            "name": "SQLException",
+                            "description": "SQLException"
+                          },
+                          {
+                            "name": "ClassNotFoundException",
+                            "description": "ClassNotFoundException"
+                          }
+                        ]
+                      },
+                      {
+                        "name": "Unchecked Exceptions (RuntimeException)",
+                        "description": "Unchecked Exceptions (RuntimeException)",
+                        "subTopics": [
+                          {
+                            "name": "NullPointerException",
+                            "description": "NullPointerException"
+                          },
+                          {
+                            "name": "ArithmeticException",
+                            "description": "ArithmeticException"
+                          },
+                          {
+                            "name": "ArrayIndexOutOfBoundsException",
+                            "description": "ArrayIndexOutOfBoundsException"
+                          },
+                          {
+                            "name": "IllegalArgumentException",
+                            "description": "IllegalArgumentException"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Keywords Implementation",
+            "description": "Keywords Implementation",
+            "subTopics": [
+              {
+                "name": "try (Monitors a block)",
+                "description": "try (Monitors a block)"
+              },
+              {
+                "name": "catch (Handles specific exception)",
+                "description": "catch (Handles specific exception)",
+                "subTopics": [
+                  {
+                    "name": "Multi-catch: catch (IOE | SQLException e)",
+                    "description": "Multi-catch: catch (IOE | SQLException e)"
+                  }
+                ]
+              },
+              {
+                "name": "finally (Always executes)",
+                "description": "finally (Always executes)"
+              },
+              {
+                "name": "try-with-resources (Java 7+)",
+                "description": "try-with-resources (Java 7+)",
+                "subTopics": [
+                  {
+                    "name": "Declares AutoCloseable resources inside parentheses",
+                    "description": "Declares AutoCloseable resources inside parentheses"
+                  }
+                ]
+              },
+              {
+                "name": "throw (Manual exception trigger)",
+                "description": "throw (Manual exception trigger)"
+              },
+              {
+                "name": "throws (Declares in method signature)",
+                "description": "throws (Declares in method signature)"
+              }
+            ]
+          },
+          {
+            "name": "Custom Exceptions",
+            "description": "Custom Exceptions",
+            "subTopics": [
+              {
+                "name": "Checked: extends Exception",
+                "description": "Checked: extends Exception"
+              },
+              {
+                "name": "Unchecked: extends RuntimeException",
+                "description": "Unchecked: extends RuntimeException"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "4.2 I/O Streams (java.io)",
-        "description": "# I/O Streams\n\n## Byte Streams (Binary Data)\nOperates on 8-bit bytes.\n- `InputStream` -> `FileInputStream`, `BufferedInputStream`\n- `OutputStream` -> `FileOutputStream`, `BufferedOutputStream`\n\n## Character Streams (Text Data)\nOperates on 16-bit Unicode characters.\n- `Reader` -> `FileReader`, `BufferedReader` (provides `readLine()`)\n- `Writer` -> `FileWriter`, `BufferedWriter` (provides `newLine()`)\n\n## Object Serialization\nConverting object state to a byte stream.\n- Requires marking class with `Serializable` interface.\n- `ObjectOutputStream.writeObject()` and `ObjectInputStream.readObject()`.\n- **`transient` keyword**: Skips a field during serialization.\n- **`serialVersionUID`**: Ensures class version matches during deserialization."
+        "name": "4.2 I/O Streams (`java.io`)",
+        "description": "4.2 I/O Streams (`java.io`)",
+        "subTopics": [
+          {
+            "name": "Byte Streams (Binary Data)",
+            "description": "Byte Streams (Binary Data)",
+            "subTopics": [
+              {
+                "name": "InputStream (Abstract)",
+                "description": "InputStream (Abstract)",
+                "subTopics": [
+                  {
+                    "name": "FileInputStream (Reads bytes from file)",
+                    "description": "FileInputStream (Reads bytes from file)"
+                  },
+                  {
+                    "name": "BufferedInputStream (Adds buffering)",
+                    "description": "BufferedInputStream (Adds buffering)"
+                  },
+                  {
+                    "name": "DataInputStream (Reads primitives)",
+                    "description": "DataInputStream (Reads primitives)"
+                  }
+                ]
+              },
+              {
+                "name": "OutputStream (Abstract)",
+                "description": "OutputStream (Abstract)",
+                "subTopics": [
+                  {
+                    "name": "FileOutputStream (Writes bytes to file)",
+                    "description": "FileOutputStream (Writes bytes to file)"
+                  },
+                  {
+                    "name": "BufferedOutputStream (Adds buffering)",
+                    "description": "BufferedOutputStream (Adds buffering)"
+                  },
+                  {
+                    "name": "DataOutputStream (Writes primitives)",
+                    "description": "DataOutputStream (Writes primitives)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Character Streams (Text Data - Unicode)",
+            "description": "Character Streams (Text Data - Unicode)",
+            "subTopics": [
+              {
+                "name": "Reader (Abstract)",
+                "description": "Reader (Abstract)",
+                "subTopics": [
+                  {
+                    "name": "FileReader (Reads chars)",
+                    "description": "FileReader (Reads chars)"
+                  },
+                  {
+                    "name": "BufferedReader (Has readLine()!)",
+                    "description": "BufferedReader (Has readLine()!)"
+                  }
+                ]
+              },
+              {
+                "name": "Writer (Abstract)",
+                "description": "Writer (Abstract)",
+                "subTopics": [
+                  {
+                    "name": "FileWriter (Writes chars)",
+                    "description": "FileWriter (Writes chars)"
+                  },
+                  {
+                    "name": "BufferedWriter (Has newLine())",
+                    "description": "BufferedWriter (Has newLine())"
+                  },
+                  {
+                    "name": "PrintWriter (Has println())",
+                    "description": "PrintWriter (Has println())"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Object Serialization",
+            "description": "Object Serialization",
+            "subTopics": [
+              {
+                "name": "Serializable (Marker Interface)",
+                "description": "Serializable (Marker Interface)"
+              },
+              {
+                "name": "ObjectOutputStream",
+                "description": "ObjectOutputStream",
+                "subTopics": [
+                  {
+                    "name": "writeObject() (Serializes object graph)",
+                    "description": "writeObject() (Serializes object graph)"
+                  }
+                ]
+              },
+              {
+                "name": "ObjectInputStream",
+                "description": "ObjectInputStream",
+                "subTopics": [
+                  {
+                    "name": "readObject() (Deserializes, returns Object)",
+                    "description": "readObject() (Deserializes, returns Object)"
+                  }
+                ]
+              },
+              {
+                "name": "transient keyword",
+                "description": "transient keyword",
+                "subTopics": [
+                  {
+                    "name": "Skips field during serialization (defaults to null/0)",
+                    "description": "Skips field during serialization (defaults to null/0)"
+                  }
+                ]
+              },
+              {
+                "name": "serialVersionUID",
+                "description": "serialVersionUID",
+                "subTopics": [
+                  {
+                    "name": "Static final long for version control",
+                    "description": "Static final long for version control"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "4.3 NIO (java.nio)",
-        "description": "# NIO (New I/O)\nIntroduced in Java 7 as NIO.2 to modernize file handling.\n\n## `Path` and `Paths`\nModern replacement for `java.io.File`.\n\n## `Files` Utility Class\nProvides massive convenience methods:\n```java\nPath p = Path.of(\"data.txt\");\nList<String> lines = Files.readAllLines(p);\nFiles.writeString(p, \"Hello World\");\nFiles.copy(src, dest);\n```\n\n## Buffers & Channels\nNIO is non-blocking and buffer-oriented.\n- `ByteBuffer`: Direct buffers for fast native I/O.\n- `FileChannel`: High performance, supports `transferTo()` for zero-copy OS-level transfers.\n- `AsynchronousFileChannel`: For non-blocking I/O using Futures or Callbacks."
+        "name": "4.3 NIO (`java.nio` - New I/O)",
+        "description": "4.3 NIO (`java.nio` - New I/O)",
+        "subTopics": [
+          {
+            "name": "`Path` & `Paths` (Modern file representation)",
+            "description": "`Path` & `Paths` (Modern file representation)"
+          },
+          {
+            "name": "`Files` Utility Class",
+            "description": "`Files` Utility Class",
+            "subTopics": [
+              {
+                "name": "readAllLines(Path) (Returns List<String>)",
+                "description": "readAllLines(Path) (Returns List<String>)"
+              },
+              {
+                "name": "writeString(Path, String) (Easy text writing)",
+                "description": "writeString(Path, String) (Easy text writing)"
+              },
+              {
+                "name": "copy()",
+                "description": "copy()"
+              },
+              {
+                "name": "move()",
+                "description": "move()"
+              },
+              {
+                "name": "delete()",
+                "description": "delete()"
+              },
+              {
+                "name": "walk(Path) (Traverse directory tree with Stream)",
+                "description": "walk(Path) (Traverse directory tree with Stream)"
+              },
+              {
+                "name": "lines(Path) (Streams lines lazily)",
+                "description": "lines(Path) (Streams lines lazily)"
+              }
+            ]
+          },
+          {
+            "name": "`Buffer` & `Channel`",
+            "description": "`Buffer` & `Channel`",
+            "subTopics": [
+              {
+                "name": "ByteBuffer (Direct / Non-direct)",
+                "description": "ByteBuffer (Direct / Non-direct)"
+              },
+              {
+                "name": "FileChannel (High-performance, transferTo() for zero-copy)",
+                "description": "FileChannel (High-performance, transferTo() for zero-copy)"
+              }
+            ]
+          },
+          {
+            "name": "Asynchronous IO (AIO)",
+            "description": "Asynchronous IO (AIO)",
+            "subTopics": [
+              {
+                "name": "AsynchronousFileChannel (Non-blocking callbacks/Futures)",
+                "description": "AsynchronousFileChannel (Non-blocking callbacks/Futures)"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
   {
     "name": "PHASE 5: CONCURRENCY & MULTITHREADING",
-    "description": "# Phase 5: Concurrency & Multithreading\n\nJava provides deep support for concurrent programming, from low-level threads to high-level Executor frameworks.",
+    "description": "PHASE 5: CONCURRENCY & MULTITHREADING",
     "subTopics": [
       {
         "name": "5.1 Thread Fundamentals",
-        "description": "# Thread Fundamentals\nA Process has its own memory. A Thread shares the process Heap but has its own Stack.\n\n## Creating Threads\n1. **Extend `Thread` class** -> override `run()`.\n2. **Implement `Runnable`** -> preferred, prevents subclassing lock-in.\n3. **Implement `Callable<V>`** -> returns a value, can throw checked exceptions.\n\n## Thread States\n- `NEW`, `RUNNABLE`, `BLOCKED`, `WAITING`, `TIMED_WAITING`, `TERMINATED`.\n\n## Key Methods\n- `start()`: Fires up the JVM thread.\n- `sleep(ms)`: Pauses execution.\n- `join()`: Current thread waits for target thread to finish.\n- `interrupt()`: Sets the interrupt flag on a thread."
+        "description": "5.1 Thread Fundamentals",
+        "subTopics": [
+          {
+            "name": "Process vs Thread",
+            "description": "Process vs Thread",
+            "subTopics": [
+              {
+                "name": "Process (Own memory space)",
+                "description": "Process (Own memory space)"
+              },
+              {
+                "name": "Thread (Shares Heap/Metaspace, own Stack)",
+                "description": "Thread (Shares Heap/Metaspace, own Stack)"
+              }
+            ]
+          },
+          {
+            "name": "Creating Threads (3 Ways)",
+            "description": "Creating Threads (3 Ways)",
+            "subTopics": [
+              {
+                "name": "1. Extend Thread class",
+                "description": "1. Extend Thread class",
+                "subTopics": [
+                  {
+                    "name": "Override run() -> call start()",
+                    "description": "Override run() -> call start()"
+                  }
+                ]
+              },
+              {
+                "name": "2. Implement Runnable interface",
+                "description": "2. Implement Runnable interface",
+                "subTopics": [
+                  {
+                    "name": "Implement run()",
+                    "description": "Implement run()"
+                  },
+                  {
+                    "name": "Pass to Thread constructor (Preferred)",
+                    "description": "Pass to Thread constructor (Preferred)"
+                  }
+                ]
+              },
+              {
+                "name": "3. Implement Callable<V>",
+                "description": "3. Implement Callable<V>",
+                "subTopics": [
+                  {
+                    "name": "Override call() (Returns value, throws checked)",
+                    "description": "Override call() (Returns value, throws checked)"
+                  },
+                  {
+                    "name": "Used with ExecutorService and Future",
+                    "description": "Used with ExecutorService and Future"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Thread Lifecycle (States)",
+            "description": "Thread Lifecycle (States)",
+            "subTopics": [
+              {
+                "name": "NEW (Created, start() not called)",
+                "description": "NEW (Created, start() not called)"
+              },
+              {
+                "name": "RUNNABLE (Executing or ready for CPU)",
+                "description": "RUNNABLE (Executing or ready for CPU)"
+              },
+              {
+                "name": "BLOCKED (Waiting for monitor lock)",
+                "description": "BLOCKED (Waiting for monitor lock)"
+              },
+              {
+                "name": "WAITING (Waiting indefinitely - wait(), join())",
+                "description": "WAITING (Waiting indefinitely - wait(), join())"
+              },
+              {
+                "name": "TIMED_WAITING (Waiting with timeout - sleep(ms))",
+                "description": "TIMED_WAITING (Waiting with timeout - sleep(ms))"
+              },
+              {
+                "name": "TERMINATED (Finished execution)",
+                "description": "TERMINATED (Finished execution)"
+              }
+            ]
+          },
+          {
+            "name": "Thread Methods",
+            "description": "Thread Methods",
+            "subTopics": [
+              {
+                "name": "start() (Creates system thread and calls run())",
+                "description": "start() (Creates system thread and calls run())"
+              },
+              {
+                "name": "sleep(millis) (Pauses current thread)",
+                "description": "sleep(millis) (Pauses current thread)"
+              },
+              {
+                "name": "yield() (Hints scheduler to give up CPU)",
+                "description": "yield() (Hints scheduler to give up CPU)"
+              },
+              {
+                "name": "join() (Waits for thread to die)",
+                "description": "join() (Waits for thread to die)"
+              },
+              {
+                "name": "setDaemon(true) (Marks as background thread)",
+                "description": "setDaemon(true) (Marks as background thread)"
+              },
+              {
+                "name": "interrupt() (Sets interrupt flag)",
+                "description": "interrupt() (Sets interrupt flag)"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "5.2 Synchronization & Visibility",
-        "description": "# Synchronization & Visibility\n\n## `synchronized`\nIntrinsic locks. Can be applied to methods (locks `this` or `Class.class`) or blocks (locks specific object).\n\n## `volatile`\nGuarantees **visibility** (flushes writes to main memory, bypassing CPU cache) and prevents instruction reordering. Does NOT guarantee atomicity.\n\n## Inter-Thread Communication\nMust be called from within a synchronized block:\n- `wait()`: Releases lock, thread enters WAITING state.\n- `notify()` / `notifyAll()`: Wakes up waiting thread(s).\n\n## `java.util.concurrent.locks.Lock`\n- `ReentrantLock`: More flexible than synchronized (tryLock, interruptible).\n- `ReadWriteLock`: Multiple readers, single writer."
+        "name": "5.2 Synchronization & Memory Visibility",
+        "description": "5.2 Synchronization & Memory Visibility",
+        "subTopics": [
+          {
+            "name": "`synchronized` Keyword (Intrinsic Lock)",
+            "description": "`synchronized` Keyword (Intrinsic Lock)",
+            "subTopics": [
+              {
+                "name": "Synchronized Instance Method (Locks on `this`)",
+                "description": "Synchronized Instance Method (Locks on `this`)"
+              },
+              {
+                "name": "Synchronized Static Method (Locks on Class.class)",
+                "description": "Synchronized Static Method (Locks on Class.class)"
+              },
+              {
+                "name": "Synchronized Block (Locks on arbitrary object)",
+                "description": "Synchronized Block (Locks on arbitrary object)",
+                "subTopics": [
+                  {
+                    "name": "More granular control",
+                    "description": "More granular control"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "`volatile` Keyword",
+            "description": "`volatile` Keyword",
+            "subTopics": [
+              {
+                "name": "Guarantees Visibility (Flushes to main memory)",
+                "description": "Guarantees Visibility (Flushes to main memory)"
+              },
+              {
+                "name": "Does NOT guarantee Atomicity (use AtomicInteger)",
+                "description": "Does NOT guarantee Atomicity (use AtomicInteger)"
+              },
+              {
+                "name": "Prevents Instruction Reordering (Happens-before)",
+                "description": "Prevents Instruction Reordering (Happens-before)"
+              }
+            ]
+          },
+          {
+            "name": "`Lock` API (`java.util.concurrent.locks`)",
+            "description": "`Lock` API (`java.util.concurrent.locks`)",
+            "subTopics": [
+              {
+                "name": "ReentrantLock",
+                "description": "ReentrantLock",
+                "subTopics": [
+                  {
+                    "name": "lock() (Blocking acquisition)",
+                    "description": "lock() (Blocking acquisition)"
+                  },
+                  {
+                    "name": "tryLock() (Non-blocking)",
+                    "description": "tryLock() (Non-blocking)"
+                  },
+                  {
+                    "name": "tryLock(timeout, unit) (With timeout)",
+                    "description": "tryLock(timeout, unit) (With timeout)"
+                  },
+                  {
+                    "name": "lockInterruptibly() (Interruptible lock)",
+                    "description": "lockInterruptibly() (Interruptible lock)"
+                  },
+                  {
+                    "name": "Always unlock in finally",
+                    "description": "Always unlock in finally"
+                  }
+                ]
+              },
+              {
+                "name": "ReadWriteLock (Multiple readers, single writer)",
+                "description": "ReadWriteLock (Multiple readers, single writer)"
+              },
+              {
+                "name": "StampedLock (Optimistic locking - Java 8)",
+                "description": "StampedLock (Optimistic locking - Java 8)"
+              }
+            ]
+          },
+          {
+            "name": "Inter-Thread Communication",
+            "description": "Inter-Thread Communication",
+            "subTopics": [
+              {
+                "name": "wait() (Releases lock, enters WAITING)",
+                "description": "wait() (Releases lock, enters WAITING)"
+              },
+              {
+                "name": "wait(long timeout) (With timeout)",
+                "description": "wait(long timeout) (With timeout)"
+              },
+              {
+                "name": "notify() (Wakes one waiting thread)",
+                "description": "notify() (Wakes one waiting thread)"
+              },
+              {
+                "name": "notifyAll() (Wakes all waiting threads)",
+                "description": "notifyAll() (Wakes all waiting threads)"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "5.3 High-Level Concurrency",
-        "description": "# High-Level Concurrency (`java.util.concurrent`)\n\n## Executor Framework (Thread Pools)\nManages thread lifecycles.\n```java\nExecutorService pool = Executors.newFixedThreadPool(4);\nFuture<Integer> future = pool.submit(() -> { return 42; });\npool.shutdown();\n```\n\n## Concurrent Collections\n- `ConcurrentHashMap`: Lock-striping and CAS (Compare-And-Swap) for high throughput.\n- `CopyOnWriteArrayList`: Read-heavy, writes clone the array.\n- `BlockingQueue`: Bounded queues that block on empty/full (used in Producer/Consumer).\n\n## Synchronizers\n- **`CountDownLatch`**: Threads wait for a counter to hit zero.\n- **`CyclicBarrier`**: N threads wait for each other to reach a point.\n- **`Semaphore`**: Restricts concurrent access to limited resources.\n\n## `CompletableFuture` (Java 8)\nAsynchronous, reactive programming.\n```java\nCompletableFuture.supplyAsync(() -> \"Data\")\n    .thenApply(String::toUpperCase)\n    .thenAccept(System.out::println);\n```"
+        "name": "5.3 High-Level Concurrency (`java.util.concurrent`)",
+        "description": "5.3 High-Level Concurrency (`java.util.concurrent`)",
+        "subTopics": [
+          {
+            "name": "Executor Framework (Thread Pools)",
+            "description": "Executor Framework (Thread Pools)",
+            "subTopics": [
+              {
+                "name": "ExecutorService Interface",
+                "description": "ExecutorService Interface"
+              },
+              {
+                "name": "Executors Factory",
+                "description": "Executors Factory",
+                "subTopics": [
+                  {
+                    "name": "newFixedThreadPool(n) (Bounded threads)",
+                    "description": "newFixedThreadPool(n) (Bounded threads)"
+                  },
+                  {
+                    "name": "newCachedThreadPool() (Unbounded, reuses idle)",
+                    "description": "newCachedThreadPool() (Unbounded, reuses idle)"
+                  },
+                  {
+                    "name": "newSingleThreadExecutor() (Single thread)",
+                    "description": "newSingleThreadExecutor() (Single thread)"
+                  },
+                  {
+                    "name": "newScheduledThreadPool(n) (Delayed/recurring tasks)",
+                    "description": "newScheduledThreadPool(n) (Delayed/recurring tasks)"
+                  }
+                ]
+              },
+              {
+                "name": "Submit Methods",
+                "description": "Submit Methods",
+                "subTopics": [
+                  {
+                    "name": "submit(Callable) (Returns Future)",
+                    "description": "submit(Callable) (Returns Future)"
+                  },
+                  {
+                    "name": "execute(Runnable) (No return)",
+                    "description": "execute(Runnable) (No return)"
+                  }
+                ]
+              },
+              {
+                "name": "Shutdown Methods",
+                "description": "Shutdown Methods",
+                "subTopics": [
+                  {
+                    "name": "shutdown() (Graceful)",
+                    "description": "shutdown() (Graceful)"
+                  },
+                  {
+                    "name": "shutdownNow() (Force interrupt)",
+                    "description": "shutdownNow() (Force interrupt)"
+                  }
+                ]
+              },
+              {
+                "name": "Future Methods",
+                "description": "Future Methods",
+                "subTopics": [
+                  {
+                    "name": "get() (Blocks for result)",
+                    "description": "get() (Blocks for result)"
+                  },
+                  {
+                    "name": "get(timeout, unit) (With timeout)",
+                    "description": "get(timeout, unit) (With timeout)"
+                  },
+                  {
+                    "name": "cancel() (Cancels task)",
+                    "description": "cancel() (Cancels task)"
+                  },
+                  {
+                    "name": "isDone() (Checks completion)",
+                    "description": "isDone() (Checks completion)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Concurrent Collections (Thread-safe)",
+            "description": "Concurrent Collections (Thread-safe)",
+            "subTopics": [
+              {
+                "name": "ConcurrentHashMap<K,V> (Lock-striping, CAS)",
+                "description": "ConcurrentHashMap<K,V> (Lock-striping, CAS)"
+              },
+              {
+                "name": "CopyOnWriteArrayList<E> (Copy on write, read-heavy)",
+                "description": "CopyOnWriteArrayList<E> (Copy on write, read-heavy)"
+              },
+              {
+                "name": "ConcurrentLinkedQueue<E> (Non-blocking, CAS)",
+                "description": "ConcurrentLinkedQueue<E> (Non-blocking, CAS)"
+              },
+              {
+                "name": "BlockingQueue<E> (Put/Take blocking)",
+                "description": "BlockingQueue<E> (Put/Take blocking)",
+                "subTopics": [
+                  {
+                    "name": "ArrayBlockingQueue (Bounded)",
+                    "description": "ArrayBlockingQueue (Bounded)"
+                  },
+                  {
+                    "name": "LinkedBlockingQueue (Optionally bounded)",
+                    "description": "LinkedBlockingQueue (Optionally bounded)"
+                  },
+                  {
+                    "name": "PriorityBlockingQueue (Unbounded, sorted)",
+                    "description": "PriorityBlockingQueue (Unbounded, sorted)"
+                  }
+                ]
+              },
+              {
+                "name": "ConcurrentSkipListMap (Sorted concurrent map)",
+                "description": "ConcurrentSkipListMap (Sorted concurrent map)"
+              }
+            ]
+          },
+          {
+            "name": "Synchronizers (Coordination)",
+            "description": "Synchronizers (Coordination)",
+            "subTopics": [
+              {
+                "name": "CountDownLatch (Wait for count to reach zero)",
+                "description": "CountDownLatch (Wait for count to reach zero)",
+                "subTopics": [
+                  {
+                    "name": "await()",
+                    "description": "await()"
+                  },
+                  {
+                    "name": "countDown()",
+                    "description": "countDown()"
+                  }
+                ]
+              },
+              {
+                "name": "CyclicBarrier (N threads wait for each other)",
+                "description": "CyclicBarrier (N threads wait for each other)",
+                "subTopics": [
+                  {
+                    "name": "await() (Resets automatically)",
+                    "description": "await() (Resets automatically)"
+                  },
+                  {
+                    "name": "Barrier action (Runnable)",
+                    "description": "Barrier action (Runnable)"
+                  }
+                ]
+              },
+              {
+                "name": "Semaphore (Limits concurrent access)",
+                "description": "Semaphore (Limits concurrent access)",
+                "subTopics": [
+                  {
+                    "name": "acquire() (Blocks if no permit)",
+                    "description": "acquire() (Blocks if no permit)"
+                  },
+                  {
+                    "name": "release() (Adds permit)",
+                    "description": "release() (Adds permit)"
+                  }
+                ]
+              },
+              {
+                "name": "Exchanger (Two threads exchange objects)",
+                "description": "Exchanger (Two threads exchange objects)"
+              }
+            ]
+          },
+          {
+            "name": "Asynchronous Programming (CompletableFuture - Java 8)",
+            "description": "Asynchronous Programming (CompletableFuture - Java 8)",
+            "subTopics": [
+              {
+                "name": "supplyAsync() (Runs async task)",
+                "description": "supplyAsync() (Runs async task)"
+              },
+              {
+                "name": "thenApply() (Transforms result synchronously)",
+                "description": "thenApply() (Transforms result synchronously)"
+              },
+              {
+                "name": "thenAccept() (Consumes result)",
+                "description": "thenAccept() (Consumes result)"
+              },
+              {
+                "name": "thenCompose() (Flat-maps futures)",
+                "description": "thenCompose() (Flat-maps futures)"
+              },
+              {
+                "name": "thenCombine() (Combines two futures)",
+                "description": "thenCombine() (Combines two futures)"
+              },
+              {
+                "name": "exceptionally() (Handles errors / fallback)",
+                "description": "exceptionally() (Handles errors / fallback)"
+              }
+            ]
+          }
+        ]
       }
     ]
   },
   {
     "name": "PHASE 6: MODERN JAVA (Java 8+ Features)",
-    "description": "# Phase 6: Modern Java\n\nJava 8 revolutionized the language with functional paradigms. Later versions added further syntactical sugar.",
+    "description": "PHASE 6: MODERN JAVA (Java 8+ Features)",
     "subTopics": [
       {
-        "name": "6.1 Lambdas & Functional Interfaces",
-        "description": "# Lambdas & Functional Interfaces\n\n## Lambdas\nConcise implementation of a functional interface.\n` (parameters) -> { body } `\n- **Variable Capture**: Can access `final` or `effectively final` local variables.\n\n## Core `@FunctionalInterface`s\n- **`Predicate<T>`**: `boolean test(T)` -> Filtering\n- **`Consumer<T>`**: `void accept(T)` -> Processing (forEach)\n- **`Function<T,R>`**: `R apply(T)` -> Mapping/Transformation\n- **`Supplier<T>`**: `T get()` -> Lazy Generation\n\n## Method References\nShorthand for lambdas:\n- `System.out::println` instead of `s -> System.out.println(s)`\n- `String::length` instead of `s -> s.length()`\n- `ArrayList::new` instead of `() -> new ArrayList<>()`"
+        "name": "6.1 Lambda Expressions",
+        "description": "6.1 Lambda Expressions",
+        "subTopics": [
+          {
+            "name": "Syntax Variants",
+            "description": "Syntax Variants",
+            "subTopics": [
+              {
+                "name": "parameters) -> { body }",
+                "description": "parameters) -> { body }"
+              },
+              {
+                "name": "parameters) -> expression",
+                "description": "parameters) -> expression"
+              }
+            ]
+          },
+          {
+            "name": "Target Type: Functional Interface",
+            "description": "Target Type: Functional Interface"
+          },
+          {
+            "name": "Variable Capture",
+            "description": "Variable Capture",
+            "subTopics": [
+              {
+                "name": "Captures final variables",
+                "description": "Captures final variables"
+              },
+              {
+                "name": "Captures effectively final variables",
+                "description": "Captures effectively final variables"
+              }
+            ]
+          },
+          {
+            "name": "Example: list.forEach(item -> System.out.println(item))",
+            "description": "Example: list.forEach(item -> System.out.println(item))"
+          }
+        ]
       },
       {
-        "name": "6.2 Streams API",
-        "description": "# Streams API (`java.util.stream`)\nDeclarative pipeline processing for collections.\n\n## Pipeline Architecture\n1. **Source** (e.g., `list.stream()`)\n2. **Intermediate Ops** (Lazy): `filter`, `map`, `flatMap`, `sorted`, `distinct`, `limit`.\n3. **Terminal Ops** (Eager): `forEach`, `collect`, `reduce`, `count`, `anyMatch`, `findFirst`.\n\n## Example\n```java\nList<String> names = List.of(\"Alice\", \"Bob\", \"Charlie\");\nString result = names.stream()\n    .filter(n -> n.length() > 3)\n    .map(String::toUpperCase)\n    .collect(Collectors.joining(\", \")); // \"ALICE, CHARLIE\"\n```\n\n## Parallel Streams\n`list.parallelStream()` uses the common `ForkJoinPool` to process chunks concurrently."
+        "name": "6.2 Functional Interfaces (`@FunctionalInterface`)",
+        "description": "6.2 Functional Interfaces (`@FunctionalInterface`)",
+        "subTopics": [
+          {
+            "name": "Predicate<T>",
+            "description": "Predicate<T>",
+            "subTopics": [
+              {
+                "name": "boolean test(T t) (Used in filter)",
+                "description": "boolean test(T t) (Used in filter)"
+              }
+            ]
+          },
+          {
+            "name": "Consumer<T>",
+            "description": "Consumer<T>",
+            "subTopics": [
+              {
+                "name": "void accept(T t) (Used in forEach)",
+                "description": "void accept(T t) (Used in forEach)"
+              }
+            ]
+          },
+          {
+            "name": "Function<T,R>",
+            "description": "Function<T,R>",
+            "subTopics": [
+              {
+                "name": "R apply(T t) (Used in map)",
+                "description": "R apply(T t) (Used in map)"
+              }
+            ]
+          },
+          {
+            "name": "Supplier<T>",
+            "description": "Supplier<T>",
+            "subTopics": [
+              {
+                "name": "T get() (Lazy initialization)",
+                "description": "T get() (Lazy initialization)"
+              }
+            ]
+          },
+          {
+            "name": "UnaryOperator<T> (Extends Function)",
+            "description": "UnaryOperator<T> (Extends Function)",
+            "subTopics": [
+              {
+                "name": "T apply(T t) (Same input/output)",
+                "description": "T apply(T t) (Same input/output)"
+              }
+            ]
+          },
+          {
+            "name": "BinaryOperator<T> (Extends BiFunction)",
+            "description": "BinaryOperator<T> (Extends BiFunction)",
+            "subTopics": [
+              {
+                "name": "T apply(T t1, T t2) (Reduction)",
+                "description": "T apply(T t1, T t2) (Reduction)"
+              }
+            ]
+          }
+        ]
       },
       {
-        "name": "6.3 Optional & Date/Time API",
-        "description": "# Optional & Date/Time API\n\n## `Optional<T>`\nPrevents `NullPointerException` by wrapping nullable values.\n```java\nOptional<User> opt = userRepository.findById(1);\nopt.ifPresent(u -> System.out.println(u.getName()));\nUser u = opt.orElseThrow(() -> new NotFoundException());\n```\n\n## `java.time` API\nImmutable, thread-safe date/time handling.\n- **`LocalDate`**, **`LocalTime`**, **`LocalDateTime`**: No timezone.\n- **`ZonedDateTime`**: With timezone.\n- **`Instant`**: Machine time (epoch seconds/nanos).\n- **`Duration`** (time-based) & **`Period`** (date-based) to calculate differences.\n- **`DateTimeFormatter`** for parsing/formatting."
+        "name": "6.3 Method References (Shorthand for Lambdas)",
+        "description": "6.3 Method References (Shorthand for Lambdas)",
+        "subTopics": [
+          {
+            "name": "Class::staticMethod (e.g., Math::max)",
+            "description": "Class::staticMethod (e.g., Math::max)"
+          },
+          {
+            "name": "object::instanceMethod (e.g., System.out::println)",
+            "description": "object::instanceMethod (e.g., System.out::println)"
+          },
+          {
+            "name": "Class::instanceMethod (e.g., String::length)",
+            "description": "Class::instanceMethod (e.g., String::length)"
+          },
+          {
+            "name": "Class::new (Constructor reference, e.g., ArrayList::new)",
+            "description": "Class::new (Constructor reference, e.g., ArrayList::new)"
+          }
+        ]
+      },
+      {
+        "name": "6.4 Streams API (`java.util.stream`)",
+        "description": "6.4 Streams API (`java.util.stream`)",
+        "subTopics": [
+          {
+            "name": "Pipeline Structure",
+            "description": "Pipeline Structure",
+            "subTopics": [
+              {
+                "name": "Source",
+                "description": "Source"
+              },
+              {
+                "name": "Intermediate Operations (Lazy)",
+                "description": "Intermediate Operations (Lazy)"
+              },
+              {
+                "name": "Terminal Operation (Eager)",
+                "description": "Terminal Operation (Eager)"
+              }
+            ]
+          },
+          {
+            "name": "Creating Streams",
+            "description": "Creating Streams",
+            "subTopics": [
+              {
+                "name": "collection.stream()",
+                "description": "collection.stream()"
+              },
+              {
+                "name": "Stream.of()",
+                "description": "Stream.of()"
+              },
+              {
+                "name": "Arrays.stream()",
+                "description": "Arrays.stream()"
+              },
+              {
+                "name": "Files.lines()",
+                "description": "Files.lines()"
+              }
+            ]
+          },
+          {
+            "name": "Intermediate Operations (Lazy)",
+            "description": "Intermediate Operations (Lazy)",
+            "subTopics": [
+              {
+                "name": "filter(Predicate)",
+                "description": "filter(Predicate)"
+              },
+              {
+                "name": "map(Function)",
+                "description": "map(Function)"
+              },
+              {
+                "name": "flatMap(Function) (Flattens nested collections)",
+                "description": "flatMap(Function) (Flattens nested collections)"
+              },
+              {
+                "name": "distinct() (Removes duplicates)",
+                "description": "distinct() (Removes duplicates)"
+              },
+              {
+                "name": "sorted() (Natural order)",
+                "description": "sorted() (Natural order)"
+              },
+              {
+                "name": "sorted(Comparator) (Custom order)",
+                "description": "sorted(Comparator) (Custom order)"
+              },
+              {
+                "name": "limit(n) (Truncates to n)",
+                "description": "limit(n) (Truncates to n)"
+              },
+              {
+                "name": "skip(n) (Discards first n)",
+                "description": "skip(n) (Discards first n)"
+              },
+              {
+                "name": "peek(Consumer) (Debugging)",
+                "description": "peek(Consumer) (Debugging)"
+              }
+            ]
+          },
+          {
+            "name": "Terminal Operations (Eager)",
+            "description": "Terminal Operations (Eager)",
+            "subTopics": [
+              {
+                "name": "forEach(Consumer)",
+                "description": "forEach(Consumer)"
+              },
+              {
+                "name": "collect(Collector)",
+                "description": "collect(Collector)",
+                "subTopics": [
+                  {
+                    "name": "Collectors.toList()",
+                    "description": "Collectors.toList()"
+                  },
+                  {
+                    "name": "Collectors.toSet()",
+                    "description": "Collectors.toSet()"
+                  },
+                  {
+                    "name": "Collectors.toMap()",
+                    "description": "Collectors.toMap()"
+                  },
+                  {
+                    "name": "Collectors.groupingBy()",
+                    "description": "Collectors.groupingBy()"
+                  },
+                  {
+                    "name": "Collectors.partitioningBy()",
+                    "description": "Collectors.partitioningBy()"
+                  },
+                  {
+                    "name": "Collectors.joining()",
+                    "description": "Collectors.joining()"
+                  }
+                ]
+              },
+              {
+                "name": "reduce(BinaryOperator) (Reduces to single value)",
+                "description": "reduce(BinaryOperator) (Reduces to single value)"
+              },
+              {
+                "name": "count()",
+                "description": "count()"
+              },
+              {
+                "name": "anyMatch(Predicate) (Short-circuit)",
+                "description": "anyMatch(Predicate) (Short-circuit)"
+              },
+              {
+                "name": "allMatch(Predicate) (Short-circuit)",
+                "description": "allMatch(Predicate) (Short-circuit)"
+              },
+              {
+                "name": "noneMatch(Predicate) (Short-circuit)",
+                "description": "noneMatch(Predicate) (Short-circuit)"
+              },
+              {
+                "name": "findFirst() (Returns Optional)",
+                "description": "findFirst() (Returns Optional)"
+              },
+              {
+                "name": "findAny() (Returns Optional)",
+                "description": "findAny() (Returns Optional)"
+              }
+            ]
+          },
+          {
+            "name": "Primitive Streams",
+            "description": "Primitive Streams",
+            "subTopics": [
+              {
+                "name": "IntStream",
+                "description": "IntStream",
+                "subTopics": [
+                  {
+                    "name": "range()",
+                    "description": "range()"
+                  },
+                  {
+                    "name": "sum()",
+                    "description": "sum()"
+                  },
+                  {
+                    "name": "average()",
+                    "description": "average()"
+                  }
+                ]
+              },
+              {
+                "name": "LongStream",
+                "description": "LongStream"
+              },
+              {
+                "name": "DoubleStream",
+                "description": "DoubleStream"
+              }
+            ]
+          },
+          {
+            "name": "Parallel Streams",
+            "description": "Parallel Streams",
+            "subTopics": [
+              {
+                "name": "parallelStream() (On collections)",
+                "description": "parallelStream() (On collections)"
+              },
+              {
+                "name": "parallel() (On existing streams)",
+                "description": "parallel() (On existing streams)"
+              },
+              {
+                "name": "Uses ForkJoinPool",
+                "description": "Uses ForkJoinPool"
+              },
+              {
+                "name": "Must be stateless and thread-safe",
+                "description": "Must be stateless and thread-safe"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "6.5 `Optional<T>` (Container for nullable values)",
+        "description": "6.5 `Optional<T>` (Container for nullable values)",
+        "subTopics": [
+          {
+            "name": "Creation",
+            "description": "Creation",
+            "subTopics": [
+              {
+                "name": "Optional.of(value) (Non-null required)",
+                "description": "Optional.of(value) (Non-null required)"
+              },
+              {
+                "name": "Optional.ofNullable(value) (May be null)",
+                "description": "Optional.ofNullable(value) (May be null)"
+              },
+              {
+                "name": "Optional.empty() (Empty container)",
+                "description": "Optional.empty() (Empty container)"
+              }
+            ]
+          },
+          {
+            "name": "Inspection",
+            "description": "Inspection",
+            "subTopics": [
+              {
+                "name": "isPresent()",
+                "description": "isPresent()"
+              },
+              {
+                "name": "isEmpty() (Java 11)",
+                "description": "isEmpty() (Java 11)"
+              }
+            ]
+          },
+          {
+            "name": "Consumption",
+            "description": "Consumption",
+            "subTopics": [
+              {
+                "name": "ifPresent(Consumer)",
+                "description": "ifPresent(Consumer)"
+              }
+            ]
+          },
+          {
+            "name": "Retrieval",
+            "description": "Retrieval",
+            "subTopics": [
+              {
+                "name": "get() (Throws NoSuchElementException if empty)",
+                "description": "get() (Throws NoSuchElementException if empty)"
+              },
+              {
+                "name": "orElse(default)",
+                "description": "orElse(default)"
+              },
+              {
+                "name": "orElseGet(Supplier) (Lazy)",
+                "description": "orElseGet(Supplier) (Lazy)"
+              },
+              {
+                "name": "orElseThrow() (Throws exception)",
+                "description": "orElseThrow() (Throws exception)"
+              }
+            ]
+          },
+          {
+            "name": "Transformation",
+            "description": "Transformation",
+            "subTopics": [
+              {
+                "name": "map(Function)",
+                "description": "map(Function)"
+              },
+              {
+                "name": "filter(Predicate)",
+                "description": "filter(Predicate)"
+              },
+              {
+                "name": "flatMap(Function) (Returns Optional)",
+                "description": "flatMap(Function) (Returns Optional)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "6.6 New Date/Time API (`java.time`)",
+        "description": "6.6 New Date/Time API (`java.time`)",
+        "subTopics": [
+          {
+            "name": "Local Date/Time (No Timezone)",
+            "description": "Local Date/Time (No Timezone)",
+            "subTopics": [
+              {
+                "name": "LocalDate (Year, Month, Day)",
+                "description": "LocalDate (Year, Month, Day)"
+              },
+              {
+                "name": "LocalTime (Hour, Minute, Second, Nanosecond)",
+                "description": "LocalTime (Hour, Minute, Second, Nanosecond)"
+              },
+              {
+                "name": "LocalDateTime (Date + Time)",
+                "description": "LocalDateTime (Date + Time)"
+              }
+            ]
+          },
+          {
+            "name": "Zoned Date/Time",
+            "description": "Zoned Date/Time",
+            "subTopics": [
+              {
+                "name": "ZonedDateTime (With timezone)",
+                "description": "ZonedDateTime (With timezone)"
+              },
+              {
+                "name": "OffsetDateTime (With UTC offset)",
+                "description": "OffsetDateTime (With UTC offset)"
+              }
+            ]
+          },
+          {
+            "name": "Machine Time",
+            "description": "Machine Time",
+            "subTopics": [
+              {
+                "name": "Instant (Epoch seconds/nanos)",
+                "description": "Instant (Epoch seconds/nanos)"
+              }
+            ]
+          },
+          {
+            "name": "Duration & Period",
+            "description": "Duration & Period",
+            "subTopics": [
+              {
+                "name": "Duration (Time-based - seconds, nanos)",
+                "description": "Duration (Time-based - seconds, nanos)",
+                "subTopics": [
+                  {
+                    "name": "between() (Static method)",
+                    "description": "between() (Static method)"
+                  }
+                ]
+              },
+              {
+                "name": "Period (Date-based - years, months, days)",
+                "description": "Period (Date-based - years, months, days)",
+                "subTopics": [
+                  {
+                    "name": "between() (Static method)",
+                    "description": "between() (Static method)"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Formatting",
+            "description": "Formatting",
+            "subTopics": [
+              {
+                "name": "DateTimeFormatter (Thread-safe)",
+                "description": "DateTimeFormatter (Thread-safe)"
+              },
+              {
+                "name": "Predefined Formatters",
+                "description": "Predefined Formatters",
+                "subTopics": [
+                  {
+                    "name": "ISO_LOCAL_DATE",
+                    "description": "ISO_LOCAL_DATE"
+                  },
+                  {
+                    "name": "BASIC_ISO_DATE",
+                    "description": "BASIC_ISO_DATE"
+                  }
+                ]
+              },
+              {
+                "name": "Custom Formatter",
+                "description": "Custom Formatter",
+                "subTopics": [
+                  {
+                    "name": "ofPattern(\"dd/MM/yyyy\")",
+                    "description": "ofPattern(\"dd/MM/yyyy\")"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Manipulation (Immutable - returns new instance)",
+            "description": "Manipulation (Immutable - returns new instance)",
+            "subTopics": [
+              {
+                "name": "plusDays()",
+                "description": "plusDays()"
+              },
+              {
+                "name": "minusMonths()",
+                "description": "minusMonths()"
+              },
+              {
+                "name": "withYear()",
+                "description": "withYear()"
+              }
+            ]
+          },
+          {
+            "name": "Temporal Adjusters",
+            "description": "Temporal Adjusters",
+            "subTopics": [
+              {
+                "name": "firstDayOfMonth()",
+                "description": "firstDayOfMonth()"
+              },
+              {
+                "name": "next(DayOfWeek.MONDAY)",
+                "description": "next(DayOfWeek.MONDAY)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "6.7 Interface Enhancements",
+        "description": "6.7 Interface Enhancements",
+        "subTopics": [
+          {
+            "name": "default methods (Provide implementation)",
+            "description": "default methods (Provide implementation)"
+          },
+          {
+            "name": "static methods (Utility in interface)",
+            "description": "static methods (Utility in interface)"
+          },
+          {
+            "name": "private methods (Java 9+ - code reuse)",
+            "description": "private methods (Java 9+ - code reuse)"
+          }
+        ]
       }
     ]
   },
   {
-    "name": "PHASE 7: JVM INTERNALS (Tuning & Diagnostics)",
-    "description": "# Phase 7: JVM Internals\n\nUnderstanding the JVM architecture is critical for performance tuning and resolving memory leaks.",
+    "name": "PHASE 7: JVM INTERNALS (Deep Dive - Performance/Tuning)",
+    "description": "PHASE 7: JVM INTERNALS (Deep Dive - Performance/Tuning)",
     "subTopics": [
       {
-        "name": "7.1 JVM Memory Layout",
-        "description": "# JVM Runtime Data Areas\n\n## Shared Memory (All Threads)\n- **Heap**: Stores instantiated objects. Divided into Young Gen (Eden, S0, S1) and Old Gen (Tenured).\n- **Metaspace**: Stores class metadata, statics, and JIT compiled code. (Replaced PermGen in Java 8).\n\n## Thread-Local Memory\n- **Stack**: Stores Frames. A Frame is created for every method call. Contains Local Variables, Operand Stack.\n- **PC Register**: Points to the current bytecode instruction.\n\n```mermaid\npie title Memory Distribution\n    \"Heap (Objects)\" : 70\n    \"Metaspace (Classes)\" : 15\n    \"Stacks (Threads)\" : 10\n    \"Native/Other\" : 5\n```"
+        "name": "7.1 JVM Memory Layout (Runtime Data Areas)",
+        "description": "7.1 JVM Memory Layout (Runtime Data Areas)",
+        "subTopics": [
+          {
+            "name": "Heap (Shared by all threads)",
+            "description": "Heap (Shared by all threads)",
+            "subTopics": [
+              {
+                "name": "Young Generation",
+                "description": "Young Generation",
+                "subTopics": [
+                  {
+                    "name": "Eden (New objects allocated here)",
+                    "description": "Eden (New objects allocated here)"
+                  },
+                  {
+                    "name": "Survivor Space 0 (S0)",
+                    "description": "Survivor Space 0 (S0)"
+                  },
+                  {
+                    "name": "Survivor Space 1 (S1)",
+                    "description": "Survivor Space 1 (S1)"
+                  }
+                ]
+              },
+              {
+                "name": "Old Generation (Tenured - survived minor GC)",
+                "description": "Old Generation (Tenured - survived minor GC)"
+              }
+            ]
+          },
+          {
+            "name": "Stack (Per thread)",
+            "description": "Stack (Per thread)",
+            "subTopics": [
+              {
+                "name": "Frame (Per method call)",
+                "description": "Frame (Per method call)"
+              },
+              {
+                "name": "Local Variable Array (Parameters + locals)",
+                "description": "Local Variable Array (Parameters + locals)"
+              },
+              {
+                "name": "Operand Stack (Intermediate computations)",
+                "description": "Operand Stack (Intermediate computations)"
+              },
+              {
+                "name": "Frame Data (Constant pool ref, return address)",
+                "description": "Frame Data (Constant pool ref, return address)"
+              }
+            ]
+          },
+          {
+            "name": "Metaspace (Replaced PermGen in Java 8)",
+            "description": "Metaspace (Replaced PermGen in Java 8)",
+            "subTopics": [
+              {
+                "name": "Class Metadata (Internal representation)",
+                "description": "Class Metadata (Internal representation)"
+              },
+              {
+                "name": "Static Variables (Class-level)",
+                "description": "Static Variables (Class-level)"
+              },
+              {
+                "name": "Method Bytecode",
+                "description": "Method Bytecode"
+              }
+            ]
+          },
+          {
+            "name": "PC Register (Points to current bytecode instruction)",
+            "description": "PC Register (Points to current bytecode instruction)"
+          }
+        ]
       },
       {
-        "name": "7.2 Garbage Collection",
-        "description": "# Garbage Collection\n\nAutomatic memory management identifying unreferenced objects using **GC Roots** (Active threads, local vars, statics).\n\n## Algorithms\n- **Mark-Copy**: Used in Young Gen. Surviving objects are copied between survivor spaces.\n- **Mark-Compact**: Used in Old Gen. Compacts memory to prevent fragmentation.\n\n## GC Implementations\n- **Serial GC**: Single thread. Small apps.\n- **Parallel GC**: Throughput optimized.\n- **G1GC (Garbage-First)**: Default since Java 9. Predictable pause times.\n- **ZGC**: Ultra-low latency (<1ms pause times) for massive heaps.\n\n## Critical JVM Flags\n- `-Xms`: Initial heap size.\n- `-Xmx`: Maximum heap size.\n- `-XX:+HeapDumpOnOutOfMemoryError`: Crucial for post-mortem leak analysis."
+        "name": "7.2 Garbage Collection (Automatic Memory Management)",
+        "description": "7.2 Garbage Collection (Automatic Memory Management)",
+        "subTopics": [
+          {
+            "name": "GC Roots (Objects always reachable)",
+            "description": "GC Roots (Objects always reachable)",
+            "subTopics": [
+              {
+                "name": "Local variables in active stack frames",
+                "description": "Local variables in active stack frames"
+              },
+              {
+                "name": "Active threads",
+                "description": "Active threads"
+              },
+              {
+                "name": "Static variables (loaded classes)",
+                "description": "Static variables (loaded classes)"
+              },
+              {
+                "name": "JNI references",
+                "description": "JNI references"
+              }
+            ]
+          },
+          {
+            "name": "Algorithms",
+            "description": "Algorithms",
+            "subTopics": [
+              {
+                "name": "Mark-Sweep (Fragmentation issue)",
+                "description": "Mark-Sweep (Fragmentation issue)"
+              },
+              {
+                "name": "Mark-Copy (Used in Young Gen)",
+                "description": "Mark-Copy (Used in Young Gen)"
+              },
+              {
+                "name": "Mark-Compact (Used in Old Gen - avoids fragmentation)",
+                "description": "Mark-Compact (Used in Old Gen - avoids fragmentation)"
+              }
+            ]
+          },
+          {
+            "name": "GC Types (JVM Implementations)",
+            "description": "GC Types (JVM Implementations)",
+            "subTopics": [
+              {
+                "name": "Serial GC (Single thread - simple apps)",
+                "description": "Serial GC (Single thread - simple apps)"
+              },
+              {
+                "name": "Parallel GC (Throughput - multi-threaded)",
+                "description": "Parallel GC (Throughput - multi-threaded)"
+              },
+              {
+                "name": "G1GC (Garbage-First - default Java 9+, predictable)",
+                "description": "G1GC (Garbage-First - default Java 9+, predictable)"
+              },
+              {
+                "name": "ZGC (Low-Latency - sub-millisecond)",
+                "description": "ZGC (Low-Latency - sub-millisecond)"
+              },
+              {
+                "name": "Shenandoah (Concurrent compaction)",
+                "description": "Shenandoah (Concurrent compaction)"
+              }
+            ]
+          },
+          {
+            "name": "Tuning Flags",
+            "description": "Tuning Flags",
+            "subTopics": [
+              {
+                "name": "Xms (Initial heap size)",
+                "description": "Xms (Initial heap size)"
+              },
+              {
+                "name": "Xmx (Maximum heap size)",
+                "description": "Xmx (Maximum heap size)"
+              },
+              {
+                "name": "XX:NewRatio (Young/Old ratio)",
+                "description": "XX:NewRatio (Young/Old ratio)"
+              },
+              {
+                "name": "XX:SurvivorRatio (Eden/Survivor ratio)",
+                "description": "XX:SurvivorRatio (Eden/Survivor ratio)"
+              },
+              {
+                "name": "XX:MaxTenuringThreshold (Promotion age)",
+                "description": "XX:MaxTenuringThreshold (Promotion age)"
+              }
+            ]
+          }
+        ]
       },
       {
         "name": "7.3 Class Loading Mechanism",
-        "description": "# Class Loading\n\nClasses are loaded dynamically via the **Parent Delegation Model**.\n\n## Lifecycle Phases\n1. **Loading**: Read `.class` bytes.\n2. **Linking**: Verification (security), Preparation (statics get default values), Resolution (direct references).\n3. **Initialization**: Static blocks and assignments execute.\n\n## Classloader Hierarchy\n1. **Bootstrap Classloader**: Native code, loads core `java.*` classes.\n2. **Platform Classloader**: Loads extension libraries.\n3. **Application Classloader**: Loads your CLASSPATH classes.\n\n> *Custom Classloaders* are used by servers like Tomcat to isolate web applications."
+        "description": "7.3 Class Loading Mechanism",
+        "subTopics": [
+          {
+            "name": "Lifecycle Phases",
+            "description": "Lifecycle Phases",
+            "subTopics": [
+              {
+                "name": "Loading (Reading .class file)",
+                "description": "Loading (Reading .class file)"
+              },
+              {
+                "name": "Linking",
+                "description": "Linking",
+                "subTopics": [
+                  {
+                    "name": "Verification (Bytecode correctness)",
+                    "description": "Verification (Bytecode correctness)"
+                  },
+                  {
+                    "name": "Preparation (Static memory allocation)",
+                    "description": "Preparation (Static memory allocation)"
+                  },
+                  {
+                    "name": "Resolution (Symbolic to direct references)",
+                    "description": "Resolution (Symbolic to direct references)"
+                  }
+                ]
+              },
+              {
+                "name": "Initialization (Static initializers run)",
+                "description": "Initialization (Static initializers run)"
+              }
+            ]
+          },
+          {
+            "name": "Classloaders (Parent Delegation Model)",
+            "description": "Classloaders (Parent Delegation Model)",
+            "subTopics": [
+              {
+                "name": "Bootstrap Classloader (Native - rt.jar / jmods)",
+                "description": "Bootstrap Classloader (Native - rt.jar / jmods)"
+              },
+              {
+                "name": "Extension/Platform Classloader (lib/ext)",
+                "description": "Extension/Platform Classloader (lib/ext)"
+              },
+              {
+                "name": "Application Classloader (CLASSPATH)",
+                "description": "Application Classloader (CLASSPATH)"
+              },
+              {
+                "name": "Custom Classloaders (Tomcat, OSGi)",
+                "description": "Custom Classloaders (Tomcat, OSGi)"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "7.4 Profiling, Diagnostics & JVM Flags",
+        "description": "7.4 Profiling, Diagnostics & JVM Flags",
+        "subTopics": [
+          {
+            "name": "Monitoring Tools",
+            "description": "Monitoring Tools",
+            "subTopics": [
+              {
+                "name": "JConsole (JMX GUI - heap, threads)",
+                "description": "JConsole (JMX GUI - heap, threads)"
+              },
+              {
+                "name": "VisualVM (CPU/Memory profiling, heap dumps)",
+                "description": "VisualVM (CPU/Memory profiling, heap dumps)"
+              },
+              {
+                "name": "JMC (Java Mission Control - flight recorder)",
+                "description": "JMC (Java Mission Control - flight recorder)"
+              },
+              {
+                "name": "JStack (Thread dumps - deadlock detection)",
+                "description": "JStack (Thread dumps - deadlock detection)"
+              }
+            ]
+          },
+          {
+            "name": "Critical JVM Flags",
+            "description": "Critical JVM Flags",
+            "subTopics": [
+              {
+                "name": "Xms<size> (Initial heap)",
+                "description": "Xms<size> (Initial heap)"
+              },
+              {
+                "name": "Xmx<size> (Maximum heap - CRITICAL)",
+                "description": "Xmx<size> (Maximum heap - CRITICAL)"
+              },
+              {
+                "name": "Xss<size> (Thread stack size)",
+                "description": "Xss<size> (Thread stack size)"
+              },
+              {
+                "name": "XX:+PrintGCDetails (Logs GC events)",
+                "description": "XX:+PrintGCDetails (Logs GC events)"
+              },
+              {
+                "name": "XX:+HeapDumpOnOutOfMemoryError (Dump on OOM)",
+                "description": "XX:+HeapDumpOnOutOfMemoryError (Dump on OOM)"
+              },
+              {
+                "name": "XX:MaxMetaspaceSize (Limits class metadata)",
+                "description": "XX:MaxMetaspaceSize (Limits class metadata)"
+              }
+            ]
+          }
+        ]
       }
     ]
   }

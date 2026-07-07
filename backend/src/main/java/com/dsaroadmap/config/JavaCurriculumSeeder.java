@@ -42,37 +42,32 @@ public class JavaCurriculumSeeder implements CommandLineRunner {
 
         log.info("Seeding Learn Java Curriculum...");
         try (InputStream is = new ClassPathResource("java-curriculum.json").getInputStream()) {
-            List<CurriculumNode> nodes = objectMapper.readValue(is, new TypeReference<List<CurriculumNode>>() {});
-            
-            int mainOrder = 1;
-            for (CurriculumNode node : nodes) {
-                Concept parentConcept = Concept.builder()
-                        .name(node.getName())
-                        .description(node.getDescription())
-                        .category("LEARN")
-                        .isMaterialOnly(true)
-                        .orderIndex(mainOrder++)
-                        .build();
-                parentConcept = conceptRepository.save(parentConcept);
+            List<CurriculumNode> curriculum = objectMapper.readValue(is, new TypeReference<List<CurriculumNode>>() {});
+            log.info("Read {} phases from java-curriculum.json", curriculum.size());
 
-                if (node.getSubTopics() != null && !node.getSubTopics().isEmpty()) {
-                    int subOrder = 1;
-                    for (CurriculumNode subNode : node.getSubTopics()) {
-                        Concept subConcept = Concept.builder()
-                                .name(subNode.getName())
-                                .description(subNode.getDescription())
-                                .category("LEARN")
-                                .isMaterialOnly(true)
-                                .parentId(parentConcept.getId())
-                                .orderIndex(subOrder++)
-                                .build();
-                        conceptRepository.save(subConcept);
-                    }
-                }
+            for (int i = 0; i < curriculum.size(); i++) {
+                seedNode(curriculum.get(i), null, i);
             }
-            log.info("Successfully seeded Learn Java Curriculum!");
+            log.info("Successfully seeded Java curriculum concepts!");
         } catch (Exception e) {
-            log.error("Failed to seed Learn Java Curriculum", e);
+            log.error("Failed to seed Java curriculum: ", e);
+        }
+    }
+
+    private void seedNode(CurriculumNode node, java.util.UUID parentId, int orderIndex) {
+        Concept concept = new Concept();
+        concept.setName(node.getName());
+        concept.setDescription(node.getDescription());
+        concept.setOrderIndex(orderIndex);
+        concept.setCategory("LEARN");
+        concept.setMaterialOnly(true);
+        concept.setParentId(parentId);
+        concept = conceptRepository.save(concept);
+
+        if (node.getSubTopics() != null && !node.getSubTopics().isEmpty()) {
+            for (int i = 0; i < node.getSubTopics().size(); i++) {
+                seedNode(node.getSubTopics().get(i), concept.getId(), i);
+            }
         }
     }
 }
