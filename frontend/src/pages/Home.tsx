@@ -137,9 +137,9 @@ export default function Home({ category }: { category: string }) {
             {/* Total Progress */}
             <div className="glass-card p-4 rounded-2xl relative overflow-hidden group min-w-[120px] flex flex-col items-center justify-center border border-primary-500/20 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
               <div className="absolute inset-0 bg-gradient-to-br from-primary-500/10 to-accent-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-1000" style={{ width: `${categoryStats.total > 0 ? (userStats.completed / categoryStats.total) * 100 : 0}%` }} />
+              <div className="absolute top-0 left-0 h-1 bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-1000" style={{ width: `${categoryStats.total > 0 ? ((userAnalytics.easy + userAnalytics.medium + userAnalytics.hard) / categoryStats.total) * 100 : 0}%` }} />
               <span className="text-2xl md:text-3xl font-extrabold text-primary-500 drop-shadow-[0_0_10px_rgba(139,92,246,0.4)] relative z-10 flex items-baseline gap-1">
-                <AnimatedCounter value={userStats.completed} /> <span className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-bold">/ <AnimatedCounter value={categoryStats.total} /></span>
+                <AnimatedCounter value={userAnalytics.easy + userAnalytics.medium + userAnalytics.hard} /> <span className="text-sm md:text-lg text-slate-500 dark:text-slate-400 font-bold">/ <AnimatedCounter value={categoryStats.total} /></span>
               </span>
               <span className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1 relative z-10">Total</span>
             </div>
