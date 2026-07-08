@@ -68,8 +68,16 @@ export default function AdminCurriculum({ category, title }: { category: string,
   }, [concepts]);
 
   const filteredProblems = useMemo(() => {
-    if (!allProblems || !Array.isArray(allProblems)) return [];
-    return allProblems.filter(p => {
+    let target = allProblems;
+    if (typeof allProblems === 'string') {
+      try {
+        target = JSON.parse(allProblems);
+      } catch (e) {
+        return [];
+      }
+    }
+    if (!target || !Array.isArray(target)) return [];
+    return target.filter((p: any) => {
       if (!p) return false;
       const titleStr = p.title || '';
       const matchesSearch = !pmSearch || titleStr.toLowerCase().includes(pmSearch.toLowerCase());
@@ -261,6 +269,13 @@ export default function AdminCurriculum({ category, title }: { category: string,
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
             onClick={() => setShowProblemManager(false)}
           >
+            {typeof allProblems === 'string' && (
+              <div className="absolute top-4 left-4 right-4 bg-red-500 text-white p-4 rounded z-50 max-h-96 overflow-auto" onClick={e => e.stopPropagation()}>
+                <h1 className="font-bold">DEBUG: allProblems is a STRING of length {allProblems.length}</h1>
+                <p className="mt-2 font-mono text-xs whitespace-pre-wrap">Preview: {allProblems.substring(0, 500)}</p>
+                <p className="mt-2 font-mono text-xs whitespace-pre-wrap">End: {allProblems.substring(allProblems.length - 500)}</p>
+              </div>
+            )}
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
