@@ -23,6 +23,7 @@ import Contact from './pages/Contact';
 import AdminMotivation from './pages/AdminMotivation';
 import AdminContact from './pages/AdminContact';
 import AdminUsers from './pages/AdminUsers';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,7 +70,7 @@ function App() {
                   <Route path="contact" element={<Contact />} />
                   
                   {/* Admin Routes */}
-                  <Route path="admin">
+                  <Route path="admin" element={<ErrorBoundary><Outlet /></ErrorBoundary>}>
                     <Route index element={<AdminDashboard />} />
                     <Route path="motivation" element={<AdminMotivation />} />
                     <Route path="contact" element={<AdminContact />} />

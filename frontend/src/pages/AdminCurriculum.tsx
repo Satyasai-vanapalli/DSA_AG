@@ -9,6 +9,7 @@ import { ArrowLeft, Plus, Trash2, GripVertical, ChevronDown, X, Edit2, FolderPlu
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export default function AdminCurriculum({ category, title }: { category: string, title: string }) {
   const { user } = useAuth();
@@ -68,9 +69,11 @@ export default function AdminCurriculum({ category, title }: { category: string,
   }, [concepts]);
 
   const filteredProblems = useMemo(() => {
-    if (!allProblems) return [];
+    if (!allProblems || !Array.isArray(allProblems)) return [];
     return allProblems.filter(p => {
-      const matchesSearch = !pmSearch || p.title.toLowerCase().includes(pmSearch.toLowerCase());
+      if (!p) return false;
+      const titleStr = p.title || '';
+      const matchesSearch = !pmSearch || titleStr.toLowerCase().includes(pmSearch.toLowerCase());
       const matchesDifficulty = pmDifficultyFilter === 'All' || p.difficulty === pmDifficultyFilter;
       const matchesConcept = pmConceptFilter === 'All' ||
         (pmConceptFilter === 'Unassigned' ? !p.concept : p.concept?.id === pmConceptFilter);
@@ -252,8 +255,9 @@ export default function AdminCurriculum({ category, title }: { category: string,
       {/* Problem Manager Modal */}
       <AnimatePresence>
         {showProblemManager && (
-          <motion.div
-            initial={{ opacity: 0 }}
+          <ErrorBoundary>
+            <motion.div
+              initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
@@ -404,9 +408,11 @@ export default function AdminCurriculum({ category, title }: { category: string,
               </div>
             </motion.div>
           </motion.div>
+          </ErrorBoundary>
         )}
       </AnimatePresence>
     </div>
+    </ErrorBoundary>
   );
 }
 
