@@ -271,9 +271,9 @@ export default function AdminCurriculum({ category, title }: { category: string,
           >
             {typeof allProblems === 'string' && (
               <div className="absolute top-4 left-4 right-4 bg-red-500 text-white p-4 rounded z-50 max-h-96 overflow-auto" onClick={e => e.stopPropagation()}>
-                <h1 className="font-bold">DEBUG: allProblems is a STRING of length {allProblems.length}</h1>
-                <p className="mt-2 font-mono text-xs whitespace-pre-wrap">Preview: {allProblems.substring(0, 500)}</p>
-                <p className="mt-2 font-mono text-xs whitespace-pre-wrap">End: {allProblems.substring(allProblems.length - 500)}</p>
+                <h1 className="font-bold">DEBUG: allProblems is a STRING of length {(allProblems as unknown as string).length}</h1>
+                <p className="mt-2 font-mono text-xs whitespace-pre-wrap">Preview: {(allProblems as unknown as string).substring(0, 500)}</p>
+                <p className="mt-2 font-mono text-xs whitespace-pre-wrap">End: {(allProblems as unknown as string).substring((allProblems as unknown as string).length - 500)}</p>
               </div>
             )}
             <motion.div
