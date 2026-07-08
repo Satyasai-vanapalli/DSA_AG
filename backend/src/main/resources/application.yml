@@ -1,4 +1,6 @@
 spring:
+  main:
+    lazy-initialization: true
   servlet:
     multipart:
       max-file-size: 50MB
@@ -8,14 +10,21 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:dsaroadmap}
     password: ${SPRING_DATASOURCE_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      idle-timeout: 300000
+      connection-timeout: 20000
+      max-lifetime: 600000
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
   mail:
     host: smtp.gmail.com
     port: 587
@@ -39,3 +48,4 @@ jwt:
   secret: ${JWT_SECRET:ThisIsAVerySecretKeyForJWTAuthThatIsVeryLongAndMustBeAtLeast256BitsLong}
   expiration: 2592000000 # 30 days
   refresh-expiration: 2592000000 # 30 days
+

@@ -24,7 +24,16 @@ import AdminMotivation from './pages/AdminMotivation';
 import AdminContact from './pages/AdminContact';
 import AdminUsers from './pages/AdminUsers';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,      // 5 minutes - don't refetch if data is fresh
+      gcTime: 10 * 60 * 1000,         // 10 minutes - keep unused data in cache
+      retry: 2,                        // retry failed requests twice
+      refetchOnWindowFocus: false,     // don't refetch when user tabs back
+    },
+  },
+});
 
 function App() {
   return (

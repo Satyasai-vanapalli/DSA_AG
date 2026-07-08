@@ -37,21 +37,19 @@ public class JavaCurriculumSeeder implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
+        long existingCount = conceptRepository.countByCategory("LEARN");
+        if (existingCount > 0) {
+            log.info("LEARN concepts already exist ({} found). Skipping seeder.", existingCount);
+            return;
+        }
+
+        log.info("No LEARN concepts found. Running initial seed...");
+
         log.info("Dropping unique constraint on concepts table to prevent race conditions...");
         try {
             jdbcTemplate.execute("ALTER TABLE concepts DROP CONSTRAINT IF EXISTS uk7q1ebufjuenqwt0b5ca6ksuqa");
         } catch (Exception e) {
             log.warn("Could not drop constraint (might not exist): {}", e.getMessage());
-        }
-
-        log.info("Unlinking problems from LEARN concepts to prevent data loss...");
-        jdbcTemplate.execute("UPDATE problems SET concept_id = NULL WHERE concept_id IN (SELECT id FROM concepts WHERE category = 'LEARN')");
-
-        log.info("Deleting existing LEARN concepts to re-seed...");
-        List<Concept> existingLearnRoots = conceptRepository.findByCategoryAndParentIdIsNullOrderByOrderIndexAsc("LEARN");
-        if (!existingLearnRoots.isEmpty()) {
-            conceptRepository.deleteAll(existingLearnRoots);
-            conceptRepository.flush();
         }
 
         log.info("Seeding Learn Java Curriculum...");
