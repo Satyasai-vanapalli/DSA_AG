@@ -19,9 +19,13 @@ export default function Home({ category }: { category: string }) {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
   const [activeTab, setActiveTab] = useState<'problems' | 'leaderboard' | 'analytics'>('problems');
 
+  const queryClient = useQueryClient();
+
   const { data: concepts, isLoading, error } = useQuery({
     queryKey: ['concepts', category],
     queryFn: () => roadmapApi.getConceptsByCategory(category),
+    retry: 5,
+    retryDelay: (attemptIndex) => Math.min(2000 * 2 ** attemptIndex, 30000),
   });
 
   const { data: userStats } = useQuery({
@@ -92,6 +96,14 @@ export default function Home({ category }: { category: string }) {
       ? 'Practice standard DSA problems.'
       : 'Prepare for contests with advanced problems.';
 
+  const [loadingSeconds, setLoadingSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!isLoading) { setLoadingSeconds(0); return; }
+    const interval = setInterval(() => setLoadingSeconds(s => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
   if (isLoading) {
     return (
       <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8">
@@ -104,9 +116,18 @@ export default function Home({ category }: { category: string }) {
               <motion.div animate={{ x: ['-100%', '200%'] }} transition={{ repeat: Infinity, duration: 1.5, ease: "linear", delay: 0.1 }} className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 dark:via-white/10 to-transparent w-1/2" />
             </div>
           </div>
-          <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 font-medium">
-            <div className="w-5 h-5 border-2 border-slate-300 border-t-transparent dark:border-slate-600 dark:border-t-transparent rounded-full animate-spin" />
-            Loading content...
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-3 text-slate-400 dark:text-slate-500 font-medium">
+              <div className="w-5 h-5 border-2 border-slate-300 border-t-transparent dark:border-slate-600 dark:border-t-transparent rounded-full animate-spin" />
+              {loadingSeconds < 5
+                ? 'Loading content...'
+                : loadingSeconds < 15
+                  ? 'Server is waking up, please wait...'
+                  : 'Almost there, hang tight...'}
+            </div>
+            {loadingSeconds >= 5 && (
+              <p className="text-xs text-slate-400 dark:text-slate-600">Free server may take up to 30s to start</p>
+            )}
           </div>
         </div>
         <div className="space-y-4">
@@ -134,7 +155,13 @@ export default function Home({ category }: { category: string }) {
           <AlertCircle className="w-8 h-8" />
         </div>
         <h2 className="text-xl font-bold mb-2 dark:text-white">Failed to load {pageTitle.toLowerCase()}</h2>
-        <p className="text-slate-600 dark:text-slate-400">Please try refreshing the page later.</p>
+        <p className="text-slate-600 dark:text-slate-400 mb-6">The server might be waking up. Please try again.</p>
+        <button
+          onClick={() => queryClient.invalidateQueries({ queryKey: ['concepts', category] })}
+          className="px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-primary-500/25 transition-all duration-200 hover:-translate-y-0.5"
+        >
+          Retry Loading
+        </button>
       </div>
     );
   }
