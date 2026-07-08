@@ -9,7 +9,6 @@ import { ArrowLeft, Plus, Trash2, GripVertical, ChevronDown, X, Edit2, FolderPlu
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import type { DropResult } from '@hello-pangea/dnd';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ErrorBoundary } from '../components/ErrorBoundary';
 
 export default function AdminCurriculum({ category, title }: { category: string, title: string }) {
   const { user } = useAuth();
@@ -255,9 +254,8 @@ export default function AdminCurriculum({ category, title }: { category: string,
       {/* Problem Manager Modal */}
       <AnimatePresence>
         {showProblemManager && (
-          <ErrorBoundary>
-            <motion.div
-              initial={{ opacity: 0 }}
+          <motion.div
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-md p-4"
@@ -408,11 +406,9 @@ export default function AdminCurriculum({ category, title }: { category: string,
               </div>
             </motion.div>
           </motion.div>
-          </ErrorBoundary>
         )}
       </AnimatePresence>
     </div>
-    </ErrorBoundary>
   );
 }
 
