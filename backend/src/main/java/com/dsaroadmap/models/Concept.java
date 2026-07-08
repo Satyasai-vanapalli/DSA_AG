@@ -17,6 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Concept {
 
     @Id
@@ -46,7 +47,7 @@ public class Concept {
     private Concept parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({"parent", "children", "problems"})
+    @JsonIgnoreProperties({"parent", "children", "problems", "hibernateLazyInitializer", "handler"})
     @OrderBy("orderIndex ASC")
     private List<Concept> children = new ArrayList<>();
 
