@@ -327,6 +327,8 @@ export default function Home({ category }: { category: string }) {
                 index={index + 1}
                 activeFilters={activeFilters}
                 searchQuery={searchQuery}
+                allConcepts={concepts}
+                category={category}
               />
             ))}
             {filteredConcepts?.length === 0 && (
@@ -345,7 +347,7 @@ export default function Home({ category }: { category: string }) {
   );
 }
 
-function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 0 }: { concept: Concept; index: number, activeFilters: string[], searchQuery: string, depth?: number }) {
+function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 0, allConcepts, category }: { concept: Concept; index: number, activeFilters: string[], searchQuery: string, depth?: number, allConcepts?: Concept[], category: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const [expandedProblemIds, setExpandedProblemIds] = useState<Set<string>>(new Set());
   const [selectedSolutionProblem, setSelectedSolutionProblem] = useState<any | null>(null);
@@ -431,6 +433,12 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
 
   const expanded = isOpen || searchQuery.length > 0;
 
+  const { data: allProblems } = useQuery({
+    queryKey: ['allProblems', category],
+    queryFn: () => roadmapApi.getProblemsByCategory(category),
+    enabled: !!category,
+  });
+
   const { data: problems, isLoading } = useQuery({
     queryKey: ['problems', concept.id],
     queryFn: () => roadmapApi.getProblemsByConcept(concept.id),
@@ -479,7 +487,49 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
     return result;
   }, [problems, activeFilters, searchQuery]);
 
-  if (searchQuery && filteredProblems.length === 0 && !(concept.name || '').toLowerCase().includes(searchQuery.toLowerCase())) {
+  const hasMatchingDescendant = useMemo(() => {
+    if (!searchQuery) return true;
+    if ((concept.name || '').toLowerCase().includes(searchQuery.toLowerCase())) return true;
+    if (filteredProblems.length > 0) return true;
+    
+    const searchLower = searchQuery.toLowerCase();
+    const checkTree = (node: Concept): boolean => {
+      if ((node.name || '').toLowerCase().includes(searchLower)) return true;
+      if (allProblems) {
+        const matchesProblem = allProblems.some(p => {
+           const pConceptId = p.concept?.id || p.conceptId;
+           return pConceptId === node.id && (p.title || '').toLowerCase().includes(searchLower);
+        });
+        if (matchesProblem) return true;
+      }
+      if (node.children) {
+        return node.children.some(checkTree);
+      }
+      return false;
+    };
+    
+    if (allConcepts) {
+      const targetNode = (() => {
+        const findConcept = (list: Concept[], targetId: string): Concept | null => {
+          for (const c of list) {
+            if (c.id === targetId) return c;
+            if (c.children) {
+              const found = findConcept(c.children, targetId);
+              if (found) return found;
+            }
+          }
+          return null;
+        };
+        return findConcept(allConcepts, concept.id);
+      })();
+      if (targetNode && targetNode.children) {
+        return targetNode.children.some(checkTree);
+      }
+    }
+    return false;
+  }, [searchQuery, filteredProblems.length, concept.name, allProblems, allConcepts, concept.id]);
+
+  if (searchQuery && !hasMatchingDescendant) {
     return null;
   }
 
@@ -488,45 +538,108 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
     return userConceptProgress.some(cp => cp.conceptId === concept.id && cp.completed);
   }, [userConceptProgress, concept.id]);
 
-  const { completedCount, conceptProgress, totalItemsCount } = useMemo(() => {
-    let problemCount = 0;
-    let completedProblemCount = 0;
-    
-    if (problems && problems.length > 0) {
-      problemCount = problems.length;
-      if (userProgress) {
-        completedProblemCount = problems.filter(p =>
-          userProgress.find(up => up.problemId === p.id && up.completed)
-        ).length;
+  const descendantConceptIds = useMemo(() => {
+    const ids = new Set<string>();
+    if (!allConcepts) return ids;
+
+    const findConcept = (list: Concept[], targetId: string): Concept | null => {
+      for (const c of list) {
+        if (c.id === targetId) return c;
+        if (c.children) {
+          const found = findConcept(c.children, targetId);
+          if (found) return found;
+        }
       }
+      return null;
+    };
+
+    const targetNode = findConcept(allConcepts, concept.id);
+    if (!targetNode) {
+      ids.add(concept.id);
+      return ids;
     }
 
-    let subConceptsWithMaterial = 0;
-    let completedSubConceptsWithMaterial = 0;
+    const collectIds = (node: Concept) => {
+      ids.add(node.id);
+      if (node.children) node.children.forEach(collectIds);
+    };
 
-    if (subConcepts && subConcepts.length > 0) {
-      subConceptsWithMaterial = subConcepts.filter(c => c.description && c.description.trim() !== '').length;
-      if (userConceptProgress && subConceptsWithMaterial > 0) {
-        completedSubConceptsWithMaterial = subConcepts.filter(c => 
-          c.description && c.description.trim() !== '' && userConceptProgress.find(up => up.conceptId === c.id && up.completed)
-        ).length;
-      }
+    collectIds(targetNode);
+    return ids;
+  }, [allConcepts, concept.id]);
+
+  const recursiveStats = useMemo(() => {
+    let easyCount = 0, mediumCount = 0, hardCount = 0, totalCount = 0;
+    let completedEasy = 0, completedMedium = 0, completedHard = 0, completedTotal = 0;
+    let materialCount = 0, completedMaterialCount = 0;
+
+    if (allProblems) {
+      const conceptProblems = allProblems.filter(p => {
+         const pConceptId = p.concept?.id || p.conceptId;
+         return pConceptId && descendantConceptIds.has(pConceptId);
+      });
+
+      conceptProblems.forEach(p => {
+         totalCount++;
+         const isCompleted = userProgress?.some(up => up.problemId === p.id && up.completed);
+         if (isCompleted) completedTotal++;
+
+         if (p.difficulty === 'Easy') {
+           easyCount++;
+           if (isCompleted) completedEasy++;
+         } else if (p.difficulty === 'Medium') {
+           mediumCount++;
+           if (isCompleted) completedMedium++;
+         } else if (p.difficulty === 'Hard') {
+           hardCount++;
+           if (isCompleted) completedHard++;
+         }
+      });
     }
 
-    const hasMaterial = concept.description && concept.description.trim() !== '' ? 1 : 0;
-    const materialCompleted = isConceptCompleted ? 1 : 0;
+    if (allConcepts) {
+       const findConcept = (list: Concept[], targetId: string): Concept | null => {
+          for (const c of list) {
+            if (c.id === targetId) return c;
+            if (c.children) {
+              const found = findConcept(c.children, targetId);
+              if (found) return found;
+            }
+          }
+          return null;
+       };
+       const targetNode = findConcept(allConcepts, concept.id);
+       if (targetNode) {
+         const checkMaterial = (node: Concept) => {
+           if (node.description && node.description.trim() !== '') {
+              materialCount++;
+              if (userConceptProgress?.some(up => up.conceptId === node.id && up.completed)) {
+                 completedMaterialCount++;
+              }
+           }
+           if (node.children) node.children.forEach(checkMaterial);
+         };
+         checkMaterial(targetNode);
+       }
+    }
 
-    const totalItems = problemCount + subConceptsWithMaterial + hasMaterial;
-    const completedItems = completedProblemCount + completedSubConceptsWithMaterial + materialCompleted;
-
-    if (totalItems === 0) return { completedCount: 0, conceptProgress: 0, totalItemsCount: 0 };
+    const finalTotalItems = totalCount + materialCount;
+    const finalCompletedItems = completedTotal + completedMaterialCount;
+    const conceptProgress = finalTotalItems === 0 ? 0 : Math.round((finalCompletedItems / finalTotalItems) * 100);
 
     return {
-      completedCount: completedItems,
-      conceptProgress: Math.round((completedItems / totalItems) * 100),
-      totalItemsCount: totalItems
+      completedCount: finalCompletedItems,
+      conceptProgress,
+      totalItemsCount: finalTotalItems,
+      easyCount, completedEasy,
+      mediumCount, completedMedium,
+      hardCount, completedHard,
+      totalProblems: totalCount,
+      completedTotal
     };
-  }, [problems, userProgress, concept.description, isConceptCompleted, subConcepts, userConceptProgress]);
+  }, [allProblems, userProgress, descendantConceptIds, allConcepts, concept.id, userConceptProgress]);
+
+  const { completedCount, conceptProgress, totalItemsCount } = recursiveStats;
 
   if (concept.isMaterialOnly) {
     return (
@@ -564,12 +677,33 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
           <div className="text-left">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">{concept.name}</h3>
             {totalItemsCount > 0 && (
-              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                {isAuthenticated
-                  ? `${completedCount}/${totalItemsCount} items completed`
-                  : `${totalItemsCount} item${totalItemsCount !== 1 ? 's' : ''}`
-                }
-              </p>
+              <div className="flex flex-col gap-1 mt-1">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {isAuthenticated
+                    ? `${completedCount}/${totalItemsCount} items completed`
+                    : `${totalItemsCount} item${totalItemsCount !== 1 ? 's' : ''}`
+                  }
+                </p>
+                {recursiveStats.totalProblems > 0 && (
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {recursiveStats.easyCount > 0 && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400">
+                        EASY: {isAuthenticated ? `${recursiveStats.completedEasy}/` : ''}{recursiveStats.easyCount}
+                      </span>
+                    )}
+                    {recursiveStats.mediumCount > 0 && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400">
+                        MED: {isAuthenticated ? `${recursiveStats.completedMedium}/` : ''}{recursiveStats.mediumCount}
+                      </span>
+                    )}
+                    {recursiveStats.hardCount > 0 && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                        HARD: {isAuthenticated ? `${recursiveStats.completedHard}/` : ''}{recursiveStats.hardCount}
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -635,6 +769,8 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
                       activeFilters={activeFilters}
                       searchQuery={searchQuery}
                       depth={depth + 1}
+                      allConcepts={allConcepts}
+                      category={category}
                     />
                   ))}
                 </div>
