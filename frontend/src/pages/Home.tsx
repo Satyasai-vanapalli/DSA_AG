@@ -40,29 +40,24 @@ export default function Home({ category }: { category: string }) {
     enabled: isAuthenticated,
   });
 
+  const { data: allProblems } = useQuery({
+    queryKey: ['allProblems', category],
+    queryFn: () => roadmapApi.getProblemsByCategory(category),
+  });
+
   const categoryStats = useMemo(() => {
     let easy = 0, medium = 0, hard = 0, total = 0;
-    if (!concepts) return { total, easy, medium, hard };
+    if (!allProblems) return { total, easy, medium, hard };
     
-    const countProblems = (conceptList: Concept[]) => {
-      conceptList.forEach(c => {
-        if (c.problems) {
-          c.problems.forEach(p => {
-            total++;
-            if (p.difficulty === 'Easy') easy++;
-            else if (p.difficulty === 'Medium') medium++;
-            else if (p.difficulty === 'Hard') hard++;
-          });
-        }
-        if (c.children) {
-          countProblems(c.children);
-        }
-      });
-    };
+    allProblems.forEach(p => {
+      total++;
+      if (p.difficulty === 'Easy') easy++;
+      else if (p.difficulty === 'Medium') medium++;
+      else if (p.difficulty === 'Hard') hard++;
+    });
     
-    countProblems(concepts);
     return { total, easy, medium, hard };
-  }, [concepts]);
+  }, [allProblems]);
 
   const filteredConcepts = useMemo(() => {
     if (!concepts) return [];
