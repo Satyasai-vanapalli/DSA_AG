@@ -547,10 +547,6 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
     return false;
   }, [searchQuery, filteredProblems.length, concept.name, allProblems, allConcepts, concept.id]);
 
-  if (searchQuery && !hasMatchingDescendant) {
-    return null;
-  }
-
   const isConceptCompleted = useMemo(() => {
     if (!userConceptProgress) return false;
     return userConceptProgress.some(cp => cp.conceptId === concept.id && cp.completed);
@@ -658,6 +654,10 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
   }, [allProblems, userProgress, descendantConceptIds, allConcepts, concept.id, userConceptProgress]);
 
   const { completedCount, conceptProgress, totalItemsCount } = recursiveStats;
+
+  if (searchQuery && !hasMatchingDescendant) {
+    return null;
+  }
 
   if (concept.isMaterialOnly) {
     return (
