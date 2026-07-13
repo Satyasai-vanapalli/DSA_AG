@@ -63,13 +63,22 @@ export default function Home({ category }: { category: string }) {
     if (!concepts) return [];
     if (!searchQuery) return concepts;
     const lowerQuery = searchQuery.toLowerCase();
+    
+    const hasMatchingProblem = (conceptId: string) => {
+      if (!allProblems) return false;
+      return allProblems.some(p => {
+        const pConceptId = p.concept?.id || p.conceptId;
+        return pConceptId === conceptId && (p.title || '').toLowerCase().includes(lowerQuery);
+      });
+    };
+
     return concepts.filter(c => {
       if ((c.name || '').toLowerCase().includes(lowerQuery)) return true;
-      if (c.problems?.some(p => (p.title || '').toLowerCase().includes(lowerQuery))) return true;
-      if (c.children?.some(sub => (sub.name || '').toLowerCase().includes(lowerQuery) || sub.problems?.some(p => (p.title || '').toLowerCase().includes(lowerQuery)))) return true;
+      if (hasMatchingProblem(c.id)) return true;
+      if (c.children?.some(sub => (sub.name || '').toLowerCase().includes(lowerQuery) || hasMatchingProblem(sub.id))) return true;
       return false;
     });
-  }, [concepts, searchQuery]);
+  }, [concepts, searchQuery, allProblems]);
 
   const pageTitle = category === 'LEARN'
     ? 'Learn Java'
@@ -484,10 +493,24 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
 
   const hasMatchingDescendant = useMemo(() => {
     if (!searchQuery) return true;
-    if ((concept.name || '').toLowerCase().includes(searchQuery.toLowerCase())) return true;
-    if (filteredProblems.length > 0) return true;
     
     const searchLower = searchQuery.toLowerCase();
+    
+    // Check concept name
+    if ((concept.name || '').toLowerCase().includes(searchLower)) return true;
+    
+    // Check filtered problems (if already loaded)
+    if (filteredProblems.length > 0) return true;
+    
+    // Check allProblems for current concept
+    if (allProblems) {
+      const matchesCurrentConceptProblem = allProblems.some(p => {
+        const pConceptId = p.concept?.id || p.conceptId;
+        return pConceptId === concept.id && (p.title || '').toLowerCase().includes(searchLower);
+      });
+      if (matchesCurrentConceptProblem) return true;
+    }
+    
     const checkTree = (node: Concept): boolean => {
       if ((node.name || '').toLowerCase().includes(searchLower)) return true;
       if (allProblems) {
