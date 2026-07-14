@@ -37,7 +37,7 @@ export default function Motivation() {
 }
 
 function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const queryClient = useQueryClient();
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -53,10 +53,20 @@ function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
           return old.map(oldM => {
             if (oldM.id === m.id) {
               const isLiked = !oldM.isLikedByCurrentUser;
+              const currentUserName = user?.name || 'You';
+              
+              let newLikedBy = oldM.likedBy ? [...oldM.likedBy] : [];
+              if (isLiked) {
+                newLikedBy.unshift(currentUserName);
+              } else {
+                newLikedBy = newLikedBy.filter(name => name !== currentUserName);
+              }
+
               return {
                 ...oldM,
                 isLikedByCurrentUser: isLiked,
-                likesCount: (oldM.likesCount || 0) + (isLiked ? 1 : -1)
+                likesCount: (oldM.likesCount || 0) + (isLiked ? 1 : -1),
+                likedBy: newLikedBy
               };
             }
             return oldM;
@@ -159,6 +169,12 @@ function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
         
         <div className="font-bold text-sm text-slate-900 dark:text-white mb-2">
           {m.likesCount || 0} {(m.likesCount === 1) ? 'like' : 'likes'}
+          {m.likedBy && m.likedBy.length > 0 && (
+            <span className="font-normal text-xs text-slate-500 dark:text-slate-400 block mt-0.5">
+              Liked by {m.likedBy.slice(0, 2).join(', ')}
+              {m.likedBy.length > 2 && ` and ${m.likedBy.length - 2} others`}
+            </span>
+          )}
         </div>
         
         {(m.commentsCount || 0) > 0 && !showComments && (

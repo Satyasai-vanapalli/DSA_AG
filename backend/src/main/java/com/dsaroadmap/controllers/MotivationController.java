@@ -76,6 +76,10 @@ public class MotivationController {
                             .build())
                     .collect(Collectors.toList());
 
+            List<String> likedBy = likeRepository.findByMotivationId(m.getId()).stream()
+                    .map(like -> like.getUser().getName())
+                    .collect(Collectors.toList());
+
             return MotivationDTO.builder()
                     .id(m.getId())
                     .type(m.getType())
@@ -86,6 +90,7 @@ public class MotivationController {
                     .likesCount(likesCount)
                     .commentsCount(commentsCount)
                     .isLikedByCurrentUser(isLiked)
+                    .likedBy(likedBy)
                     .comments(comments)
                     .build();
         }).collect(Collectors.toList());

@@ -17,6 +17,7 @@ export interface Motivation {
   likesCount?: number;
   commentsCount?: number;
   isLikedByCurrentUser?: boolean;
+  likedBy?: string[];
   comments?: Comment[];
 }
 

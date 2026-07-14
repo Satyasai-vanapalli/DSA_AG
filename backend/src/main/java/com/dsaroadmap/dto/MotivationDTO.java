@@ -24,5 +24,6 @@ public class MotivationDTO {
     private int likesCount;
     private int commentsCount;
     private boolean isLikedByCurrentUser;
+    private List<String> likedBy;
     private List<CommentDTO> comments;
 }
