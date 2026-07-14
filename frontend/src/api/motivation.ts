@@ -1,5 +1,12 @@
 import apiClient from './client';
 
+export interface Comment {
+  id: string;
+  content: string;
+  userName: string;
+  createdAt: string;
+}
+
 export interface Motivation {
   id: string;
   type: 'QUOTE' | 'IMAGE' | 'VIDEO' | 'LINK';
@@ -7,6 +14,16 @@ export interface Motivation {
   author?: string;
   active: boolean;
   createdAt?: string;
+  likesCount?: number;
+  commentsCount?: number;
+  isLikedByCurrentUser?: boolean;
+  comments?: Comment[];
+}
+
+export interface MotivationView {
+  userName: string;
+  userEmail: string;
+  lastViewedAt: string;
 }
 
 export const motivationApi = {
@@ -38,5 +55,16 @@ export const motivationApi = {
   },
   delete: async (id: string) => {
     await apiClient.delete(`/admin/motivation/${id}`);
+  },
+  toggleLike: async (id: string) => {
+    await apiClient.post(`/motivation/${id}/like`);
+  },
+  addComment: async (id: string, content: string) => {
+    const response = await apiClient.post<Comment>(`/motivation/${id}/comment`, { content });
+    return response.data;
+  },
+  getViewers: async () => {
+    const response = await apiClient.get<MotivationView[]>('/admin/motivation/views');
+    return response.data;
   },
 };

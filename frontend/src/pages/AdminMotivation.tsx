@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motivationApi, type Motivation } from '../api/motivation';
-import { Loader2, Plus, Edit2, Trash2, Image as ImageIcon, Video, Type, Link as LinkIcon, Upload } from 'lucide-react';
+import { Loader2, Plus, Edit2, Trash2, Image as ImageIcon, Video, Type, Link as LinkIcon, Upload, Users } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 
@@ -20,6 +20,11 @@ export default function AdminMotivation() {
   const { data: motivations, isLoading } = useQuery({
     queryKey: ['admin-motivations'],
     queryFn: motivationApi.getAllAdmin,
+  });
+
+  const { data: viewers, isLoading: isLoadingViewers } = useQuery({
+    queryKey: ['admin-motivation-views'],
+    queryFn: motivationApi.getViewers,
   });
 
   const isSuperAdmin = user?.role === 'ADMIN';
@@ -183,6 +188,42 @@ export default function AdminMotivation() {
             </div>
           </div>
         ))}
+      </div>
+
+      <div className="mt-12">
+        <div className="flex items-center gap-2 mb-6">
+          <Users className="w-6 h-6 text-blue-600" />
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Recent Viewers</h2>
+        </div>
+        
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gray-50 dark:bg-gray-900/50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">User Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Last Viewed At</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              {isLoadingViewers ? (
+                <tr><td colSpan={3} className="px-6 py-4 text-center"><Loader2 className="w-5 h-5 animate-spin mx-auto text-gray-400" /></td></tr>
+              ) : viewers?.length === 0 ? (
+                <tr><td colSpan={3} className="px-6 py-4 text-center text-gray-500">No viewers recorded yet.</td></tr>
+              ) : (
+                viewers?.map((v, i) => (
+                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{v.userName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{v.userEmail}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                      {new Date(v.lastViewedAt).toLocaleString()}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
