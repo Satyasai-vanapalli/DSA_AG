@@ -106,14 +106,14 @@ function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
           <img 
             src={m.content.startsWith('http') ? m.content : (import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`)} 
             alt="motivation" 
-            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" 
+            className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500 relative z-20" 
           />
         )}
         
         {m.type === 'VIDEO' && (
           <video 
             controls 
-            className="w-full h-auto"
+            className="w-full h-auto relative z-20 pointer-events-auto"
             src={m.content.startsWith('http') ? m.content : (import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', m.content) : `http://localhost:8081${m.content}`)}
           />
         )}
