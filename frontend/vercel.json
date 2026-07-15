@@ -1,6 +1,7 @@
 {
   "rewrites": [
     {
+      "source": "/api/(.*)",
       "destination": "https://dsa-roadmap-backend.onrender.com/api/$1"
     },
     {
