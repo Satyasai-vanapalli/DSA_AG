@@ -391,6 +391,8 @@ export default function Home({ category }: { category: string }) {
 }
 
 function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 0, allConcepts, category }: { concept: Concept; index: number, activeFilters: string[], searchQuery: string, depth?: number, allConcepts?: Concept[], category: string }) {
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [isOpen, setIsOpen] = useState(false);
   const toggleConceptCompletedMutation = useMutation({
     mutationFn: (conceptId: string) => progressApi.toggleConceptCompleted(conceptId),
@@ -1020,7 +1022,7 @@ function ProblemListTable({ problems }: { problems: any[] }) {
           />
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }
 
