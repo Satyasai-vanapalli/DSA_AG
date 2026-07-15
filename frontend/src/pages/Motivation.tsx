@@ -205,7 +205,7 @@ function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
                   {c.isOwner && (
                     <button 
                       onClick={() => { if (confirm('Delete comment?')) deleteCommentMutation.mutate(c.id); }}
-                      className="text-red-500 opacity-0 group-hover/comment:opacity-100 transition-opacity p-1 hover:bg-red-50 dark:hover:bg-red-500/10 rounded"
+                      className="text-red-500 transition-opacity p-1 hover:bg-red-50 dark:hover:bg-red-500/10 rounded"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
