@@ -202,7 +202,7 @@ function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
                     <span className="font-bold text-slate-900 dark:text-white mr-2">{c.userName}</span>
                     <span className="text-slate-700 dark:text-slate-300">{c.content}</span>
                   </div>
-                  {c.isOwner && (
+                  {(c.isOwner || (user && user.name === c.userName) || (c as any).owner) && (
                     <button 
                       onClick={() => { if (confirm('Delete comment?')) deleteCommentMutation.mutate(c.id); }}
                       className="text-red-500 transition-opacity p-1 hover:bg-red-50 dark:hover:bg-red-500/10 rounded"

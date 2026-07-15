@@ -1,5 +1,7 @@
 package com.dsaroadmap.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +19,7 @@ public class CommentDTO {
     private String content;
     private String userName;
     private LocalDateTime createdAt;
+    
+    @JsonProperty("isOwner")
     private boolean isOwner;
 }
