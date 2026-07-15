@@ -45,6 +45,37 @@ export default function Home({ category }: { category: string }) {
     queryFn: () => roadmapApi.getProblemsByCategory(category),
   });
 
+  const { data: userProgress } = useQuery({
+    queryKey: ['progress'],
+    queryFn: progressApi.getMyProgress,
+    enabled: isAuthenticated,
+  });
+
+  const globalFilteredProblems = useMemo(() => {
+    if (!allProblems) return [];
+    if (!searchQuery && activeFilters.length === 0) return [];
+    
+    let result = allProblems;
+    if (activeFilters.length > 0) {
+      result = result.filter(p => {
+        const isSolved = userProgress?.some(up => up.problemId === p.id && up.completed);
+        const hasDifficultyFilter = activeFilters.some(f => ['Easy', 'Medium', 'Hard'].includes(f));
+        const hasStatusFilter = activeFilters.some(f => ['Solved', 'Unsolved'].includes(f));
+
+        const difficultyMatch = !hasDifficultyFilter || activeFilters.includes(p.difficulty);
+        const statusMatch = !hasStatusFilter || 
+          (activeFilters.includes('Solved') && isSolved) || 
+          (activeFilters.includes('Unsolved') && !isSolved);
+          
+        return difficultyMatch && statusMatch;
+      });
+    }
+    if (searchQuery) {
+      result = result.filter(p => (p.title || '').toLowerCase().includes(searchQuery.toLowerCase()));
+    }
+    return result;
+  }, [allProblems, activeFilters, searchQuery, userProgress]);
+
   const categoryStats = useMemo(() => {
     let easy = 0, medium = 0, hard = 0, total = 0;
     if (!allProblems) return { total, easy, medium, hard };
@@ -324,25 +355,33 @@ export default function Home({ category }: { category: string }) {
 
           {/* Roadmap List */}
           <div className="space-y-4">
-            {filteredConcepts?.map((concept, index) => (
-              <ConceptAccordion
-                key={concept.id}
-                concept={concept}
-                index={index + 1}
-                activeFilters={activeFilters}
-                searchQuery={searchQuery}
-                allConcepts={concepts}
-                category={category}
-              />
-            ))}
-            {filteredConcepts?.length === 0 && (
-              <div className="text-center py-16 bg-white dark:bg-dark-card rounded-3xl border border-slate-200 dark:border-dark-border">
-                <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-8 h-8 text-slate-400" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No matches found</h3>
-                <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
+            {searchQuery.length > 0 || activeFilters.length > 0 ? (
+              <div className="bg-white dark:bg-dark-card rounded-2xl border border-slate-200 dark:border-dark-border overflow-hidden shadow-sm">
+                <ProblemListTable problems={globalFilteredProblems} />
               </div>
+            ) : (
+              <>
+                {filteredConcepts?.map((concept, index) => (
+                  <ConceptAccordion
+                    key={concept.id}
+                    concept={concept}
+                    index={index + 1}
+                    activeFilters={activeFilters}
+                    searchQuery={searchQuery}
+                    allConcepts={concepts}
+                    category={category}
+                  />
+                ))}
+                {filteredConcepts?.length === 0 && (
+                  <div className="text-center py-16 bg-white dark:bg-dark-card rounded-3xl border border-slate-200 dark:border-dark-border">
+                    <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Search className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">No matches found</h3>
+                    <p className="text-slate-500 dark:text-slate-400">Try adjusting your search or filters.</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </>
@@ -353,50 +392,6 @@ export default function Home({ category }: { category: string }) {
 
 function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 0, allConcepts, category }: { concept: Concept; index: number, activeFilters: string[], searchQuery: string, depth?: number, allConcepts?: Concept[], category: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [expandedProblemIds, setExpandedProblemIds] = useState<Set<string>>(new Set());
-  const [selectedSolutionProblem, setSelectedSolutionProblem] = useState<any | null>(null);
-
-  const toggleProblemExpansion = (problemId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    setExpandedProblemIds(prev => {
-      const next = new Set(prev);
-      if (next.has(problemId)) next.delete(problemId);
-      else next.add(problemId);
-      return next;
-    });
-  };
-
-  const { isAuthenticated } = useAuth();
-  const queryClient = useQueryClient();
-
-  const toggleCompletedMutation = useMutation({
-    mutationFn: (data: { problemId: string; timeSpent?: number }) => progressApi.toggleCompleted(data.problemId, data.timeSpent),
-    onMutate: async (newData) => {
-      await queryClient.cancelQueries({ queryKey: ['progress'] });
-      const previousProgress = queryClient.getQueryData(['progress']);
-      queryClient.setQueryData(['progress'], (old: any) => {
-        if (!old) return old;
-        const index = old.findIndex((p: any) => p.problemId === newData.problemId);
-        if (index > -1) {
-          const newProgress = [...old];
-          newProgress[index] = { ...newProgress[index], completed: !newProgress[index].completed };
-          return newProgress;
-        } else {
-          return [...old, { problemId: newData.problemId, completed: true }];
-        }
-      });
-      return { previousProgress };
-    },
-    onError: (_err, _newData, context: any) => {
-      queryClient.setQueryData(['progress'], context.previousProgress);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['progress'] });
-      queryClient.invalidateQueries({ queryKey: ['stats'] });
-      queryClient.invalidateQueries({ queryKey: ['analytics'] });
-    }
-  });
-
   const toggleConceptCompletedMutation = useMutation({
     mutationFn: (conceptId: string) => progressApi.toggleConceptCompleted(conceptId),
     onMutate: async (conceptId) => {
@@ -424,11 +419,6 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
       queryClient.invalidateQueries({ queryKey: ['analytics'] });
     }
   });
-
-  const handleToggleCompleted = (e: React.MouseEvent, problemId: string, _isCompleted: boolean) => {
-    e.stopPropagation();
-    toggleCompletedMutation.mutate({ problemId });
-  };
 
   const handleToggleConceptCompleted = (e: React.MouseEvent, conceptId: string) => {
     e.stopPropagation();
@@ -797,162 +787,230 @@ function ConceptAccordion({ concept, index, activeFilters, searchQuery, depth = 
                 <div className="py-8 flex justify-center">
                   <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
                 </div>
-              ) : filteredProblems.length > 0 ? (
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-16 text-center">Status</th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Problem</th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-28">Difficulty</th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-28">Problem Link</th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-28 text-center">Video Solution</th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-24 text-center">Solution</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {filteredProblems.map((problem) => {
-                      const prog = userProgress?.find((up: any) => up.problemId === problem.id);
-                      const isCompleted = prog?.completed || false;
-                      const isRevision = prog?.revision || false;
-
-                      return (
-                        <Fragment key={problem.id}>
-                          <tr
-                            onClick={(e) => toggleProblemExpansion(problem.id, e)}
-                            className={`cursor-pointer transition-colors group ${isCompleted
-                              ? 'bg-green-50/40 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20'
-                              : 'bg-white dark:bg-dark-card hover:bg-slate-50 dark:hover:bg-slate-800/40'
-                              }`}
-                          >
-                            {/* Status */}
-                            <td className="px-4 py-3.5 text-center">
-                              {isAuthenticated ? (
-                                <button
-                                  onClick={(e) => handleToggleCompleted(e, problem.id, isCompleted)}
-                                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors mx-auto"
-                                  title={isCompleted ? "Mark as incomplete" : "Mark as complete"}
-                                >
-                                  {isCompleted ? (
-                                    <CheckCircle className="w-5 h-5 text-green-500" />
-                                  ) : (
-                                    <div className="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-500 hover:border-green-500 transition-colors" />
-                                  )}
-                                </button>
-                              ) : (
-                                <Code2 className="w-4 h-4 text-slate-400 mx-auto" />
-                              )}
-                            </td>
-
-                            {/* Problem Name */}
-                            <td className="px-4 py-3.5">
-                              <div className="flex items-center gap-2">
-                                <span className={`font-medium text-sm transition-colors ${isCompleted
-                                  ? 'text-green-800 dark:text-green-300'
-                                  : 'text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400'
-                                  }`}>
-                                  {problem.title}
-                                </span>
-                                {isRevision && (
-                                  <span className="shrink-0 inline-flex items-center gap-0.5 text-[10px] font-bold text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded">
-                                    <Star className="w-3 h-3 fill-current" /> Revise
-                                  </span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Difficulty */}
-                            <td className="px-4 py-3.5">
-                              <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' :
-                                problem.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400' :
-                                  'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
-                                }`}>
-                                {problem.difficulty}
-                              </span>
-                            </td>
-
-                            {/* Problem Links */}
-                            <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                {problem.platformLinks && problem.platformLinks.length > 0 ? (
-                                  problem.platformLinks.map((link: any, i: number) => (
-                                    <PlatformIcon key={i} name={link.platformName} url={link.url} />
-                                  ))
-                                ) : problem.problemLink ? (
-                                  <PlatformIcon name={getPlatformName(problem.problemLink)} url={problem.problemLink} />
-                                ) : (
-                                  <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
-                                )}
-                              </div>
-                            </td>
-
-                            {/* Video Solution */}
-                            <td className="px-4 py-3.5 text-center" onClick={(e) => e.stopPropagation()}>
-                              {problem.youtubeLink ? (
-                                <a
-                                  href={problem.youtubeLink.startsWith('http') ? problem.youtubeLink : `https://${problem.youtubeLink}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-xs font-medium"
-                                >
-                                  <PlayCircle className="w-3.5 h-3.5" /> Video
-                                </a>
-                              ) : (
-                                <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
-                              )}
-                            </td>
-
-                            {/* Solution */}
-                            <td className="px-4 py-3.5 text-center" onClick={(e) => e.stopPropagation()}>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedSolutionProblem(problem);
-                                }}
-                                className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors text-xs font-medium"
-                              >
-                                <Code2 className="w-3.5 h-3.5" /> View Solution
-                              </button>
-                            </td>
-                          </tr>
-
-                          {/* Expanded Documentation Row */}
-                          {expandedProblemIds.has(problem.id) && (
-                            <tr>
-                              <td colSpan={6} className="px-4 py-4 bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100 dark:border-slate-800">
-                                <div className="text-sm text-slate-600 dark:text-slate-300 md:pl-16 space-y-4">
-                                  {problem.documentationLink && (
-                                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium">
-                                      <FileText className="w-4 h-4" />
-                                      <a href={problem.documentationLink.startsWith('http') ? problem.documentationLink : `https://${problem.documentationLink}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                                        Read Official Documentation
-                                      </a>
-                                    </div>
-                                  )}
-                                  {problem.description ? (
-                                    <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap">
-                                      {problem.description}
-                                    </div>
-                                  ) : (
-                                    <div className="italic text-slate-400">Oops, still not added documentation.</div>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          )}
-                        </Fragment>
-                      );
-                    })}
-                  </tbody>
-                </table>
               ) : (
-                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
-                  No matching problems in this topic.
-                </div>
+                <ProblemListTable problems={filteredProblems} />
               )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+function ProblemListTable({ problems }: { problems: any[] }) {
+  const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
+  const [expandedProblemIds, setExpandedProblemIds] = useState<Set<string>>(new Set());
+  const [selectedSolutionProblem, setSelectedSolutionProblem] = useState<any | null>(null);
+
+  const { data: userProgress } = useQuery({
+    queryKey: ['progress'],
+    queryFn: progressApi.getMyProgress,
+    enabled: isAuthenticated,
+  });
+
+  const toggleCompletedMutation = useMutation({
+    mutationFn: (data: { problemId: string; timeSpent?: number }) => progressApi.toggleCompleted(data.problemId, data.timeSpent),
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ['progress'] });
+      const previousProgress = queryClient.getQueryData(['progress']);
+      queryClient.setQueryData(['progress'], (old: any) => {
+        if (!old) return old;
+        const index = old.findIndex((p: any) => p.problemId === newData.problemId);
+        if (index > -1) {
+          const newProgress = [...old];
+          newProgress[index] = { ...newProgress[index], completed: !newProgress[index].completed };
+          return newProgress;
+        } else {
+          return [...old, { problemId: newData.problemId, completed: true }];
+        }
+      });
+      return { previousProgress };
+    },
+    onError: (_err, _newData, context: any) => {
+      queryClient.setQueryData(['progress'], context.previousProgress);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['progress'] });
+      queryClient.invalidateQueries({ queryKey: ['stats'] });
+      queryClient.invalidateQueries({ queryKey: ['analytics'] });
+    }
+  });
+
+  const handleToggleCompleted = (e: React.MouseEvent, problemId: string, _isCompleted: boolean) => {
+    e.stopPropagation();
+    toggleCompletedMutation.mutate({ problemId });
+  };
+
+  const toggleProblemExpansion = (problemId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setExpandedProblemIds(prev => {
+      const next = new Set(prev);
+      if (next.has(problemId)) next.delete(problemId);
+      else next.add(problemId);
+      return next;
+    });
+  };
+
+  if (problems.length === 0) {
+    return (
+      <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+        No matching problems found.
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-left border-collapse min-w-[800px]">
+          <thead>
+            <tr className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-700">
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-16 text-center">Status</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Problem</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-28">Difficulty</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-28">Problem Link</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-28 text-center">Video Solution</th>
+              <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-24 text-center">Solution</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            {problems.map((problem) => {
+              const prog = userProgress?.find((up: any) => up.problemId === problem.id);
+              const isCompleted = prog?.completed || false;
+              const isRevision = prog?.revision || false;
+
+              return (
+                <Fragment key={problem.id}>
+                  <tr
+                    onClick={(e) => toggleProblemExpansion(problem.id, e)}
+                    className={`cursor-pointer transition-colors group ${isCompleted
+                      ? 'bg-green-50/40 dark:bg-green-900/10 hover:bg-green-50 dark:hover:bg-green-900/20'
+                      : 'bg-white dark:bg-dark-card hover:bg-slate-50 dark:hover:bg-slate-800/40'
+                      }`}
+                  >
+                    {/* Status */}
+                    <td className="px-4 py-3.5 text-center">
+                      {isAuthenticated ? (
+                        <button
+                          onClick={(e) => handleToggleCompleted(e, problem.id, isCompleted)}
+                          className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors mx-auto"
+                          title={isCompleted ? "Mark as incomplete" : "Mark as complete"}
+                        >
+                          {isCompleted ? (
+                            <CheckCircle className="w-5 h-5 text-green-500" />
+                          ) : (
+                            <div className="w-4 h-4 rounded-full border-2 border-slate-300 dark:border-slate-500 hover:border-green-500 transition-colors" />
+                          )}
+                        </button>
+                      ) : (
+                        <Code2 className="w-4 h-4 text-slate-400 mx-auto" />
+                      )}
+                    </td>
+
+                    {/* Problem Name */}
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <span className={`font-medium text-sm transition-colors ${isCompleted
+                          ? 'text-green-800 dark:text-green-300'
+                          : 'text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400'
+                          }`}>
+                          {problem.title}
+                        </span>
+                        {isRevision && (
+                          <span className="shrink-0 inline-flex items-center gap-0.5 text-[10px] font-bold text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 px-1.5 py-0.5 rounded">
+                            <Star className="w-3 h-3 fill-current" /> Revise
+                          </span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Difficulty */}
+                    <td className="px-4 py-3.5">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-md ${problem.difficulty === 'Easy' ? 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400' :
+                        problem.difficulty === 'Medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/40 dark:text-yellow-400' :
+                          'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
+                        }`}>
+                        {problem.difficulty}
+                      </span>
+                    </td>
+
+                    {/* Problem Links */}
+                    <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {problem.platformLinks && problem.platformLinks.length > 0 ? (
+                          problem.platformLinks.map((link: any, i: number) => (
+                            <PlatformIcon key={i} name={link.platformName} url={link.url} />
+                          ))
+                        ) : problem.problemLink ? (
+                          <PlatformIcon name={getPlatformName(problem.problemLink)} url={problem.problemLink} />
+                        ) : (
+                          <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Video Solution */}
+                    <td className="px-4 py-3.5 text-center" onClick={(e) => e.stopPropagation()}>
+                      {problem.youtubeLink ? (
+                        <a
+                          href={problem.youtubeLink.startsWith('http') ? problem.youtubeLink : `https://${problem.youtubeLink}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors text-xs font-medium"
+                        >
+                          <PlayCircle className="w-3.5 h-3.5" /> Video
+                        </a>
+                      ) : (
+                        <span className="text-xs text-slate-300 dark:text-slate-600">—</span>
+                      )}
+                    </td>
+
+                    {/* Solution */}
+                    <td className="px-4 py-3.5 text-center" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedSolutionProblem(problem);
+                        }}
+                        className="inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 rounded-lg hover:bg-primary-100 dark:hover:bg-primary-900/40 transition-colors text-xs font-medium"
+                      >
+                        <Code2 className="w-3.5 h-3.5" /> View Solution
+                      </button>
+                    </td>
+                  </tr>
+
+                  {/* Expanded Documentation Row */}
+                  {expandedProblemIds.has(problem.id) && (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-4 bg-slate-50/50 dark:bg-slate-800/20 border-b border-slate-100 dark:border-slate-800">
+                        <div className="text-sm text-slate-600 dark:text-slate-300 md:pl-16 space-y-4">
+                          {problem.documentationLink && (
+                            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium">
+                              <FileText className="w-4 h-4" />
+                              <a href={problem.documentationLink.startsWith('http') ? problem.documentationLink : `https://${problem.documentationLink}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                                Read Official Documentation
+                              </a>
+                            </div>
+                          )}
+                          {problem.description ? (
+                            <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap">
+                              {problem.description}
+                            </div>
+                          ) : (
+                            <div className="italic text-slate-400">Oops, still not added documentation.</div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )}
+                </Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
 
       <AnimatePresence>
         {selectedSolutionProblem && (
