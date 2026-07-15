@@ -12,11 +12,11 @@ export default function Contact() {
 
   const getIcon = (platform: string) => {
     switch (platform.toUpperCase()) {
-      case 'WHATSAPP': return <img src="/icons/whatsapp.png" alt="WhatsApp" className="w-8 h-8 object-contain" />;
-      case 'INSTAGRAM': return <img src="/icons/instagram.png" alt="Instagram" className="w-8 h-8 object-contain" />;
-      case 'GMAIL': return <img src="/icons/gmail.png" alt="Gmail" className="w-8 h-8 object-contain" />;
-      case 'OUTLOOK': return <img src="/icons/outlook.png" alt="Outlook" className="w-8 h-8 object-contain" />;
-      default: return <ExternalLink className="w-6 h-6 text-blue-500" />;
+      case 'WHATSAPP': return <img src="/icons/whatsapp.png" alt="WhatsApp" className="w-full h-full object-cover" />;
+      case 'INSTAGRAM': return <img src="/icons/instagram.png" alt="Instagram" className="w-full h-full object-cover" />;
+      case 'GMAIL': return <img src="/icons/gmail.png" alt="Gmail" className="w-full h-full object-cover" />;
+      case 'OUTLOOK': return <img src="/icons/outlook.png" alt="Outlook" className="w-full h-full object-cover" />;
+      default: return <ExternalLink className="w-8 h-8 text-blue-500 m-4" />;
     }
   };
 
@@ -43,7 +43,7 @@ export default function Contact() {
             className="group glass-card flex items-center p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="p-4 rounded-2xl bg-white/50 dark:bg-white/5 group-hover:scale-110 transition-transform duration-300 shadow-sm relative z-10">
+            <div className="w-16 h-16 flex-shrink-0 rounded-2xl overflow-hidden bg-white/50 dark:bg-white/5 group-hover:scale-110 transition-transform duration-300 shadow-sm relative z-10 flex items-center justify-center">
               {getIcon(contact.platform)}
             </div>
             <div className="ml-5 flex-1 relative z-10">
@@ -66,8 +66,8 @@ export default function Contact() {
             className="group glass-card flex items-center p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="p-4 rounded-2xl bg-white/50 dark:bg-white/5 group-hover:scale-110 transition-transform duration-300 shadow-sm relative z-10">
-              <img src="/icons/outlook.png" alt="Outlook" className="w-8 h-8 object-contain" />
+            <div className="w-16 h-16 flex-shrink-0 rounded-2xl overflow-hidden bg-white/50 dark:bg-white/5 group-hover:scale-110 transition-transform duration-300 shadow-sm relative z-10 flex items-center justify-center">
+              <img src="/icons/outlook.png" alt="Outlook" className="w-full h-full object-cover" />
             </div>
             <div className="ml-5 flex-1 relative z-10">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">OUTLOOK</h3>
