@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { contactApi } from '../api/contact';
-import { Loader2, MessageCircle, Camera, Mail, ExternalLink } from 'lucide-react';
+import { Loader2, ExternalLink } from 'lucide-react';
 
 export default function Contact() {
   const { data: contacts, isLoading } = useQuery({
@@ -12,9 +12,10 @@ export default function Contact() {
 
   const getIcon = (platform: string) => {
     switch (platform.toUpperCase()) {
-      case 'WHATSAPP': return <MessageCircle className="w-6 h-6 text-green-500" />;
-      case 'INSTAGRAM': return <Camera className="w-6 h-6 text-pink-500" />;
-      case 'GMAIL': return <Mail className="w-6 h-6 text-red-500" />;
+      case 'WHATSAPP': return <img src="/icons/whatsapp.png" alt="WhatsApp" className="w-8 h-8 object-contain" />;
+      case 'INSTAGRAM': return <img src="/icons/instagram.png" alt="Instagram" className="w-8 h-8 object-contain" />;
+      case 'GMAIL': return <img src="/icons/gmail.png" alt="Gmail" className="w-8 h-8 object-contain" />;
+      case 'OUTLOOK': return <img src="/icons/outlook.png" alt="Outlook" className="w-8 h-8 object-contain" />;
       default: return <ExternalLink className="w-6 h-6 text-blue-500" />;
     }
   };
@@ -54,6 +55,26 @@ export default function Contact() {
         ))}
         {contacts?.length === 0 && (
           <div className="col-span-full text-center text-gray-500 py-12">No contact information available right now.</div>
+        )}
+        
+        {/* Hardcoded fallback for Outlook if not added via admin panel */}
+        {contacts && !contacts.some(c => c.platform.toUpperCase() === 'OUTLOOK') && (
+          <a
+            href="mailto:2300031222@kluniversity.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group glass-card flex items-center p-6 rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="p-4 rounded-2xl bg-white/50 dark:bg-white/5 group-hover:scale-110 transition-transform duration-300 shadow-sm relative z-10">
+              <img src="/icons/outlook.png" alt="Outlook" className="w-8 h-8 object-contain" />
+            </div>
+            <div className="ml-5 flex-1 relative z-10">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">OUTLOOK</h3>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">2300031222@kluniversity.in</p>
+            </div>
+            <ExternalLink className="w-6 h-6 text-slate-300 group-hover:text-primary-500 opacity-0 group-hover:opacity-100 transition-all duration-300 relative z-10 drop-shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
+          </a>
         )}
       </div>
     </div>
