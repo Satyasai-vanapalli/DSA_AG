@@ -17,4 +17,5 @@ public class CommentDTO {
     private String content;
     private String userName;
     private LocalDateTime createdAt;
+    private boolean isOwner;
 }

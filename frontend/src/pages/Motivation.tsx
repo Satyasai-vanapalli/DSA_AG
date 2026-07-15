@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motivationApi } from '../api/motivation';
 import type { Motivation as MotivationType } from '../api/motivation';
-import { Loader2, Quote, ExternalLink, Heart, MessageCircle } from 'lucide-react';
+import { Loader2, Quote, ExternalLink, Heart, MessageCircle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 
@@ -90,6 +90,13 @@ function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['motivations'] });
       setCommentText('');
+    }
+  });
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: (commentId: string) => motivationApi.deleteComment(m.id, commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['motivations'] });
     }
   });
 
@@ -190,9 +197,19 @@ function MotivationCard({ motivation: m }: { motivation: MotivationType }) {
           <div className="mt-3 space-y-3">
             <div className="max-h-48 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
               {m.comments?.map(c => (
-                <div key={c.id} className="text-sm">
-                  <span className="font-bold text-slate-900 dark:text-white mr-2">{c.userName}</span>
-                  <span className="text-slate-700 dark:text-slate-300">{c.content}</span>
+                <div key={c.id} className="text-sm flex justify-between items-start group/comment">
+                  <div>
+                    <span className="font-bold text-slate-900 dark:text-white mr-2">{c.userName}</span>
+                    <span className="text-slate-700 dark:text-slate-300">{c.content}</span>
+                  </div>
+                  {c.isOwner && (
+                    <button 
+                      onClick={() => { if (confirm('Delete comment?')) deleteCommentMutation.mutate(c.id); }}
+                      className="text-red-500 opacity-0 group-hover/comment:opacity-100 transition-opacity p-1 hover:bg-red-50 dark:hover:bg-red-500/10 rounded"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                 </div>
               ))}
               {m.comments?.length === 0 && (

@@ -5,6 +5,7 @@ export interface Comment {
   content: string;
   userName: string;
   createdAt: string;
+  isOwner?: boolean;
 }
 
 export interface Motivation {
@@ -63,6 +64,9 @@ export const motivationApi = {
   addComment: async (id: string, content: string) => {
     const response = await apiClient.post<Comment>(`/motivation/${id}/comment`, { content });
     return response.data;
+  },
+  deleteComment: async (motivationId: string, commentId: string) => {
+    await apiClient.delete(`/motivation/${motivationId}/comment/${commentId}`);
   },
   getViewers: async () => {
     const response = await apiClient.get<MotivationView[]>('/admin/motivation/views');

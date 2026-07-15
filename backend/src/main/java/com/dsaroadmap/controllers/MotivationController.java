@@ -73,6 +73,7 @@ public class MotivationController {
                             .content(c.getContent())
                             .userName(c.getUser().getName())
                             .createdAt(c.getCreatedAt())
+                            .isOwner(finalUser != null && finalUser.getId().equals(c.getUser().getId()))
                             .build())
                     .collect(Collectors.toList());
 
@@ -130,7 +131,22 @@ public class MotivationController {
                 .content(comment.getContent())
                 .userName(currentUser.getName())
                 .createdAt(comment.getCreatedAt())
+                .isOwner(true)
                 .build());
+    }
+    
+    @DeleteMapping("/motivation/{id}/comment/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable UUID id, @PathVariable UUID commentId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = userRepository.findByEmail(auth.getName()).orElseThrow();
+        
+        MotivationComment comment = commentRepository.findById(commentId).orElseThrow();
+        if (!comment.getUser().getId().equals(currentUser.getId())) {
+            return ResponseEntity.status(403).build(); // Only owner can delete
+        }
+        
+        commentRepository.delete(comment);
+        return ResponseEntity.ok().build();
     }
 
     // Only Super Admins or MOTIVATION category admins can access these
